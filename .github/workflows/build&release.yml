@@ -27,6 +27,10 @@ jobs:
       - name: Build
         run: GOOS=${{ matrix.goos }} GOARCH=${{ matrix.goarch }} go build -v -o boofutils-${{ matrix.goos }}-${{ matrix.goarch }} .
         
+      - name: Get commit ID
+        id: get_commit_id
+        run: echo "::set-output name=ID::$(git rev-parse --short HEAD)"
+        
       - name: Create Release
         id: create_release
         uses: actions/create-release@v1
@@ -34,7 +38,7 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           tag_name: ${{ github.ref }}
-          release_name: Release ${{ github.ref }}
+          release_name: Release ${{ github.ref }} - ${{ steps.get_commit_id.outputs.ID }}
           draft: false
           prerelease: true
 
