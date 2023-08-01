@@ -10,6 +10,8 @@ import (
 	"os"
 )
 
+// Don't touch any of this code. It barely works.
+
 func hf_main() {
 	fmt.Println("What is the path of the file?")
 	filePath := askInput()
