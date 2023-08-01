@@ -6,14 +6,9 @@ on:
     branches:
       - main
 
-
 jobs:
   build:
     runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        goos: [windows, linux]
-        goarch: [386, amd64]
     steps:
       - name: Set up Go
         uses: actions/setup-go@v2
@@ -26,9 +21,6 @@ jobs:
       - name: Get dependencies
         run: go get -v -t -d ./...
 
-      - name: Build
-        run: GOOS=${{ matrix.goos }} GOARCH=${{ matrix.goarch }} go build -v -o boofutils-${{ matrix.goos }}-${{ matrix.goarch }} .
-        
       - name: Get commit ID
         id: get_commit_id
         run: echo "::set-output name=ID::$(git rev-parse --short HEAD)"
@@ -36,7 +28,22 @@ jobs:
       - name: Get the version
         id: get_version
         run: echo ::set-output name=VERSION::$(echo ${GITHUB_REF#refs/*/})
-        
+
+  build_matrix:
+    needs: build
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        goos: [windows, linux]
+        goarch: [386, amd64]
+    steps:
+      - name: Build
+        run: GOOS=${{ matrix.goos }} GOARCH=${{ matrix.goarch }} go build -v -o boofutils-${{ matrix.goos }}-${{ matrix.goarch }} .
+
+  release:
+    needs: build_matrix
+    runs-on: ubuntu-latest
+    steps:
       - name: Create Release
         id: create_release
         uses: actions/create-release@v1
