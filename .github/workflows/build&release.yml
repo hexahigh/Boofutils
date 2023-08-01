@@ -43,10 +43,6 @@ jobs:
         id: set-asset-paths
         run: echo "::set-output name=asset_paths::boofutils-windows-386,boofutils-windows-amd64,boofutils-linux-386,boofutils-linux-amd64"
 
-      - name: Get commit ID
-        id: get_commit_id
-        run: echo "::set-output name=ID::$(git rev-parse --short HEAD)"
-
       - name: Get the version
         id: get_version
         run: echo ::set-output name=VERSION::$(echo ${GITHUB_REF#refs/*/})
