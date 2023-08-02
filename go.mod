@@ -1,3 +1,3 @@
 module boofdev.org/utils
 
-go 1.18
+go 1.20
