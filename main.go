@@ -60,10 +60,14 @@ func checkInputAndDoStuff(input string) {
 	if input == "1" {
 		hf_main()
 	}
+	if input == "2" {
+		hex_main()
+	}
 	if input == "0" {
 		os.Exit(0)
 	}
-	if input != "1" && input != "0" {
+	// There is definetely a better way to do this but it works
+	if input != "1" && input != "2" && input != "0" {
 		fmt.Println("Invalid input")
 		os.Exit(0)
 	}
