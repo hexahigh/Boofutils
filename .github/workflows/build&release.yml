@@ -64,8 +64,8 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: ./boofutils-windows-386
-          asset_name: boofutils-windows-386
+          asset_path: ./boofutils-windows-386.exe
+          asset_name: boofutils-windows-386.exe
           asset_content_type: application/octet-stream
 
       - name: Upload Release Asset
@@ -74,8 +74,8 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: ./boofutils-windows-amd64
-          asset_name: boofutils-windows-amd64
+          asset_path: ./boofutils-windows-amd64.exe
+          asset_name: boofutils-windows-amd64.exe
           asset_content_type: application/octet-stream
 
       - name: Upload Release Asset
