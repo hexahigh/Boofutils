@@ -10,19 +10,30 @@ import (
 	"strings"
 )
 
+const AppVersion = "0.2.1 beta"
+
 var skipTo string
+var version *bool
 
 func init() {
+	version = flag.Bool("v", false, "Prints the current version")
 	flag.StringVar(&skipTo, "skip", "", "Skip the main menu and go to the selected task. Usage: -skip 1")
 	flag.Parse()
 }
 
 func main() {
+
+	if *version {
+		fmt.Println(AppVersion)
+		os.Exit(0)
+	  }
+
 	fmt.Println(skipTo)
 	if skipTo == "" {
 		fmt.Println("Hello", getName()+"!", "Welcome to Boofutils.")
 		fmt.Println("What would you like to do today?")
-		fmt.Println("[1] Calculate hashes of file")
+		fmt.Println("[1] Calculate hashes of a file")
+		fmt.Println("[2] Convert a file to hex")
 		fmt.Println("[0] Exit")
 		checkInputAndDoStuff(askInput())
 	} else {
@@ -57,18 +68,16 @@ func askInput() string {
 }
 
 func checkInputAndDoStuff(input string) {
-	if input == "1" {
-		hf_main()
-	}
-	if input == "2" {
-		hex_main()
-	}
-	if input == "0" {
-		os.Exit(0)
-	}
-	// There is definetely a better way to do this but it works
-	if input != "1" && input != "2" && input != "0" {
-		fmt.Println("Invalid input")
-		os.Exit(0)
-	}
+    switch input {
+    case "1":
+        hf_main()
+    case "2":
+        hex_main()
+    case "0":
+        os.Exit(0)
+    default:
+        fmt.Println("Invalid input")
+        os.Exit(0)
+    }
 }
+
