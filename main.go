@@ -27,8 +27,6 @@ func main() {
 		fmt.Println(AppVersion)
 		os.Exit(0)
 	  }
-
-	fmt.Println(skipTo)
 	if skipTo == "" {
 		fmt.Println(Greet(), getName()+"!", "Welcome to Boofutils.")
 		fmt.Println("What would you like to do today?")
