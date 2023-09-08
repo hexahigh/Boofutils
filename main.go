@@ -30,7 +30,7 @@ func main() {
 
 	fmt.Println(skipTo)
 	if skipTo == "" {
-		fmt.Println("Hello", getName()+"!", "Welcome to Boofutils.")
+		fmt.Println(Greet(), getName()+"!", "Welcome to Boofutils.")
 		fmt.Println("What would you like to do today?")
 		fmt.Println("[1] Calculate hashes of a file")
 		fmt.Println("[2] Convert a file to hex")
