@@ -10,7 +10,7 @@ import (
 	"strings"
 )
 
-const AppVersion = "0.2.1 beta"
+const AppVersion = "0.2.2 beta"
 
 var skipTo string
 var version *bool
