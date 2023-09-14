@@ -25,6 +25,11 @@ jobs:
       - name: Install tinygo dependencies
         run: sudo apt install gcc-arm-linux-gnueabihf
 
+      - name: Check versions
+        run: |
+          clang --version
+          tinygo version
+
       - name: Check out code
         uses: actions/checkout@v2
 
