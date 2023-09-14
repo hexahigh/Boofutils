@@ -24,7 +24,7 @@ jobs:
 
       - name: Install tinygo dependencies
         run: sudo apt install gcc-arm-linux-gnueabihf
-        
+
       - name: Check out code
         uses: actions/checkout@v2
 
@@ -36,16 +36,16 @@ jobs:
         run: go get -v -t -d ./...
 
       - name: Build windows-386
-        run: GOOS=windows GOARCH=386 tinygo build -v -o boofutils-windows-386.exe .
+        run: GOOS=windows GOARCH=386 tinygo build -o boofutils-windows-386.exe .
 
       - name: Build windows-amd64
-        run: GOOS=windows GOARCH=amd64 tinygo build -v -o boofutils-windows-amd64.exe .
+        run: GOOS=windows GOARCH=amd64 tinygo build -o boofutils-windows-amd64.exe .
 
       - name: Build linux-386
-        run: GOOS=linux GOARCH=386 tinygo build -v -o boofutils-linux-386 .
+        run: GOOS=linux GOARCH=386 tinygo build -o boofutils-linux-386 .
 
       - name: Build linux-amd64
-        run: GOOS=linux GOARCH=amd64 tinygo build -v -o boofutils-linux-amd64 .
+        run: GOOS=linux GOARCH=amd64 tinygo build -o boofutils-linux-amd64 .
 
       - name: Set asset paths
         id: set-asset-paths
