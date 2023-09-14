@@ -22,6 +22,9 @@ jobs:
         with:
           tinygo-version: '0.29.0'
 
+      - name: Install tinygo dependencies
+        run: sudo apt install gcc-arm-linux-gnueabihf
+        
       - name: Check out code
         uses: actions/checkout@v2
 
