@@ -23,6 +23,7 @@ func main() {
 		fmt.Println("Hello", getName()+"!", "Welcome to Boofutils.")
 		fmt.Println("What would you like to do today?")
 		fmt.Println("[1] Calculate hashes of file")
+		fmt.Println("[2] Print a file as hexadecimal (Base16)")
 		fmt.Println("[0] Exit")
 		checkInputAndDoStuff(askInput())
 	} else {
