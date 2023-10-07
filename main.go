@@ -10,17 +10,25 @@ import (
 	"strings"
 )
 
+const AppVersion = "0.2.2 beta"
+
 var skipTo string
+var version *bool
 
 func init() {
-	flag.StringVar(&skipTo, "skip", "", "Skip the main menu and go to the selected task. Usage: -skip 1")
+	version = flag.Bool("v", false, "Prints the current version")
+	flag.StringVar(&skipTo, "skip", "", "Skip the main menu and go to the selected task. Example Usage: -skip 1")
 	flag.Parse()
 }
 
 func main() {
-	fmt.Println(skipTo)
+
+	if *version {
+		fmt.Println(AppVersion)
+		os.Exit(0)
+	}
 	if skipTo == "" {
-		fmt.Println("Hello", getName()+"!", "Welcome to Boofutils.")
+		fmt.Println(Greet(), getName()+"!", "Welcome to Boofutils.")
 		fmt.Println("What would you like to do today?")
 		fmt.Println("[1] Calculate hashes of file")
 		fmt.Println("[2] Print a file as hexadecimal (Base16)")
@@ -58,17 +66,14 @@ func askInput() string {
 }
 
 func checkInputAndDoStuff(input string) {
-	if input == "1" {
+	switch input {
+	case "1":
 		hf_main()
-	}
-	if input == "2" {
+	case "2":
 		hex_main()
-	}
-	if input == "0" {
+	case "0":
 		os.Exit(0)
-	}
-	// There is definetely a better way to do this but it works
-	if input != "1" && input != "2" && input != "0" {
+	default:
 		fmt.Println("Invalid input")
 		os.Exit(0)
 	}
