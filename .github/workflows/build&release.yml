@@ -20,10 +20,6 @@ jobs:
       - name: Check out code
         uses: actions/checkout@v2
 
-      - name: Get commit ID
-        id: get_commit_id
-        run: echo "::set-output name=ID::$(git rev-parse --short HEAD)"
-
       - name: Get dependencies
         run: go get -v -t -d ./...
 
@@ -39,61 +35,41 @@ jobs:
       - name: Build linux-amd64
         run: GOOS=linux GOARCH=amd64 go build -v -o boofutils-linux-amd64 .
 
-      - name: Set asset paths
-        id: set-asset-paths
-        run: echo "::set-output name=asset_paths::boofutils-windows-386,boofutils-windows-amd64,boofutils-linux-386,boofutils-linux-amd64"
-
-      - name: Get the version
-        id: get_version
-        run: echo ::set-output name=VERSION::$(echo ${GITHUB_REF#refs/*/})
-
-      - name: Create Release
-        id: create_release
-        uses: actions/create-release@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - name: Upload the artifact
+        uses: actions/upload-artifact@v3
         with:
-          tag_name: ${{ steps.get_commit_id.outputs.ID }}
-          release_name: Autobuild - ${{ steps.get_commit_id.outputs.ID }}
-          draft: false
+          name: boofutils
+          path: |
+            boofutils-windows-386.exe
+            boofutils-windows-amd64.exe
+            boofutils-linux-386
+            boofutils-linux-amd64
+
+  upload:
+    name: Upload release
+    runs-on: ubuntu-latest
+    needs: build
+    if: github.ref == 'refs/heads/main'
+
+    steps:
+      - name: Delete old release and tag
+        uses: dev-drprasad/delete-tag-and-release@v1.0.1
+        with:
+          delete_release: true
+          tag_name: latest_auto
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Get artifacts
+        uses: actions/download-artifact@v3
+        with:
+          path: build
+
+      - name: Release to GitHub
+        uses: ncipollo/release-action@v1
+        with:
+          name: Latest Autobuild
+          tag: latest_auto
+          commit: main
+          body: ${{ github.event.head_commit.message }}
+          artifacts: "build/boofutils/boofutils-windows-386.exe, build/boofutils/boofutils-windows-amd64.exe, build/boofutils/boofutils-linux-386, build/boofutils/boofutils-linux-amd64"
           prerelease: true
-
-      - name: Upload Release Asset
-        uses: actions/upload-release-asset@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: ./boofutils-windows-386.exe
-          asset_name: boofutils-windows-386.exe
-          asset_content_type: application/octet-stream
-
-      - name: Upload Release Asset
-        uses: actions/upload-release-asset@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: ./boofutils-windows-amd64.exe
-          asset_name: boofutils-windows-amd64.exe
-          asset_content_type: application/octet-stream
-
-      - name: Upload Release Asset
-        uses: actions/upload-release-asset@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: ./boofutils-linux-386
-          asset_name: boofutils-linux-386
-          asset_content_type: application/octet-stream
-
-      - name: Upload Release Asset
-        uses: actions/upload-release-asset@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: ./boofutils-linux-amd64
-          asset_name: boofutils-linux-amd64
-          asset_content_type: application/octet-stream
