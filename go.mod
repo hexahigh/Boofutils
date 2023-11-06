@@ -1,3 +1,3 @@
-module boofdev.org/utils
+module github.com/hexahigh/Boofutils
 
-go 1.20
+go 1.21.3
