@@ -1,15 +1,15 @@
 package main
 
 import (
+	"boofutils/modules"
 	"flag"
 	"fmt"
 	"log"
 	"os"
 	"os/user"
-	"boofutils/modules"
 )
 
-const AppVersion = "0.2.2 beta"
+const AppVersion = "0.2.6 beta"
 
 var skipTo string
 var version *bool
@@ -26,12 +26,29 @@ func main() {
 		fmt.Println(AppVersion)
 		os.Exit(0)
 	}
+
+	if !modules.CheckConfigFileExists() {
+		fmt.Println("Boofutils has not been configured yet. Would you like to answer some quick questions to get started?")
+		fmt.Println("Y/N (Default: Y)")
+		if modules.AskInput() == "y" || modules.AskInput() == "Y" {
+			modules.AskUserQuestions()
+		} else {
+			modules.GenerateDefaultConfig()
+		}
+	}
+
+	username, err := modules.GetOptionFromConfig("name")
+	if err != nil {
+		log.Fatalf(err.Error())
+	}
+
 	if skipTo == "" {
-		fmt.Println(modules.Greet(), getName()+"!", "Welcome to Boofutils.")
+		fmt.Println(modules.Greet(), username+"!", "Welcome to Boofutils.")
 		fmt.Println("What would you like to do today?")
 		fmt.Println("[1] Calculate hashes of file")
 		fmt.Println("[2] Print a file as hexadecimal (Base16)")
 		fmt.Println("[3] Subdomain Finder")
+		fmt.Println("[9] Reconfigure Boofutils")
 		fmt.Println("[0] Exit")
 		checkInputAndDoStuff(modules.AskInput())
 	} else {
@@ -62,6 +79,8 @@ func checkInputAndDoStuff(input string) {
 		modules.Hex_main()
 	case "3":
 		modules.SubD_main()
+	case "9":
+		modules.AskUserQuestions()
 	case "0":
 		os.Exit(0)
 	default:
