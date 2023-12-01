@@ -23,13 +23,31 @@ func SubD_main() {
 	strings.Replace(domain, "http://", "", -1)
 	strings.Replace(domain, "https://", "", -1)
 
-	data, err := content.ReadFile("embed/subdomains.txt")
-	if err != nil {
-		fmt.Println(err)
-		return
-	}
+// Open the zstd file
+f, err := os.Open("embed/subdomains.zst")
+if err != nil {
+    fmt.Println(err)
+    return
+}
+defer f.Close()
 
-	scanner := bufio.NewScanner(strings.NewReader(string(data)))
+// Create a decoder
+d, err := zstd.NewReader(f)
+if err != nil {
+    fmt.Println(err)
+    return
+}
+defer d.Close()
+
+// Read the file
+data, err := ioutil.ReadAll(d)
+if err != nil {
+    fmt.Println(err)
+    return
+}
+
+// Continue with your code...
+scanner := bufio.NewScanner(strings.NewReader(string(data)))
 	var subdomains []string
 	for scanner.Scan() {
 		subdomains = append(subdomains, scanner.Text())
