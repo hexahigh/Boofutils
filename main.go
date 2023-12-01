@@ -38,7 +38,7 @@ func main() {
 	}
 
 	if *version {
-		fmt.Println(AppVersion)
+		fmt.Println("\033[36mBoofutils\033[0m\nVersion:", AppVersion, "\nBoof Development")
 		os.Exit(0)
 	}
 
