@@ -16,6 +16,13 @@ import (
 //go:embed embed/subdomains.txt.zst
 var content embed.FS
 
+// SubD_main is the main function for subdomain scanning.
+//
+// It prompts the user for a domain to scan, asks for user input to disable the
+// progress bar, reads a list of subdomains from a file, and performs DNS lookups
+// for each subdomain. It prints out the subdomains with A or AAAA records and
+// their corresponding CNAME records. Finally, it prints out the list of found
+// subdomains.
 func SubD_main() {
 	var foundDomains []string
 
