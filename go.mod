@@ -1,3 +1,3 @@
-module github.com/hexahigh/Boofutils
+module boofutils
 
-go 1.21.3
+go 1.21.0

@@ -1,4 +1,4 @@
-package main
+package modules
 
 import (
 	"crypto/md5"
@@ -12,9 +12,9 @@ import (
 
 // Don't touch any of this code. It barely works.
 
-func hf_main() {
+func Hf_main() {
 	fmt.Println("What is the path of the file?")
-	filePath := askInput()
+	filePath := AskInput()
 	//md5
 	fmt.Println("Calculating MD5...")
 	md5hash, err := hash_file_md5(filePath)

@@ -1,4 +1,4 @@
-package main
+package modules
 
 import (
 	"bufio"
@@ -8,9 +8,9 @@ import (
 	"os"
 )
 
-func hex_main() {
+func Hex_main() {
 	fmt.Println("What is the path of the file?")
-	filePath := askInput()
+	filePath := AskInput()
 	readLinesHexraw(filePath)
 }
 

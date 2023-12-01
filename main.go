@@ -1,13 +1,12 @@
 package main
 
 import (
-	"bufio"
 	"flag"
 	"fmt"
 	"log"
 	"os"
 	"os/user"
-	"strings"
+	"boofutils/modules"
 )
 
 const AppVersion = "0.2.2 beta"
@@ -28,12 +27,12 @@ func main() {
 		os.Exit(0)
 	}
 	if skipTo == "" {
-		fmt.Println(Greet(), getName()+"!", "Welcome to Boofutils.")
+		fmt.Println(modules.Greet(), getName()+"!", "Welcome to Boofutils.")
 		fmt.Println("What would you like to do today?")
 		fmt.Println("[1] Calculate hashes of file")
 		fmt.Println("[2] Print a file as hexadecimal (Base16)")
 		fmt.Println("[0] Exit")
-		checkInputAndDoStuff(askInput())
+		checkInputAndDoStuff(modules.AskInput())
 	} else {
 		checkInputAndDoStuff(skipTo)
 	}
@@ -54,23 +53,14 @@ func askInputOLD() string {
 	return input
 }
 
-func askInput() string {
-	reader := bufio.NewReader(os.Stdin)
-	input, err := reader.ReadString('\n')
-	if err != nil {
-		fmt.Println("Error reading input:", err)
-	}
-	// Trim the newline character at the end
-	input = strings.TrimSpace(input)
-	return input
-}
-
 func checkInputAndDoStuff(input string) {
 	switch input {
 	case "1":
-		hf_main()
+		modules.Hf_main()
 	case "2":
-		hex_main()
+		modules.Hex_main()
+	case "3":
+		modules.SubD_main()
 	case "0":
 		os.Exit(0)
 	default:
