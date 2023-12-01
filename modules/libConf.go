@@ -39,7 +39,7 @@ func AskUserQuestions() {
 		return
 	}
 
-	filePath := filepath.Join(appdataDir, "boofutils.conf")
+	filePath := filepath.Join(appdataDir, "Boofdev", "boofutils.conf")
 	if err := saveToJSONFile(userInput, filePath); err != nil {
 		fmt.Println("Error saving data to JSON file:", err)
 		return
@@ -50,7 +50,7 @@ func AskUserQuestions() {
 
 func GetOptionFromConfig(optionName string) (string, error) {
 	appdataDir, err := os.UserConfigDir()
-	configFile, err := os.Open(filepath.Join(appdataDir, "boofutils.conf"))
+	configFile, err := os.Open(filepath.Join(appdataDir, "Boofdev", "boofutils.conf"))
 	if err != nil {
 		return "", err
 	}
@@ -85,7 +85,7 @@ func GenerateDefaultConfig() {
 		return
 	}
 
-	filePath := filepath.Join(appdataDir, "boofutils.conf")
+	filePath := filepath.Join(appdataDir, "Boofdev", "boofutils.conf")
 	if err := saveToJSONFile(userInput, filePath); err != nil {
 		fmt.Println("Error saving data to JSON file:", err)
 		return
@@ -96,7 +96,7 @@ func GenerateDefaultConfig() {
 
 func CheckConfigFileExists() bool {
 	appdataDir, err := os.UserConfigDir()
-	_, err = os.Stat(filepath.Join(appdataDir, "boofutils.conf"))
+	_, err = os.Stat(filepath.Join(appdataDir, "Boofdev", "boofutils.conf"))
 	if err == nil {
 		return true
 	}
