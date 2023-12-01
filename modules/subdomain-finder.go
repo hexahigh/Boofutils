@@ -5,6 +5,7 @@ import (
 	"embed"
 	"fmt"
 	"net/http"
+	"context"
 	"strings"
 	"sync"
 	"time"
@@ -54,11 +55,13 @@ func SubD_main() {
 			defer wg.Done()
 			subdomain := fmt.Sprintf("http://%s.%s", sub, domain)
 			client := http.Client{
-				Timeout: time.Second * 2, // Timeout after 2 seconds
+				Timeout: time.Second * 10, // Timeout after N seconds
 			}
 			resp, err := client.Get(subdomain)
 			if err != nil {
-				fmt.Println(err)
+				if err != context.DeadlineExceeded {
+					fmt.Println(err)
+				}
 				return
 			}
 			if resp.StatusCode == http.StatusOK {
