@@ -31,6 +31,7 @@ func main() {
 		fmt.Println("What would you like to do today?")
 		fmt.Println("[1] Calculate hashes of file")
 		fmt.Println("[2] Print a file as hexadecimal (Base16)")
+		fmt.Println("[3] Subdomain Finder")
 		fmt.Println("[0] Exit")
 		checkInputAndDoStuff(modules.AskInput())
 	} else {

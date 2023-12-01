@@ -6,7 +6,11 @@ import (
 	"fmt"
 	"net/http"
 	"strings"
+	"sync"
 	"time"
+
+	"github.com/vbauerster/mpb/v7"
+	"github.com/vbauerster/mpb/v7/decor"
 )
 
 //go:embed embed/subdomains.txt
@@ -27,21 +31,45 @@ func SubD_main() {
 	}
 
 	scanner := bufio.NewScanner(strings.NewReader(string(data)))
+	var subdomains []string
 	for scanner.Scan() {
-		sub := scanner.Text()
-		subdomain := fmt.Sprintf("http://%s.%s", sub, domain)
-		client := http.Client{
-			Timeout: time.Second * 2, // Timeout after 2 seconds
-		}
-		resp, err := client.Get(subdomain)
-		if err != nil {
-			fmt.Println(err)
-			continue
-		}
-		if resp.StatusCode == http.StatusOK {
-			fmt.Printf("%s is reachable\n", subdomain)
-		}
+		subdomains = append(subdomains, scanner.Text())
 	}
+
+	p := mpb.New(mpb.WithWaitGroup(&sync.WaitGroup{}))
+
+	bar := p.AddBar(int64(len(subdomains)),
+		mpb.PrependDecorators(
+			decor.CountersNoUnit("%d / %d", decor.WCSyncSpace),
+		),
+		mpb.AppendDecorators(
+			decor.Percentage(decor.WCSyncSpace),
+		),
+	)
+
+	var wg sync.WaitGroup
+	for _, sub := range subdomains {
+		wg.Add(1)
+		go func(sub string) {
+			defer wg.Done()
+			subdomain := fmt.Sprintf("http://%s.%s", sub, domain)
+			client := http.Client{
+				Timeout: time.Second * 2, // Timeout after 2 seconds
+			}
+			resp, err := client.Get(subdomain)
+			if err != nil {
+				fmt.Println(err)
+				return
+			}
+			if resp.StatusCode == http.StatusOK {
+				fmt.Printf("%s is reachable\n", subdomain)
+			}
+			bar.Increment()
+		}(sub)
+	}
+
+	wg.Wait()
+	p.Wait()
 
 	if err := scanner.Err(); err != nil {
 		fmt.Println(err)
