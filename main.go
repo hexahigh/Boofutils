@@ -13,18 +13,29 @@ import (
 //go:embed LICENSE
 var LICENSE embed.FS
 
-const AppVersion = "0.3.0 beta"
+const AppVersion = "0.3.1 beta"
 
 var skipTo string
-var version *bool
+var version, showLicense *bool
 
 func init() {
 	version = flag.Bool("v", false, "Prints the current version")
 	flag.StringVar(&skipTo, "skip", "", "Skip the main menu and go to the selected task. Example Usage: -skip 1")
+	showLicense = flag.Bool("license", false, "Print the license")
 	flag.Parse()
 }
 
 func main() {
+
+	if *showLicense {
+		data, err := LICENSE.ReadFile("LICENSE")
+		if err != nil {
+			fmt.Println("Error reading file:", err)
+			os.Exit(1)
+		}
+		fmt.Println(string(data))
+		os.Exit(0)
+	}
 
 	if *version {
 		fmt.Println(AppVersion)
