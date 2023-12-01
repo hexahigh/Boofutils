@@ -8,11 +8,12 @@ import (
 	"strings"
 	"sync"
 
+	"github.com/klauspost/compress/zstd"
 	"github.com/vbauerster/mpb/v8"
 	"github.com/vbauerster/mpb/v8/decor"
 )
 
-//go:embed embed/subdomains.txt
+//go:embed embed/subdomains.txt.zst
 var content embed.FS
 
 func SubD_main() {
@@ -21,20 +22,24 @@ func SubD_main() {
 	fmt.Println("What domain would you like to scan?")
 	domain := AskInput()
 
-	fmt.Println("Should i shut up? (Disable logging)")
-	quietQ := AskInput()
-	quiet := YNtoBool(quietQ)
+	fmt.Println("Disable the progress bar? Y/N (Default: N)")
+	quiet := YNtoBool(AskInput())
 
 	// remove http and https from url
 	strings.Replace(domain, "http://", "", -1)
 	strings.Replace(domain, "https://", "", -1)
 
-	data, err := content.ReadFile("embed/subdomains.txt")
+	f, _ := content.Open("embed/subdomains.txt.zst")
+	defer f.Close()
+
+	d, err := zstd.NewReader(f)
 	if err != nil {
 		fmt.Println(err)
 		return
 	}
-	scanner := bufio.NewScanner(strings.NewReader(string(data)))
+	defer d.Close()
+
+	scanner := bufio.NewScanner(d)
 	var subdomains []string
 	for scanner.Scan() {
 		subdomains = append(subdomains, scanner.Text())
@@ -62,16 +67,12 @@ func SubD_main() {
 			subdomain := fmt.Sprintf("%s.%s", sub, domain)
 			_, err := net.LookupHost(subdomain)
 			if err == nil {
-				if !quiet {
-					fmt.Printf("%s has A or AAAA record\n", subdomain)
-				}
+				fmt.Printf("%s has A or AAAA record\n", subdomain)
 			}
 			foundDomains = append(foundDomains, subdomain)
 			cname, err := net.LookupCNAME(subdomain)
 			if err == nil {
-				if !quiet {
-					fmt.Printf("%s has CNAME record: %s\n", subdomain, cname)
-				}
+				fmt.Printf("%s has CNAME record: %s\n", subdomain, cname)
 				foundDomains = append(foundDomains, subdomain)
 			}
 			if !quiet {
