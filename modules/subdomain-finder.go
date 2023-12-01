@@ -16,8 +16,14 @@ import (
 var content embed.FS
 
 func SubD_main() {
+	var foundDomains []string
+
 	fmt.Println("What domain would you like to scan?")
 	domain := AskInput()
+
+	fmt.Println("Should i shut up? (Disable logging)")
+	quietQ := AskInput()
+	quiet := YNtoBool(quietQ)
 
 	// remove http and https from url
 	strings.Replace(domain, "http://", "", -1)
@@ -34,16 +40,19 @@ func SubD_main() {
 		subdomains = append(subdomains, scanner.Text())
 	}
 
-	p := mpb.New(mpb.WithWaitGroup(&sync.WaitGroup{}))
-
-	bar := p.AddBar(int64(len(subdomains)),
-		mpb.PrependDecorators(
-			decor.CountersNoUnit("%d / %d", decor.WCSyncSpace),
-		),
-		mpb.AppendDecorators(
-			decor.Percentage(decor.WCSyncSpace),
-		),
-	)
+	var p *mpb.Progress
+	var bar *mpb.Bar
+	if !quiet {
+		p = mpb.New()
+		bar = p.AddBar(int64(len(subdomains)),
+			mpb.PrependDecorators(
+				decor.CountersNoUnit("%d / %d", decor.WCSyncSpace),
+			),
+			mpb.AppendDecorators(
+				decor.Percentage(decor.WCSyncSpace),
+			),
+		)
+	}
 
 	var wg sync.WaitGroup
 	for _, sub := range subdomains {
@@ -53,18 +62,33 @@ func SubD_main() {
 			subdomain := fmt.Sprintf("%s.%s", sub, domain)
 			_, err := net.LookupHost(subdomain)
 			if err == nil {
-				fmt.Printf("%s has A or AAAA record\n", subdomain)
+				if !quiet {
+					fmt.Printf("%s has A or AAAA record\n", subdomain)
+				}
 			}
+			foundDomains = append(foundDomains, subdomain)
 			cname, err := net.LookupCNAME(subdomain)
 			if err == nil {
-				fmt.Printf("%s has CNAME record: %s\n", subdomain, cname)
+				if !quiet {
+					fmt.Printf("%s has CNAME record: %s\n", subdomain, cname)
+				}
+				foundDomains = append(foundDomains, subdomain)
 			}
-			bar.Increment()
+			if !quiet {
+				bar.Increment()
+			}
 		}(sub)
 	}
 
 	wg.Wait()
+	if !quiet {
+		p.Wait()
+	}
+
+	wg.Wait()
 	p.Wait()
+	fmt.Println("Done! Found subdomains:")
+	fmt.Println(foundDomains)
 
 	if err := scanner.Err(); err != nil {
 		fmt.Println(err)

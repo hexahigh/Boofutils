@@ -17,3 +17,8 @@ func AskInput() string {
 	input = strings.TrimSpace(input)
 	return input
 }
+
+func YNtoBool(input string) bool {
+	input = strings.ToLower(input)
+	return input == "y" || input == "Y" || input == "yes" || input == "true"
+}
