@@ -4,11 +4,9 @@ import (
 	"bufio"
 	"embed"
 	"fmt"
-	"net/http"
-	"context"
+	"net"
 	"strings"
 	"sync"
-	"time"
 
 	"github.com/vbauerster/mpb/v7"
 	"github.com/vbauerster/mpb/v7/decor"
@@ -53,19 +51,14 @@ func SubD_main() {
 		wg.Add(1)
 		go func(sub string) {
 			defer wg.Done()
-			subdomain := fmt.Sprintf("http://%s.%s", sub, domain)
-			client := http.Client{
-				Timeout: time.Second * 10, // Timeout after N seconds
+			subdomain := fmt.Sprintf("%s.%s", sub, domain)
+			_, err := net.LookupHost(subdomain)
+			if err == nil {
+				fmt.Printf("%s has A or AAAA record\n", subdomain)
 			}
-			resp, err := client.Get(subdomain)
-			if err != nil {
-				if err != context.DeadlineExceeded {
-					fmt.Println(err)
-				}
-				return
-			}
-			if resp.StatusCode == http.StatusOK {
-				fmt.Printf("%s is reachable\n", subdomain)
+			cname, err := net.LookupCNAME(subdomain)
+			if err == nil {
+				fmt.Printf("%s has CNAME record: %s\n", subdomain, cname)
 			}
 			bar.Increment()
 		}(sub)
