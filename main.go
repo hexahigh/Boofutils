@@ -2,12 +2,16 @@ package main
 
 import (
 	"boofutils/modules"
+	"embed"
 	"flag"
 	"fmt"
 	"log"
 	"os"
 	"os/user"
 )
+
+//go:embed LICENSE
+var LICENSE embed.FS
 
 const AppVersion = "0.3.0 beta"
 
