@@ -9,7 +9,7 @@ import (
 	"os/user"
 )
 
-const AppVersion = "0.2.6 beta"
+const AppVersion = "0.2.7 beta"
 
 var skipTo string
 var version *bool
@@ -45,11 +45,11 @@ func main() {
 	if skipTo == "" {
 		fmt.Println(modules.Greet(), username+"!", "Welcome to Boofutils.")
 		fmt.Println("What would you like to do today?")
-		fmt.Println("[1] Calculate hashes of file")
-		fmt.Println("[2] Print a file as hexadecimal (Base16)")
-		fmt.Println("[3] Subdomain Finder")
-		fmt.Println("[9] Reconfigure Boofutils")
-		fmt.Println("[0] Exit")
+		fmt.Println("[\033[36m1\033[0m] Calculate hashes of file")
+		fmt.Println("[\033[36m2\033[0m] Print a file as hexadecimal (Base16)")
+		fmt.Println("[\033[36m3\033[0m] Subdomain Finder")
+		fmt.Println("[\033[36m9\033[0m] Reconfigure Boofutils")
+		fmt.Println("[\033[36m0\033[0m] Exit")
 		checkInputAndDoStuff(modules.AskInput())
 	} else {
 		checkInputAndDoStuff(skipTo)
