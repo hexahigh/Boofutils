@@ -8,8 +8,8 @@ import (
 	"strings"
 	"sync"
 
-	"github.com/vbauerster/mpb/v7"
-	"github.com/vbauerster/mpb/v7/decor"
+	"github.com/vbauerster/mpb/v8"
+	"github.com/vbauerster/mpb/v8/decor"
 )
 
 //go:embed embed/subdomains.txt
