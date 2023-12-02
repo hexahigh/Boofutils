@@ -35,9 +35,6 @@ jobs:
       - name: Build linux-amd64
         run: GOOS=linux GOARCH=amd64 go build -v -o boofutils-linux-amd64 .
 
-      - name: Build wasm
-        run: GOOS=wasip1 GOARCH=wasm go build -v -o boofutils-wasm.wasm .
-
       - name: Upload the artifact
         uses: actions/upload-artifact@v3
         with:
