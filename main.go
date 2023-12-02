@@ -22,7 +22,26 @@ func init() {
 	version = flag.Bool("v", false, "Prints the current version")
 	flag.StringVar(&skipTo, "s", "", "Skip the main menu and go to the selected task. Example Usage: -s 1")
 	showLicense = flag.Bool("l", false, "Print the license")
+
+	// Subcommands
+	subdomainCommand := flag.NewFlagSet("subdomain", flag.ExitOnError)
 	flag.Parse()
+
+	subdomainCommand.Usage = func() {
+		fmt.Fprintf(os.Stderr, "Usage of %s:\n", "subdomain")
+		subdomainCommand.PrintDefaults()
+	}
+
+	if len(os.Args) > 1 {
+		switch os.Args[1] {
+		case "subdomain":
+			subdomainCommand.Parse(os.Args[2:])
+			modules.SubD_main()
+		default:
+			flag.PrintDefaults()
+			os.Exit(1)
+		}
+	}
 }
 
 func main() {

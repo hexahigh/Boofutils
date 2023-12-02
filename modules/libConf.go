@@ -51,6 +51,13 @@ func AskUserQuestions() {
 	}
 
 	filePath := filepath.Join(appdataDir, "Boofdev", "boofutils.conf")
+
+	// Make the folder if it does not exist
+	err = os.MkdirAll(filepath.Dir(filePath), os.ModePerm)
+	if err != nil {
+		fmt.Println("Error creating folder:", err)
+		return
+	}
 	if err := saveToJSONFile(userInput, filePath); err != nil {
 		fmt.Println("Error saving data to JSON file:", err)
 		return
@@ -107,8 +114,14 @@ func GenerateDefaultConfig() {
 		fmt.Println("Error getting user's appdata directory:", err)
 		return
 	}
-
 	filePath := filepath.Join(appdataDir, "Boofdev", "boofutils.conf")
+
+	// Make the folder if it does not exist
+	err = os.MkdirAll(filepath.Dir(filePath), os.ModePerm)
+	if err != nil {
+		fmt.Println("Error creating folder:", err)
+		return
+	}
 	if err := saveToJSONFile(userInput, filePath); err != nil {
 		fmt.Println("Error saving data to JSON file:", err)
 		return

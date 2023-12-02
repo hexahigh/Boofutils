@@ -92,9 +92,6 @@ func SubD_main() {
 	if !quiet {
 		p.Wait()
 	}
-
-	wg.Wait()
-	p.Wait()
 	fmt.Println("Done! Found subdomains:")
 	fmt.Println(foundDomains)
 
