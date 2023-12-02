@@ -23,12 +23,13 @@ var content embed.FS
 // for each subdomain. It prints out the subdomains with A or AAAA records and
 // their corresponding CNAME records. Finally, it prints out the list of found
 // subdomains.
-func SubD_main() {
+func SubD_main(threads int, domain string) {
 	var foundDomains []string
 
-	fmt.Println("What domain would you like to scan?")
-	domain := AskInput()
-
+	if domain == "undef" {
+		fmt.Println("What domain would you like to scan?")
+		domain = AskInput()
+	}
 	fmt.Println("Disable the progress bar? Y/N (Default: N)")
 	quiet := YNtoBool(AskInput())
 
@@ -66,11 +67,18 @@ func SubD_main() {
 		)
 	}
 
+	fmt.Println("Starting scan with " + fmt.Sprint(threads) + " threads...")
 	var wg sync.WaitGroup
+	sem := make(chan struct{}, threads)
+
 	for _, sub := range subdomains {
+		sem <- struct{}{} // Acquire a semaphore slot
 		wg.Add(1)
 		go func(sub string) {
-			defer wg.Done()
+			defer func() {
+				<-sem // Release the semaphore slot
+				wg.Done()
+			}()
 			subdomain := fmt.Sprintf("%s.%s", sub, domain)
 			_, err := net.LookupHost(subdomain)
 			if err == nil {

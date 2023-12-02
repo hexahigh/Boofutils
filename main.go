@@ -15,7 +15,8 @@ var LICENSE embed.FS
 
 const AppVersion = "0.3.3 beta"
 
-var skipTo string
+var subD_threads int
+var skipTo, subD_domain string
 var version, showLicense *bool
 
 func init() {
@@ -25,6 +26,9 @@ func init() {
 
 	// Subcommands
 	subdomainCommand := flag.NewFlagSet("subdomain", flag.ExitOnError)
+	subdomainCommand.IntVar(&subD_threads, "t", 10, "Number of threads to use")
+	subdomainCommand.StringVar(&subD_domain, "d", "undef", "Domain to scan")
+
 	flag.Parse()
 
 	subdomainCommand.Usage = func() {
@@ -36,7 +40,7 @@ func init() {
 		switch os.Args[1] {
 		case "subdomain":
 			subdomainCommand.Parse(os.Args[2:])
-			modules.SubD_main()
+			modules.SubD_main(subD_threads, subD_domain)
 		default:
 			flag.PrintDefaults()
 			os.Exit(1)
@@ -112,7 +116,7 @@ func checkInputAndDoStuff(input string) {
 	case "2":
 		modules.Hex_main()
 	case "3":
-		modules.SubD_main()
+		modules.SubD_main(subD_threads, subD_domain)
 	case "9":
 		modules.AskUserQuestions()
 	case "0":
