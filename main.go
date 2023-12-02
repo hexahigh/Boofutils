@@ -13,7 +13,7 @@ import (
 //go:embed LICENSE
 var LICENSE embed.FS
 
-const AppVersion = "0.3.1 beta"
+const AppVersion = "0.3.3 beta"
 
 var skipTo string
 var version, showLicense *bool
