@@ -20,8 +20,8 @@ var version, showLicense *bool
 
 func init() {
 	version = flag.Bool("v", false, "Prints the current version")
-	flag.StringVar(&skipTo, "skip", "", "Skip the main menu and go to the selected task. Example Usage: -skip 1")
-	showLicense = flag.Bool("license", false, "Print the license")
+	flag.StringVar(&skipTo, "s", "", "Skip the main menu and go to the selected task. Example Usage: -s 1")
+	showLicense = flag.Bool("l", false, "Print the license")
 	flag.Parse()
 }
 
