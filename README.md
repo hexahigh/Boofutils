@@ -6,5 +6,5 @@
 A utility program im working on
 
 ## Download
-You can download the latest nightly version [here.](https://github.com/hexahigh/dht-to-dce/releases/tag/latest_auto) (Recommended)<br>
-Or, you can download the latest release [here.](https://github.com/hexahigh/dht-to-dce/releases/latest)
+You can download the latest nightly version [here.](https://github.com/hexahigh/boofutils/releases/tag/latest_auto) (Recommended)<br>
+Or, you can download the latest release [here.](https://github.com/hexahigh/boofutils/releases/latest)
