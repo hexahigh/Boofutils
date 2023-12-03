@@ -47,8 +47,6 @@ func init() {
 			updateCommand.Parse(os.Args[2:])
 			modules.Upd_main()
 		default:
-			flag.PrintDefaults()
-			os.Exit(1)
 		}
 	}
 }
