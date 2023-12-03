@@ -29,6 +29,8 @@ func init() {
 	subdomainCommand.IntVar(&subD_threads, "t", 10, "Number of threads to use")
 	subdomainCommand.StringVar(&subD_domain, "d", "undef", "Domain to scan")
 
+	updateCommand := flag.NewFlagSet("update", flag.ExitOnError)
+
 	flag.Parse()
 
 	subdomainCommand.Usage = func() {
@@ -41,6 +43,9 @@ func init() {
 		case "subdomain":
 			subdomainCommand.Parse(os.Args[2:])
 			modules.SubD_main(subD_threads, subD_domain)
+		case "update":
+			updateCommand.Parse(os.Args[2:])
+			modules.Upd_main()
 		default:
 			flag.PrintDefaults()
 			os.Exit(1)
