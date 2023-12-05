@@ -3,6 +3,7 @@ package modules
 import (
 	"log"
 	"os"
+	"fmt"
 
 	"github.com/go-audio/audio"
 	"github.com/go-audio/wav"
@@ -11,8 +12,12 @@ import (
 func Fileinaudio_main(inFile string, outFile string, decode bool) {
 	if decode {
 		fileinaudio_decode(inFile, outFile)
+		fmt.Println("File decoded!")
+		os.Exit(0)
 	} else {
 		fileinaudio_encode(inFile, outFile)
+		fmt.Println("File encoded!")
+		os.Exit(0)
 	}
 }
 
