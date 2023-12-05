@@ -1,12 +1,13 @@
 package modules
 
 import (
+	"fmt"
 	"log"
 	"os"
-	"fmt"
 
 	"github.com/go-audio/audio"
 	"github.com/go-audio/wav"
+	"github.com/klauspost/compress/zstd"
 )
 
 func Fileinaudio_main(inFile string, outFile string, decode bool) {
@@ -28,8 +29,15 @@ func fileinaudio_encode(inFile string, outFile string) {
 		log.Fatal(err)
 	}
 
+	// Compress the data with zstd
+	w, err := zstd.NewWriter(nil)
+	if err != nil {
+		log.Fatal(err)
+	}
+	compressedData := w.EncodeAll(data, nil)
+
 	// Create a new audio.IntBuffer
-	buf := &audio.IntBuffer{Data: make([]int, len(data)), Format: &audio.Format{SampleRate: 44100, NumChannels: 1}}
+	buf := &audio.IntBuffer{Data: make([]int, len(compressedData)), Format: &audio.Format{SampleRate: 44100, NumChannels: 1}}
 
 	// Map each byte to a frequency and add it to the buffer
 	for i, b := range data {
@@ -76,8 +84,18 @@ func fileinaudio_decode(inFile string, outFile string) {
 		data[i] = byte(f / 100) // Divide by 100 to get the original byte
 	}
 
+	// Decompress the data with zstd
+	d, err := zstd.NewReader(nil)
+	if err != nil {
+		log.Fatal(err)
+	}
+	decompressedData, err := d.DecodeAll(data, nil)
+	if err != nil {
+		log.Fatal(err)
+	}
+
 	// Write the data to a file
-	err = os.WriteFile(outFile, data, 0644)
+	err = os.WriteFile(outFile, decompressedData, 0644)
 	if err != nil {
 		log.Fatal(err)
 	}
