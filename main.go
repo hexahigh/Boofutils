@@ -1,13 +1,14 @@
 package main
 
 import (
-	m "boofutils/modules"
 	"embed"
 	"flag"
 	"fmt"
 	"log"
 	"os"
 	"os/user"
+
+	m "github.com/hexahigh/boofutils/modules"
 )
 
 //go:embed LICENSE
