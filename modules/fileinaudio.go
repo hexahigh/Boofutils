@@ -10,38 +10,51 @@ import (
 	"github.com/klauspost/compress/zstd"
 )
 
-func Fileinaudio_main(inFile string, outFile string, decode bool) {
+func Fileinaudio_main(inFile string, outFile string, decode bool, noCompress bool) {
 	if decode {
-		fileinaudio_decode(inFile, outFile)
+		fileinaudio_decode(inFile, outFile, noCompress)
 		fmt.Println("File decoded!")
 		os.Exit(0)
 	} else {
-		fileinaudio_encode(inFile, outFile)
+		fileinaudio_encode(inFile, outFile, noCompress)
 		fmt.Println("File encoded!")
 		os.Exit(0)
 	}
 }
 
-func fileinaudio_encode(inFile string, outFile string) {
+func fileinaudio_encode(inFile string, outFile string, noCompress bool) {
+	var buf *audio.IntBuffer
+
 	// Read the file
 	data, err := os.ReadFile(inFile)
 	if err != nil {
 		log.Fatal(err)
 	}
 
-	// Compress the data with zstd
-	w, err := zstd.NewWriter(nil)
-	if err != nil {
-		log.Fatal(err)
-	}
-	compressedData := w.EncodeAll(data, nil)
+	// If compression is enabled
+	if !noCompress {
+		// Compress the data with zstd
+		w, err := zstd.NewWriter(nil, zstd.WithEncoderLevel(22))
+		if err != nil {
+			log.Fatal(err)
+		}
+		compressedData := w.EncodeAll(data, nil)
 
-	// Create a new audio.IntBuffer
-	buf := &audio.IntBuffer{Data: make([]int, len(compressedData)), Format: &audio.Format{SampleRate: 44100, NumChannels: 1}}
+		// Create a new audio.IntBuffer
+		buf = &audio.IntBuffer{Data: make([]int, len(compressedData)), Format: &audio.Format{SampleRate: 44100, NumChannels: 1}}
 
-	// Map each byte to a frequency and add it to the buffer
-	for i, b := range data {
-		buf.Data[i] = int(b) * 100 // Multiply by 100 to get a frequency in the audible range
+		// Map each byte to a frequency and add it to the buffer
+		for i, b := range compressedData {
+			buf.Data[i] = int(b) * 100 // Multiply by 100 to get a frequency in the audible range
+		}
+		// If compression is not enabled
+	} else {
+		// Create a new audio.IntBuffer
+		buf = &audio.IntBuffer{Data: make([]int, len(data)), Format: &audio.Format{SampleRate: 44100, NumChannels: 1}}
+		// Map each byte to a frequency and add it to the buffer
+		for i, b := range data {
+			buf.Data[i] = int(b) * 100 // Multiply by 100 to get a frequency in the audible range
+		}
 	}
 
 	// Create a new wav.Encoder
@@ -62,7 +75,7 @@ func fileinaudio_encode(inFile string, outFile string) {
 	}
 }
 
-func fileinaudio_decode(inFile string, outFile string) {
+func fileinaudio_decode(inFile string, outFile string, noCompress bool) {
 	// Open the .wav file
 	in, err := os.Open(inFile)
 	if err != nil {
@@ -84,18 +97,20 @@ func fileinaudio_decode(inFile string, outFile string) {
 		data[i] = byte(f / 100) // Divide by 100 to get the original byte
 	}
 
-	// Decompress the data with zstd
-	d, err := zstd.NewReader(nil)
-	if err != nil {
-		log.Fatal(err)
-	}
-	decompressedData, err := d.DecodeAll(data, nil)
-	if err != nil {
-		log.Fatal(err)
+	if !noCompress {
+		// Decompress the data with zstd
+		d, err := zstd.NewReader(nil)
+		if err != nil {
+			log.Fatal(err)
+		}
+		data, err = d.DecodeAll(data, nil)
+		if err != nil {
+			log.Fatal(err)
+		}
 	}
 
 	// Write the data to a file
-	err = os.WriteFile(outFile, decompressedData, 0644)
+	err = os.WriteFile(outFile, data, 0644)
 	if err != nil {
 		log.Fatal(err)
 	}

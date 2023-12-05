@@ -19,7 +19,7 @@ const AppVersion = "0.3.4 beta"
 var subD_threads int
 var skipTo, subD_domain, FIA_in, FIA_out string
 var version, showLicense *bool
-var FIA_decode bool
+var FIA_decode, FIA_compress bool
 
 func init() {
 	version = flag.Bool("v", false, "Prints the current version")
@@ -47,6 +47,7 @@ func init() {
 	fileinaudioCommand.StringVar(&FIA_in, "i", "", "Input file")
 	fileinaudioCommand.StringVar(&FIA_out, "o", "", "Output file")
 	fileinaudioCommand.BoolVar(&FIA_decode, "d", false, "Decode")
+	fileinaudioCommand.BoolVar(&FIA_compress, "nc", false, "Disable compression when encoding/decoding")
 
 	flag.Parse()
 
@@ -65,7 +66,7 @@ func init() {
 			m.Upd_main()
 		case "fileinaudio":
 			fileinaudioCommand.Parse(os.Args[2:])
-			m.Fileinaudio_main(FIA_in, FIA_out, FIA_decode)
+			m.Fileinaudio_main(FIA_in, FIA_out, FIA_decode, FIA_compress)
 		default:
 		}
 	}
