@@ -17,8 +17,9 @@ var LICENSE embed.FS
 const AppVersion = "0.3.4 beta"
 
 var subD_threads int
-var skipTo, subD_domain string
+var skipTo, subD_domain, FIA_in, FIA_out string
 var version, showLicense *bool
+var FIA_decode bool
 
 func init() {
 	version = flag.Bool("v", false, "Prints the current version")
@@ -32,6 +33,7 @@ func init() {
 		fmt.Println("Subcommands:")
 		fmt.Println("subdomain -t <threads> -d <domain>")
 		fmt.Println("update")
+		fmt.Println("fileinaudio")
 	}
 
 	// Subcommands
@@ -40,6 +42,11 @@ func init() {
 	subdomainCommand.StringVar(&subD_domain, "d", "undef", "Domain to scan")
 
 	updateCommand := flag.NewFlagSet("update", flag.ExitOnError)
+
+	fileinaudioCommand := flag.NewFlagSet("fileinaudio", flag.ExitOnError)
+	fileinaudioCommand.StringVar(&FIA_in, "i", "", "Input file")
+	fileinaudioCommand.StringVar(&FIA_out, "o", "", "Output file")
+	fileinaudioCommand.BoolVar(&FIA_decode, "d", false, "Decode")
 
 	flag.Parse()
 
@@ -56,6 +63,9 @@ func init() {
 		case "update":
 			updateCommand.Parse(os.Args[2:])
 			m.Upd_main()
+		case "fileinaudio":
+			fileinaudioCommand.Parse(os.Args[2:])
+			m.Fileinaudio_main(FIA_in, FIA_out, FIA_decode)
 		default:
 		}
 	}
