@@ -123,7 +123,8 @@ func askInputOLD() string {
 func checkInputAndDoStuff(input string) {
 	switch input {
 	case "1":
-
+		flag.Usage()
+		os.Exit(0)
 	case "9":
 		m.AskUserQuestions()
 	case "0":
