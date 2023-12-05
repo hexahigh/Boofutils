@@ -11,6 +11,10 @@ import (
 func Upd_main() {
 	fmt.Println("Starting the update process...")
 
+	if runtime.GOOS == "windows" {
+		fmt.Println("Warning: Windows does not like it when you rename running executables.\nIt may work or it might not.")
+	}
+
 	url := "https://github.com/hexahigh/Boofutils/releases/download/latest_auto/boofutils-" + runtime.GOOS + "-" + runtime.GOARCH
 	outputFile := "boofutils_new"
 	if runtime.GOOS == "windows" {
@@ -51,6 +55,12 @@ func Upd_main() {
 
 	fmt.Println("Replacing the current version with the new version")
 	err = os.Rename(outputFile, exePath)
+	if err != nil {
+		panic(err)
+	}
+
+	fmt.Println("Fixing permissions")
+	err = os.Chmod(exePath, 0755)
 	if err != nil {
 		panic(err)
 	}
