@@ -70,4 +70,5 @@ func Upd_main() {
 	}
 
 	fmt.Println("Update completed successfully!")
+	os.Exit(0)
 }
