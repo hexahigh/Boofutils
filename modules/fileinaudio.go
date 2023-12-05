@@ -10,6 +10,13 @@ import (
 	"github.com/klauspost/compress/zstd"
 )
 
+// Fileinaudio_main is the main function that handles the file in audio conversion.
+//
+// inFile: the input file path.
+// outFile: the output file path.
+// decode: a boolean flag indicating whether to decode the audio file.
+// noCompress: a boolean flag indicating whether to compress the audio file.
+// This function does not return anything.
 func Fileinaudio_main(inFile string, outFile string, decode bool, noCompress bool) {
 	if decode {
 		fileinaudio_decode(inFile, outFile, noCompress)
@@ -22,6 +29,12 @@ func Fileinaudio_main(inFile string, outFile string, decode bool, noCompress boo
 	}
 }
 
+// fileinaudio_encode encodes a file into an audio file.
+//
+// inFile specifies the input file path.
+// outFile specifies the output file path.
+// noCompress specifies whether compression should be enabled or not.
+// The function does not return anything.
 func fileinaudio_encode(inFile string, outFile string, noCompress bool) {
 	var buf *audio.IntBuffer
 
@@ -75,6 +88,12 @@ func fileinaudio_encode(inFile string, outFile string, noCompress bool) {
 	}
 }
 
+// fileinaudio_decode decodes an audio file and writes the decoded data to an output file.
+//
+// inFile is the path to the input .wav file.
+// outFile is the path to the output file.
+// noCompress indicates whether the data should be compressed or not.
+// The function does not return anything.
 func fileinaudio_decode(inFile string, outFile string, noCompress bool) {
 	// Open the .wav file
 	in, err := os.Open(inFile)
