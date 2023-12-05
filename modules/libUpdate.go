@@ -29,6 +29,10 @@ func Upd_main() {
 	}
 	defer resp.Body.Close()
 
+	if resp.StatusCode != 200 {
+		panic(fmt.Errorf("unexpected status: %d %s", resp.StatusCode, resp.Status))
+	}
+
 	fmt.Println("Saving the new version as:", outputFile)
 	out, err := os.Create(outputFile)
 	if err != nil {
