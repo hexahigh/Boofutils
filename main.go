@@ -1,7 +1,7 @@
 package main
 
 import (
-	"boofutils/modules"
+	m "boofutils/modules"
 	"embed"
 	"flag"
 	"fmt"
@@ -24,6 +24,15 @@ func init() {
 	flag.StringVar(&skipTo, "s", "", "Skip the main menu and go to the selected task. Example Usage: -s 1")
 	showLicense = flag.Bool("l", false, "Print the license")
 
+	// usage
+	flag.Usage = func() {
+		fmt.Fprintf(os.Stderr, "Usage of %s:\n", "Boofutils")
+		flag.PrintDefaults()
+		fmt.Println("Subcommands:")
+		fmt.Println("subdomain -t <threads> -d <domain>")
+		fmt.Println("update")
+	}
+
 	// Subcommands
 	subdomainCommand := flag.NewFlagSet("subdomain", flag.ExitOnError)
 	subdomainCommand.IntVar(&subD_threads, "t", 10, "Number of threads to use")
@@ -42,10 +51,10 @@ func init() {
 		switch os.Args[1] {
 		case "subdomain":
 			subdomainCommand.Parse(os.Args[2:])
-			modules.SubD_main(subD_threads, subD_domain)
+			m.SubD_main(subD_threads, subD_domain)
 		case "update":
 			updateCommand.Parse(os.Args[2:])
-			modules.Upd_main()
+			m.Upd_main()
 		default:
 		}
 	}
@@ -68,30 +77,28 @@ func main() {
 		os.Exit(0)
 	}
 
-	if !modules.CheckConfigFileExists() {
+	if !m.CheckConfigFileExists() {
 		fmt.Println("Boofutils has not been configured yet. Would you like to answer some quick questions to get started?")
 		fmt.Println("Y/N (Default: Y)")
-		if modules.AskInput() == "y" || modules.AskInput() == "Y" {
-			modules.AskUserQuestions()
+		if m.AskInput() == "y" || m.AskInput() == "Y" {
+			m.AskUserQuestions()
 		} else {
-			modules.GenerateDefaultConfig()
+			m.GenerateDefaultConfig()
 		}
 	}
 
-	username, err := modules.GetOptionFromConfig("name")
+	username, err := m.GetOptionFromConfig("name")
 	if err != nil {
 		log.Fatalf(err.Error())
 	}
 
 	if skipTo == "" {
-		fmt.Println(modules.Greet(), username+"!", "Welcome to Boofutils.")
+		fmt.Println(m.Greet(), username+"!", "Welcome to Boofutils.")
 		fmt.Println("What would you like to do today?")
-		fmt.Println("[\033[36m1\033[0m] Calculate hashes of file")
-		fmt.Println("[\033[36m2\033[0m] Print a file as hexadecimal (Base16)")
-		fmt.Println("[\033[36m3\033[0m] Subdomain Finder")
+		fmt.Println("[\033[36m1\033[0m] Print subcommands")
 		fmt.Println("[\033[36m9\033[0m] Reconfigure Boofutils")
 		fmt.Println("[\033[36m0\033[0m] Exit")
-		checkInputAndDoStuff(modules.AskInput())
+		checkInputAndDoStuff(m.AskInput())
 	} else {
 		checkInputAndDoStuff(skipTo)
 	}
@@ -115,13 +122,9 @@ func askInputOLD() string {
 func checkInputAndDoStuff(input string) {
 	switch input {
 	case "1":
-		modules.Hf_main()
-	case "2":
-		modules.Hex_main()
-	case "3":
-		modules.SubD_main(subD_threads, subD_domain)
+
 	case "9":
-		modules.AskUserQuestions()
+		m.AskUserQuestions()
 	case "0":
 		os.Exit(0)
 	default:
