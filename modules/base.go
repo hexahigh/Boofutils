@@ -6,17 +6,28 @@ import (
 	"encoding/hex"
 )
 
-func Base_main(base int, eod bool, stringORbin bool, input string) {
-	if stringORbin == true {
-		switch base {
-		case 16:
-			B16_string(input, eod)
-		case 32:
-			B32_string(input, eod)
-		case 64:
-			B64_string(input, eod)
-		}
+func Base_main_string(input string, eod bool, base int) string {
+	switch base {
+	case 16:
+		return B16_string(input, eod)
+	case 32:
+		return B32_string(input, eod)
+	case 64:
+		return B64_string(input, eod)
 	}
+	return "An error occured while encoding/decoding"
+}
+
+func Base_main_data(input []byte, eod bool, base int) string {
+	switch base {
+	case 16:
+		return B16_data(input, eod)
+	case 32:
+		return B32_data(input, eod)
+	case 64:
+		return B64_data(input, eod)
+	}
+	return "An error occured while encoding/decoding"
 }
 
 func B64_string(input string, eod bool) string {
