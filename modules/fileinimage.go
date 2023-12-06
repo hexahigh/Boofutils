@@ -102,7 +102,6 @@ dataLoop:
 	for y := 0; y < height; y++ {
 		for x := 0; x < width; x++ {
 			r, g, b, a := img.At(x, y).RGBA()
-			fmt.Println(r, g, b, a)
 			if r == 65535 && g == 2570 && b == 65535 && a == 65535 {
 				fmt.Println("Found marker at", x, y, "Stopping decoding")
 				// Stop decoding when we encounter the marker
