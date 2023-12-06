@@ -77,3 +77,9 @@ func RandomCatFact() string {
 
 	return randFact.(string)
 }
+
+func CheckIfError(err error) {
+	if err != nil {
+		panic(err)
+	}
+}
