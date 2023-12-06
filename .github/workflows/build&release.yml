@@ -12,10 +12,15 @@ jobs:
     outputs:
       asset_paths: "boofutils-aix-ppc64,boofutils-android-386,boofutils-android-amd64,boofutils-android-arm,boofutils-android-arm64,boofutils-darwin-amd64,boofutils-darwin-arm64,boofutils-dragonfly-amd64,boofutils-freebsd-386,boofutils-freebsd-amd64,boofutils-freebsd-arm,boofutils-freebsd-arm64,boofutils-freebsd-riscv64,boofutils-illumos-amd64,boofutils-ios-amd64,boofutils-ios-arm64,boofutils-js-wasm,boofutils-linux-386,boofutils-linux-amd64,boofutils-linux-arm,boofutils-linux-arm64,boofutils-linux-loong64,boofutils-linux-mips,boofutils-linux-mips64,boofutils-linux-mips64le,boofutils-linux-mipsle,boofutils-linux-ppc64,boofutils-linux-ppc64le,boofutils-linux-riscv64,boofutils-linux-s390x,boofutils-netbsd-386,boofutils-netbsd-amd64,boofutils-netbsd-arm,boofutils-netbsd-arm64,boofutils-openbsd-386,boofutils-openbsd-amd64,boofutils-openbsd-arm,boofutils-openbsd-arm64,boofutils-plan9-386,boofutils-plan9-amd64,boofutils-plan9-arm,boofutils-solaris-amd64,boofutils-wasip1-wasm,boofutils-windows-386,boofutils-windows-amd64,boofutils-windows-arm,boofutils-windows-arm64"
     steps:
+      - name: Update apt packages
+        run: |
+          sudo apt update
+          sudo apt upgrade -y
+
       - name: Set up Go
         uses: actions/setup-go@v2
         with:
-          go-version: 1.21.3
+          go-version: 1.21.4
 
       - name: Check out code
         uses: actions/checkout@v2
