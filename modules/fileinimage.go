@@ -5,13 +5,13 @@ import (
 	"image"
 	"image/color"
 	_ "image/jpeg"
+	"image/png"
 	_ "image/png"
 	"log"
 	"math"
 	"os"
 
 	"github.com/klauspost/compress/zstd"
-	"golang.org/x/image/tiff"
 )
 
 func Fileinimage_main(inFile string, outFile string, decode bool, noCompress bool) {
@@ -67,8 +67,8 @@ func fileinimage_encode(inFile string, outFile string, noCompress bool) {
 	}
 	defer out.Close()
 
-	// Encode the image as a TIFF
-	err = tiff.Encode(out, img, &tiff.Options{Compression: tiff.Deflate, Predictor: true})
+	// Encode the image as a PNG
+	err = png.Encode(out, img)
 	if err != nil {
 		log.Fatal(err)
 	}
