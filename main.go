@@ -49,6 +49,12 @@ func init() {
 	fileinaudioCommand.BoolVar(&FIA_decode, "d", false, "Decode")
 	fileinaudioCommand.BoolVar(&FIA_compress, "nc", false, "Disable compression when encoding/decoding")
 
+	fileinimageCommand := flag.NewFlagSet("fileinimage", flag.ExitOnError)
+	fileinimageCommand.StringVar(&FIA_in, "i", "", "Input file")
+	fileinimageCommand.StringVar(&FIA_out, "o", "", "Output file")
+	fileinimageCommand.BoolVar(&FIA_decode, "d", false, "Decode")
+	fileinimageCommand.BoolVar(&FIA_compress, "nc", false, "Disable compression when encoding/decoding")
+
 	flag.Parse()
 
 	subdomainCommand.Usage = func() {
@@ -67,6 +73,9 @@ func init() {
 		case "fileinaudio":
 			fileinaudioCommand.Parse(os.Args[2:])
 			m.Fileinaudio_main(FIA_in, FIA_out, FIA_decode, FIA_compress)
+		case "fileinimage":
+			fileinimageCommand.Parse(os.Args[2:])
+			m.Fileinimage_main(FIA_in, FIA_out, FIA_decode, FIA_compress)
 		default:
 		}
 	}

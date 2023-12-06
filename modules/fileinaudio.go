@@ -47,7 +47,7 @@ func fileinaudio_encode(inFile string, outFile string, noCompress bool) {
 	// If compression is enabled
 	if !noCompress {
 		// Compress the data with zstd
-		w, err := zstd.NewWriter(nil, zstd.WithEncoderLevel(zstd.EncoderLevelFromZstd(22)))
+		w, err := zstd.NewWriter(nil, zstd.WithEncoderLevel(zstd.SpeedBestCompression))
 		if err != nil {
 			log.Fatal(err)
 		}

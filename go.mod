@@ -18,5 +18,6 @@ require (
 	github.com/nsf/termbox-go v1.1.1 // indirect
 	github.com/rivo/uniseg v0.4.4 // indirect
 	github.com/vbauerster/mpb/v7 v7.5.3 // indirect
+	golang.org/x/image v0.14.0 // indirect
 	golang.org/x/sys v0.14.0 // indirect
 )
