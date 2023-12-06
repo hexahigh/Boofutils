@@ -60,6 +60,9 @@ func fileinimage_encode(inFile string, outFile string, noCompress bool) {
 		img.Set(x, y, color.RGBA{R: b, G: b, B: b, A: 255})
 	}
 
+	// Add marker at the end
+	img.Set(len(processedData)%size, len(processedData)/size, color.RGBA{R: 255, G: 10, B: 255, A: 100})
+
 	// Create the output file
 	out, err := os.Create(outFile)
 	if err != nil {
@@ -92,14 +95,19 @@ func fileinimage_decode(inFile string, outFile string, noCompress bool) {
 	bounds := img.Bounds()
 	width, height := bounds.Max.X, bounds.Max.Y
 
-	// Create a byte slice to hold the data
-	data := make([]byte, width*height)
+	var data []byte
 
 	// Extract the data from the image
+dataLoop:
 	for y := 0; y < height; y++ {
 		for x := 0; x < width; x++ {
-			r, _, _, _ := img.At(x, y).RGBA()
-			data[y*width+x] = byte(r)
+			r, g, b, a := img.At(x, y).RGBA()
+			if r == 14109 && g == 2519 && b == 14109 && a == 25700 {
+				fmt.Println("Found marker at", x, y, "Stopping decoding")
+				// Stop decoding when we encounter the marker
+				break dataLoop
+			}
+			data = append(data, byte(r))
 		}
 	}
 

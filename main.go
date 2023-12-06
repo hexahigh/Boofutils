@@ -14,7 +14,7 @@ import (
 //go:embed LICENSE
 var LICENSE embed.FS
 
-const AppVersion = "0.4.0 beta"
+const AppVersion = "0.4.1 beta"
 
 var subD_threads int
 var skipTo, subD_domain, FIA_in, FIA_out string
@@ -34,6 +34,7 @@ func init() {
 		fmt.Println("subdomain -t <threads> -d <domain>")
 		fmt.Println("update")
 		fmt.Println("fileinaudio")
+		fmt.Println("fileinimage")
 	}
 
 	// Subcommands
