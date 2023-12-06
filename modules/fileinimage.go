@@ -15,6 +15,14 @@ import (
 )
 
 func Fileinimage_main(inFile string, outFile string, decode bool, noCompress bool) {
+	if outFile == "" {
+		fmt.Println("No output file specified")
+		os.Exit(0)
+	}
+	if inFile == "" {
+		fmt.Println("No input file specified")
+		os.Exit(0)
+	}
 	if decode {
 		fileinimage_decode(inFile, outFile, noCompress)
 		fmt.Println("File decoded!")
