@@ -14,7 +14,7 @@ import (
 //go:embed LICENSE
 var LICENSE embed.FS
 
-const AppVersion = "0.3.4 beta"
+const AppVersion = "0.4.0 beta"
 
 var subD_threads int
 var skipTo, subD_domain, FIA_in, FIA_out string
