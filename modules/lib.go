@@ -2,10 +2,19 @@ package modules
 
 import (
 	"bufio"
+	"embed"
+	"encoding/json"
 	"fmt"
+	"io"
+	"math/rand"
 	"os"
 	"strings"
+
+	"github.com/klauspost/compress/zstd"
 )
+
+//go:embed embed/cat_facts.json.zst
+var cat embed.FS
 
 // AskInput prompts the user for input from the command line.
 //
@@ -36,4 +45,35 @@ func AskInput() string {
 func YNtoBool(input string) bool {
 	input = strings.ToLower(input)
 	return input == "y" || input == "yes" || input == "true"
+}
+
+func RandomCatFact() string {
+	// This method uses less memory but is slower.
+	// I really need to decrease this programs memory usage.
+	f, _ := content.Open("embed/cat_facts.json.zst")
+	defer f.Close()
+
+	d, err := zstd.NewReader(f)
+	if err != nil {
+		fmt.Println(err)
+	}
+	defer d.Close()
+	bytes, err := io.ReadAll(d)
+	if err != nil {
+		fmt.Println(err)
+		return ""
+	}
+
+	var catJson map[string]interface{}
+	json.Unmarshal(bytes, &catJson)
+
+	facts, ok := catJson["facts"].([]interface{})
+	if !ok {
+		fmt.Println("Key 'facts' not found in JSON")
+		return ""
+	}
+
+	randFact := facts[rand.Intn(len(facts))]
+
+	return randFact.(string)
 }

@@ -95,7 +95,11 @@ func main() {
 	}
 
 	if *version {
-		fmt.Println("\033[36mBoofutils\033[0m\nVersion:", AppVersion, "\nBoof Development")
+		fmt.Println("\033[36mBoofutils\033[0m")
+		fmt.Println("Version:", AppVersion)
+		fmt.Println("2023 - Boofdev")
+		fmt.Println("github.com/hexahigh/boofutils")
+		fmt.Println("\nRandom cat fact:", m.RandomCatFact())
 		os.Exit(0)
 	}
 
