@@ -61,7 +61,7 @@ func fileinimage_encode(inFile string, outFile string, noCompress bool) {
 	}
 
 	// Add marker at the end
-	img.Set(len(processedData)%size, len(processedData)/size, color.RGBA{R: 255, G: 10, B: 255, A: 100})
+	img.Set(len(processedData)%size, len(processedData)/size, color.RGBA{R: 255, G: 10, B: 255, A: 255})
 
 	// Create the output file
 	out, err := os.Create(outFile)
@@ -102,7 +102,8 @@ dataLoop:
 	for y := 0; y < height; y++ {
 		for x := 0; x < width; x++ {
 			r, g, b, a := img.At(x, y).RGBA()
-			if r == 14109 && g == 2519 && b == 14109 && a == 25700 {
+			fmt.Println(r, g, b, a)
+			if r == 65535 && g == 2570 && b == 65535 && a == 65535 {
 				fmt.Println("Found marker at", x, y, "Stopping decoding")
 				// Stop decoding when we encounter the marker
 				break dataLoop
