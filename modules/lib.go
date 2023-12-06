@@ -50,7 +50,7 @@ func YNtoBool(input string) bool {
 func RandomCatFact() string {
 	// This method uses less memory but is slower.
 	// I really need to decrease this programs memory usage.
-	f, _ := content.Open("embed/cat_facts.json.zst")
+	f, _ := cat.Open("embed/cat_facts.json.zst")
 	defer f.Close()
 
 	d, err := zstd.NewReader(f)

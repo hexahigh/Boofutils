@@ -99,7 +99,7 @@ func main() {
 		fmt.Println("Version:", AppVersion)
 		fmt.Println("2023 - Boofdev")
 		fmt.Println("github.com/hexahigh/boofutils")
-		fmt.Println("\nRandom cat fact:", m.RandomCatFact())
+		fmt.Println(m.ColorPurple, "\nRandom cat fact:", m.ColorNone, m.RandomCatFact())
 		os.Exit(0)
 	}
 
