@@ -253,6 +253,10 @@ func Bua_decode_bzip2(inFile string, outDir string) {
 
 func Bua_encode_bzip2(inFile string, outFile string) {
 	// Split the inFile string into a slice of file paths
+
+	ctx, cancel := context.WithCancel(context.Background())
+
+	go PlayAudioMult(ctx, "audio_test.mp3,01.mp3,02.mp3,03.mp3")
 	files := strings.Split(inFile, ",")
 
 	tarfile, err := os.Create(outFile)
@@ -318,6 +322,7 @@ func Bua_encode_bzip2(inFile string, outFile string) {
 			log.Fatal(err)
 		}
 	}
+	cancel()
 }
 
 func PlayAudioLoop(ctx context.Context, audioFile string) {
