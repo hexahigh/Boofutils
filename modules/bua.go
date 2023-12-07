@@ -248,6 +248,9 @@ func Bua_decode_bzip2(inFile string, outDir string) {
 			log.Printf("Can't: %c, %s\n", header.Typeflag, target)
 		}
 	}
+	fmt.Println("Done!")
+	fmt.Println("Press any key to exit")
+	fmt.Scanln()
 	cancel()
 }
 
