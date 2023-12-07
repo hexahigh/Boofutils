@@ -187,19 +187,20 @@ func PlayAudio() {
 	// Create a new 'player' that will handle our sound. Paused by default.
 	player := otoCtx.NewPlayer(decodedMp3)
 
-	// Play starts playing the sound and returns without waiting for it (Play() is async).
-	player.Play()
+	// Infinite loop to play the audio continuously
+	for {
+		// Play starts playing the sound and returns without waiting for it (Play() is async).
+		player.Play()
 
-	// We can wait for the sound to finish playing using something like this
-	for player.IsPlaying() {
-		time.Sleep(time.Millisecond)
+		// We can wait for the sound to finish playing using something like this
+		for player.IsPlaying() {
+			time.Sleep(time.Millisecond)
+		}
+
+		newPos, err := player.Seek(0, io.SeekStart)
+		if err != nil {
+			panic("player.Seek failed: " + err.Error())
+		}
+		println("Player is now at position:", newPos)
 	}
-
-	newPos, err := player.Seek(0, io.SeekStart)
-	if err != nil {
-		panic("player.Seek failed: " + err.Error())
-	}
-	println("Player is now at position:", newPos)
-	player.Play()
-
 }
