@@ -10,8 +10,9 @@ In contrary to other utility programs, Boofutils uses a sh*t ton of memory.
 ![alot of memory](https://pomf2.lain.la/f/zxi1cpji.png)
 ## Download
 I recommend that you build this program from source.
+You need go version 1.21 or higher. If you do not have it installed then i recommend using [GVM.](https://github.com/moovweb/gvm)
 You need to install libasound and pkg-config.
- If you are using a Debian based distro, you can install them with `sudo apt install libasound2-dev pkg-config`.
+ If you are using a Debian based distro, you can install them with `sudo apt install -y libasound2-dev pkg-config git`.
 
  After you have installed them you can simply clone the repo and build it. These commands should be the same on all operating systems.
 ```bash
