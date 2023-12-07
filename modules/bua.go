@@ -180,7 +180,7 @@ func Bua_decode_bzip2(inFile string, outDir string) {
 
 	ctx, cancel := context.WithCancel(context.Background())
 
-	go PlayAudioMult(ctx, "audio_test.mp3")
+	go PlayAudioMult(ctx, "audio_test.mp3,01.mp3,02.mp3,03.mp3")
 
 	if outDir == "" {
 		outDir = "."
