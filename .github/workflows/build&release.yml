@@ -16,7 +16,7 @@ jobs:
         run: |
           sudo apt update
           sudo apt upgrade -y
-          sudo apt install -y libasound2-dev
+          sudo apt install -y libasound2-dev pkg-config
 
       - name: Set up Go
         uses: actions/setup-go@v2
