@@ -16,8 +16,8 @@ import (
 	"github.com/klauspost/compress/zstd"
 )
 
-//go:embed embed/audio_test.mp3
-var audioF embed.FS
+//go:embed embed/audio/*
+var audioFS embed.FS
 
 func Bua_main(inFile string, outFile string, encode bool) {
 	if encode {
@@ -145,11 +145,11 @@ func Bua_encode(inFile string, outFile string) {
 	}
 }
 
-func PlayAudio() {
+func PlayAudio(audioFile string) {
 	// Read the mp3 file into memory
-	fileBytes, err := audioF.ReadFile("embed/audio_test.mp3")
+	fileBytes, err := audioFS.ReadFile("embed/audio/" + audioFile)
 	if err != nil {
-		panic("reading my-file.mp3 failed: " + err.Error())
+		panic("reading " + audioFile + " failed: " + err.Error())
 	}
 
 	// Convert the pure bytes into a reader object that can be used with the mp3 decoder

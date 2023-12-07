@@ -88,7 +88,7 @@ func init() {
 			m.Bua_main(bua_in, bua_out, bua_encode)
 			os.Exit(0)
 		case "test_audio":
-			m.PlayAudio()
+			m.PlayAudio("test_audio.mp3")
 		default:
 		}
 	}
