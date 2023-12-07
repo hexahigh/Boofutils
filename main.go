@@ -86,6 +86,7 @@ func init() {
 		case "bua":
 			buaCommand.Parse(os.Args[2:])
 			m.Bua_main(bua_in, bua_out, bua_encode)
+			os.Exit(0)
 		default:
 		}
 	}

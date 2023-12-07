@@ -107,7 +107,7 @@ func Bua_encode(inFile string, outFile string) {
 				return err
 			}
 
-			header, err := tar.FileInfoHeader(info, info.Name())
+			header, err := tar.FileInfoHeader(info, path)
 			if err != nil {
 				return err
 			}
