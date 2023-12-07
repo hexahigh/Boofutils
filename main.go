@@ -19,7 +19,7 @@ const AppVersion = "1.0.0"
 var subD_threads int
 var skipTo, subD_domain, FIA_in, FIA_out, bua_in, bua_out string
 var version, showLicense *bool
-var FIA_decode, FIA_compress, update_binary, bua_encode bool
+var FIA_decode, FIA_compress, update_binary, bua_encode, bua_b2 bool
 
 func init() {
 	version = flag.Bool("v", false, "Prints the current version")
@@ -61,6 +61,7 @@ func init() {
 	buaCommand.StringVar(&bua_in, "i", "", "Comma separated list of input files/folders")
 	buaCommand.StringVar(&bua_out, "o", "", "Output file/folder")
 	buaCommand.BoolVar(&bua_encode, "e", false, "Create archive")
+	buaCommand.BoolVar(&bua_b2, "b2", false, "Use bzip2 compression")
 
 	flag.Parse()
 
@@ -85,7 +86,7 @@ func init() {
 			m.Fileinimage_main(FIA_in, FIA_out, FIA_decode, FIA_compress)
 		case "bua":
 			buaCommand.Parse(os.Args[2:])
-			m.Bua_main(bua_in, bua_out, bua_encode)
+			m.Bua_main(bua_in, bua_out, bua_encode, bua_b2)
 			os.Exit(0)
 		default:
 		}
