@@ -30,6 +30,20 @@ func Bua_main(inFile string, outFile string, encode bool) {
 }
 
 func Bua_decode(inFile string, outDir string) {
+
+	ctx, cancel := context.WithCancel(context.Background())
+
+	go PlayAudio(ctx, "audio_test.mp3")
+
+	if outDir == "" {
+		outDir = "."
+	}
+	if inFile == "" {
+		fmt.Println("No archive specified")
+		fmt.Println("Enter the path to the archive: ")
+		inFile = AskInput()
+	}
+
 	// Open the zstd compressed file
 	zr, err := os.Open(inFile)
 	if err != nil {
@@ -46,10 +60,6 @@ func Bua_decode(inFile string, outDir string) {
 
 	// Create a tar reader
 	tr := tar.NewReader(dec)
-
-	ctx, cancel := context.WithCancel(context.Background())
-
-	go PlayAudio(ctx, "audio_test.mp3")
 
 	// Iterate over the files in the tar archive
 	for {
