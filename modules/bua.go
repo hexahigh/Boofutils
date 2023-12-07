@@ -145,7 +145,7 @@ func Bua_encode(inFile string, outFile string) {
 	}
 }
 
-func playAudio() {
+func PlayAudio() {
 	// Read the mp3 file into memory
 	fileBytes, err := audioF.ReadFile("embed/audio_test.mp3")
 	if err != nil {
