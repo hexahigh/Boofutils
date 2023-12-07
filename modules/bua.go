@@ -193,8 +193,6 @@ func PlayAudio() {
 	// We can wait for the sound to finish playing using something like this
 	for player.IsPlaying() {
 		time.Sleep(time.Millisecond)
-		currentPos, _ := player.Seek(0, io.SeekCurrent)
-		println("Current position:", currentPos/100000, "out of", decodedMp3.Length()/100000)
 	}
 
 	newPos, err := player.Seek(0, io.SeekStart)
