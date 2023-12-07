@@ -19,7 +19,7 @@ const AppVersion = "0.4.1 beta"
 var subD_threads int
 var skipTo, subD_domain, FIA_in, FIA_out string
 var version, showLicense *bool
-var FIA_decode, FIA_compress, update_binary bool
+var FIA_decode, FIA_compress, update_binary, update_allow_win bool
 
 func init() {
 	version = flag.Bool("v", false, "Prints the current version")
@@ -44,6 +44,7 @@ func init() {
 
 	updateCommand := flag.NewFlagSet("update", flag.ExitOnError)
 	updateCommand.BoolVar(&update_binary, "b", false, "Update using a pre-compiled binary")
+	updateCommand.BoolVar(&update_allow_win, "w", false, "Allow Windows")
 
 	fileinaudioCommand := flag.NewFlagSet("fileinaudio", flag.ExitOnError)
 	fileinaudioCommand.StringVar(&FIA_in, "i", "", "Input file")
@@ -71,7 +72,7 @@ func init() {
 			m.SubD_main(subD_threads, subD_domain)
 		case "update":
 			updateCommand.Parse(os.Args[2:])
-			m.Upd_main(update_binary)
+			m.Upd_main(update_binary, update_allow_win)
 		case "fileinaudio":
 			fileinaudioCommand.Parse(os.Args[2:])
 			m.Fileinaudio_main(FIA_in, FIA_out, FIA_decode, FIA_compress)

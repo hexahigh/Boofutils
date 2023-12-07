@@ -11,16 +11,18 @@ import (
 	"github.com/go-git/go-git/v5"
 )
 
-func Upd_main(binary bool) {
+func Upd_main(binary bool, allow_win bool) {
 	if binary {
 		Upd_main_binary()
 	} else {
-		Upd_main_source()
+		Upd_main_source(allow_win)
 	}
 }
 
-func Upd_main_source() {
-	if runtime.GOOS == "windows" {
+func Upd_main_source(allow_win bool) {
+
+	// Check if we are on Windows
+	if runtime.GOOS == "windows" && !allow_win {
 		fmt.Println("This autoupdater does not work on Windows. Please use the -b flag when updating to use a precompiled binary.")
 		os.Exit(0)
 	}
