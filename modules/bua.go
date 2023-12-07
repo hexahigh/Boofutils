@@ -262,7 +262,10 @@ func Bua_encode_bzip2(inFile string, outFile string) {
 	defer tarfile.Close()
 
 	// create a new bzip2 writer
-	bw, err := bzip2.NewWriter(tarfile, nil)
+	conf := &bzip2.WriterConfig{
+		Level: 9,
+	}
+	bw, err := bzip2.NewWriter(tarfile, conf)
 	if err != nil {
 		log.Fatal(err)
 	}
