@@ -118,17 +118,23 @@ func Bua_encode(inFile string, outFile string) {
 	// Iterate over the files and add them to the tar archive
 	for _, file := range files {
 		file = strings.TrimSpace(file) // Remove any leading/trailing white space
+		baseDir := filepath.Dir(file)
 		err = filepath.Walk(file, func(path string, info os.FileInfo, err error) error {
 			if err != nil {
 				return err
 			}
 
-			header, err := tar.FileInfoHeader(info, path)
+			relPath, err := filepath.Rel(baseDir, path)
 			if err != nil {
 				return err
 			}
 
-			header.Name = path // Ensure the name is correct
+			header, err := tar.FileInfoHeader(info, relPath)
+			if err != nil {
+				return err
+			}
+
+			header.Name = relPath // Ensure the name is correct
 			if err := tw.WriteHeader(header); err != nil {
 				return err
 			}
