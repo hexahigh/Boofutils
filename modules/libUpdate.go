@@ -66,6 +66,16 @@ func Upd_main_source() {
 		panic(err)
 	}
 
+	fmt.Println("Cleaning up...")
+	err = os.RemoveAll("/tmp/bu")
+	if err != nil {
+		panic(err)
+	}
+	err = os.Remove(oldExePath)
+	if err != nil {
+		panic(err)
+	}
+
 	fmt.Println("Update completed successfully!")
 	os.Exit(0)
 }
