@@ -83,3 +83,20 @@ func CheckIfError(err error) {
 		panic(err)
 	}
 }
+
+func FileSize(filePath string) int64 {
+	// Open the file
+	file, err := os.Open(filePath)
+	if err != nil {
+		return 0
+	}
+	defer file.Close()
+
+	// Get the file size
+	fi, err := file.Stat()
+	if err != nil {
+		return 0
+	}
+
+	return fi.Size()
+}

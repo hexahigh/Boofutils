@@ -285,6 +285,8 @@ func Bua_encode_bzip2(inFile string, outFile string) {
 				return err
 			}
 
+			fmt.Println("Adding: ", relPath, "(", FileSize(path), ")")
+
 			header, err := tar.FileInfoHeader(info, relPath)
 			if err != nil {
 				return err
