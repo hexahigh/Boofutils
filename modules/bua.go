@@ -3,6 +3,7 @@ package modules
 import (
 	"archive/tar"
 	"bytes"
+	"embed"
 	"io"
 	"log"
 	"os"
@@ -14,6 +15,9 @@ import (
 	"github.com/hajimehoshi/go-mp3"
 	"github.com/klauspost/compress/zstd"
 )
+
+//go:embed embed/audio_test.mp3
+var audioF embed.FS
 
 func Bua_main(inFile string, outFile string, encode bool) {
 	if encode {
@@ -143,7 +147,7 @@ func Bua_encode(inFile string, outFile string) {
 
 func playAudio() {
 	// Read the mp3 file into memory
-	fileBytes, err := os.ReadFile("./my-file.mp3")
+	fileBytes, err := audioF.ReadFile("embed/audio_test.mp3")
 	if err != nil {
 		panic("reading my-file.mp3 failed: " + err.Error())
 	}
