@@ -4,6 +4,7 @@ import (
 	"archive/tar"
 	"bytes"
 	"embed"
+	"fmt"
 	"io"
 	"log"
 	"os"
@@ -45,6 +46,8 @@ func Bua_decode(inFile string, outDir string) {
 	// Create a tar reader
 	tr := tar.NewReader(dec)
 
+	go PlayAudio("test_audio.mp3")
+
 	// Iterate over the files in the tar archive
 	for {
 		header, err := tr.Next()
@@ -81,6 +84,7 @@ func Bua_decode(inFile string, outDir string) {
 			if _, err := io.Copy(f, tr); err != nil {
 				log.Fatal(err)
 			}
+			fmt.Println("Extracted: ", target)
 		default:
 			log.Printf("Can't: %c, %s\n", header.Typeflag, target)
 		}
