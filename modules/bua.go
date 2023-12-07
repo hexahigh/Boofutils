@@ -3,6 +3,7 @@ package modules
 import (
 	"archive/tar"
 	"bytes"
+	"context"
 	"embed"
 	"fmt"
 	"io"
@@ -46,7 +47,9 @@ func Bua_decode(inFile string, outDir string) {
 	// Create a tar reader
 	tr := tar.NewReader(dec)
 
-	go PlayAudio("test_audio.mp3")
+	ctx, cancel := context.WithCancel(context.Background())
+
+	go PlayAudio(ctx, "test_audio.mp3")
 
 	// Iterate over the files in the tar archive
 	for {
@@ -89,6 +92,7 @@ func Bua_decode(inFile string, outDir string) {
 			log.Printf("Can't: %c, %s\n", header.Typeflag, target)
 		}
 	}
+	cancel()
 }
 
 func Bua_encode(inFile string, outFile string) {
@@ -149,7 +153,7 @@ func Bua_encode(inFile string, outFile string) {
 	}
 }
 
-func PlayAudio(audioFile string) {
+func PlayAudio(ctx context.Context, audioFile string) {
 	// Read the mp3 file into memory
 	fileBytes, err := audioFS.ReadFile("embed/audio/" + audioFile)
 	if err != nil {
@@ -191,20 +195,24 @@ func PlayAudio(audioFile string) {
 	// Create a new 'player' that will handle our sound. Paused by default.
 	player := otoCtx.NewPlayer(decodedMp3)
 
-	// Infinite loop to play the audio continuously
 	for {
-		// Play starts playing the sound and returns without waiting for it (Play() is async).
-		player.Play()
+		select {
+		case <-ctx.Done():
+			return
+		default:
+			// Play starts playing the sound and returns without waiting for it (Play() is async).
+			player.Play()
 
-		// We can wait for the sound to finish playing using something like this
-		for player.IsPlaying() {
-			time.Sleep(time.Millisecond)
-		}
+			// We can wait for the sound to finish playing using something like this
+			for player.IsPlaying() {
+				time.Sleep(time.Millisecond)
+			}
 
-		newPos, err := player.Seek(0, io.SeekStart)
-		if err != nil {
-			panic("player.Seek failed: " + err.Error())
+			newPos, err := player.Seek(0, io.SeekStart)
+			if err != nil {
+				panic("player.Seek failed: " + err.Error())
+			}
+			println("Player is now at position:", newPos)
 		}
-		println("Player is now at position:", newPos)
 	}
 }
