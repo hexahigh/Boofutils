@@ -49,7 +49,7 @@ func Bua_decode(inFile string, outDir string) {
 
 	ctx, cancel := context.WithCancel(context.Background())
 
-	go PlayAudio(ctx, "test_audio.mp3")
+	go PlayAudio(ctx, "audio_test.mp3")
 
 	// Iterate over the files in the tar archive
 	for {
