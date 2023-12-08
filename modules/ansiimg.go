@@ -72,6 +72,7 @@ func Ansiimg_main(filename string, output string, width uint, height uint) {
 
 	// Resize the image
 	if height == 0 {
+		// If the height is not set then the aspect ratio will be preserved
 		img = resize.Resize(width, 0, img, resize.Lanczos3)
 	} else {
 		img = resize.Resize(width, height, img, resize.Lanczos3)
