@@ -75,7 +75,7 @@ func init() {
 	ansiimgCommand.StringVar(&ansiimg_filename, "i", "", "Input file")
 	ansiimgCommand.StringVar(&ansiimg_output, "o", "", "Output file")
 	ansiimgCommand.UintVar(&ansiimg_width, "w", 100, "Width")
-	ansiimgCommand.UintVar(&ansiimg_height, "h", 100, "Height")
+	ansiimgCommand.UintVar(&ansiimg_height, "h", 0, "Height")
 
 	ansividCommand := flag.NewFlagSet("ansivid", flag.ExitOnError)
 	ansividCommand.StringVar(&ansivid_musicFile, "a", "", "AUdio file")
