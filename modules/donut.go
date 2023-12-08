@@ -35,11 +35,14 @@ func Donut_main() {
 				t := c*h*g - f*e
 				x := int(40 + 30*D*(l*h*m-t*n))
 				y := int(12 + 15*D*(l*h*n+t*m))
-				o := x + 80*y
-				N := int(8 * ((f*e-c*d*g)*m - c*d*e - f*g - l*d*n))
-				if 0 <= y && y < 22 && 0 <= x && x < 80 && D > z[o] {
-					z[o] = D
-					b[o] = ".,-~:;=!*#$@"[N]
+				if 0 <= y && y < 22 && 0 <= x && x < 80 {
+					o := x + 80*y
+					if 0 <= o && o < len(z) {
+						z[o] = D
+						if N := int(8 * ((f*e-c*d*g)*m - c*d*e - f*g - l*d*n)); N >= 0 && N < len(".,-~:;=!*#$@") {
+							b[o] = ".,-~:;=!*#$@"[N]
+						}
+					}
 				}
 			}
 		}

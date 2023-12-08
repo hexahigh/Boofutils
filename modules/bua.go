@@ -25,37 +25,29 @@ import (
 //go:embed embed/audio/*
 var audioFS embed.FS
 
-func Bua_main(inFile string, outFile string, encode bool, b2 bool, u bool) {
-	if b2 && u {
+func Bua_main(inFile string, outFile string, encode bool, b2 bool) {
+	if b2 {
 		fmt.Println("Please choose either b2 or u")
 		os.Exit(0)
 
 	}
 	if b2 {
 		outFile += ".bua2"
-	} else if u {
-		outFile += ".bua3"
 	} else {
 		outFile += ".bua"
 	}
 
 	// Bua1
-	if encode && !b2 && !u {
+	if encode && !b2 {
 		Bua_encode(inFile, outFile)
-	} else if !b2 && !u {
+	} else if !b2 {
 		Bua_decode(inFile, outFile)
 	}
 	// Bua2
-	if encode && b2 && !u {
+	if encode && b2 {
 		Bua_encode_bzip2(inFile, outFile)
-	} else if b2 && !u {
+	} else if b2 {
 		Bua_decode_bzip2(inFile, outFile)
-	}
-	// Bua3
-	if encode && !b2 && u {
-		bua_encode_ultra(inFile, outFile)
-	} else if !b2 && u {
-		bua_decode_ultra(inFile, outFile)
 	}
 }
 
@@ -443,9 +435,7 @@ func bua_decode_ultra(inFile string, outDir string) {
 
 func bua_encode_ultra(inFile string, outFile string) {
 	// Split the inFile string into a slice of file paths
-
 	ctx, cancel := context.WithCancel(context.Background())
-
 	go PlayAudioMult(ctx, "audio_test.mp3,01.mp3,02.mp3,03.mp3")
 	files := strings.Split(inFile, ",")
 
@@ -476,50 +466,66 @@ func bua_encode_ultra(inFile string, outFile string) {
 	tw := tar.NewWriter(bw)
 	defer tw.Close()
 
+	// Create a channel to communicate between goroutines
+	errChan := make(chan error, len(files))
+
 	// Iterate over the files and add them to the tar archive
 	for _, file := range files {
-		file = strings.TrimSpace(file) // Remove any leading/trailing white space
-		baseDir := filepath.Dir(file)
-		err = filepath.Walk(file, func(path string, info os.FileInfo, err error) error {
-			if err != nil {
+		go func(file string) {
+			file = strings.TrimSpace(file) // Remove any leading/trailing white space
+			baseDir := filepath.Dir(file)
+			err := filepath.Walk(file, func(path string, info os.FileInfo, err error) error {
+				if err != nil {
+					return err
+				}
+
+				relPath, err := filepath.Rel(baseDir, path)
+				if err != nil {
+					return err
+				}
+
+				fmt.Println("Adding: ", relPath, "(", FileSize(path), ")")
+
+				header, err := tar.FileInfoHeader(info, relPath)
+				if err != nil {
+					return err
+				}
+
+				header.Name = relPath // Ensure the name is correct
+				if err := tw.WriteHeader(header); err != nil {
+					return err
+				}
+
+				if !info.Mode().IsRegular() { // Skip if not a regular file
+					return nil
+				}
+
+				f, err := os.Open(path)
+				if err != nil {
+					return err
+				}
+				defer f.Close()
+
+				_, err = io.Copy(tw, f)
 				return err
-			}
+			})
 
-			relPath, err := filepath.Rel(baseDir, path)
-			if err != nil {
-				return err
-			}
+			// Send the error (or nil if no error) to the channel
+			errChan <- err
+		}(file)
+	}
 
-			fmt.Println("Adding: ", relPath, "(", FileSize(path), ")")
-
-			header, err := tar.FileInfoHeader(info, relPath)
-			if err != nil {
-				return err
-			}
-
-			header.Name = relPath // Ensure the name is correct
-			if err := tw.WriteHeader(header); err != nil {
-				return err
-			}
-
-			if !info.Mode().IsRegular() { // Skip if not a regular file
-				return nil
-			}
-
-			f, err := os.Open(path)
-			if err != nil {
-				return err
-			}
-			defer f.Close()
-
-			_, err = io.Copy(tw, f)
-			return err
-		})
-
+	// Wait for all goroutines to finish
+	for i := 0; i < len(files); i++ {
+		err := <-errChan
 		if err != nil {
 			log.Fatal(err)
 		}
 	}
+
+	// Close the channel
+	close(errChan)
+
 	cancel()
 }
 
