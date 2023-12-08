@@ -34,6 +34,7 @@ require (
 	github.com/kevinburke/ssh_config v1.2.0 // indirect
 	github.com/lazywei/go-opencv v0.0.0-20190115070742-a4fe8ec027cc // indirect
 	github.com/mattn/go-runewidth v0.0.15 // indirect
+	github.com/nfnt/resize v0.0.0-20180221191011-83c6a9932646 // indirect
 	github.com/nsf/termbox-go v1.1.1 // indirect
 	github.com/pion/opus v0.0.0-20230805182210-70baa277ae2f // indirect
 	github.com/pjbgf/sha1cd v0.3.0 // indirect

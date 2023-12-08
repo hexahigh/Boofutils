@@ -26,6 +26,7 @@ var ansivid_musicFile, ansivid_gifFile, ansivid_gifSeq string
 var ansivid_duration, ansivid_gifWidth, ansivid_gifHeight, ansivid_loopNum int
 var ansivid_gifContrast, ansivid_gifSigma float64
 var ansivid_gifMode, ansivid_gifAsciiMode, ansivid_blockMode bool
+var ansiimg_width, ansiimg_height uint
 
 func init() {
 	version = flag.Bool("v", false, "Prints the current version")
@@ -73,9 +74,10 @@ func init() {
 	ansiimgCommand := flag.NewFlagSet("ansiimg", flag.ExitOnError)
 	ansiimgCommand.StringVar(&ansiimg_filename, "i", "", "Input file")
 	ansiimgCommand.StringVar(&ansiimg_output, "o", "", "Output file")
+	ansiimgCommand.UintVar(&ansiimg_width, "w", 100, "Width")
+	ansiimgCommand.UintVar(&ansiimg_height, "h", 100, "Height")
 
 	ansividCommand := flag.NewFlagSet("ansivid", flag.ExitOnError)
-	// func Ansivid_main(musicFile string, gifWidth int, gifHeight int, duration int, gifFile string, gifSeq string, loopNum int, gifMode bool, gifContrast float64, gifAsciiMode bool, gifSigma float64, blockMode bool) {
 	ansividCommand.StringVar(&ansivid_musicFile, "a", "", "AUdio file")
 	ansividCommand.StringVar(&ansivid_gifFile, "g", "", "GIF file")
 	ansividCommand.StringVar(&ansivid_gifSeq, "s", "0", "GIF sequence")
@@ -87,7 +89,7 @@ func init() {
 	ansividCommand.BoolVar(&ansivid_gifMode, "m", false, "GIF mode")
 	ansividCommand.BoolVar(&ansivid_gifAsciiMode, "ascii", false, "GIF ascii mode")
 	ansividCommand.BoolVar(&ansivid_blockMode, "block", false, "GIF block mode")
-	ansiimgCommand.IntVar(&ansivid_loopNum, "l", 1, "GIF loop number")
+	ansividCommand.IntVar(&ansivid_loopNum, "l", 1, "GIF loop number")
 
 	flag.Parse()
 
@@ -116,7 +118,7 @@ func init() {
 			os.Exit(0)
 		case "ansiimg":
 			ansiimgCommand.Parse(os.Args[2:])
-			m.Ansiimg_main(ansiimg_filename, ansiimg_output)
+			m.Ansiimg_main(ansiimg_filename, ansiimg_output, ansiimg_width, ansiimg_height)
 			os.Exit(0)
 		case "ansivid":
 			ansividCommand.Parse(os.Args[2:])

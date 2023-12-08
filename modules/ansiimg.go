@@ -6,6 +6,8 @@ import (
 	"image/color"
 	_ "image/png"
 	"os"
+
+	"github.com/nfnt/resize"
 )
 
 func pixelToAnsi(px1, px2 color.Color) string {
@@ -53,7 +55,7 @@ func imageToAnsi(img image.Image) string {
 	return finalRes
 }
 
-func Ansiimg_main(filename string, output string) {
+func Ansiimg_main(filename string, output string, width uint, height uint) {
 
 	file, err := os.Open(filename)
 	if err != nil {
@@ -66,6 +68,13 @@ func Ansiimg_main(filename string, output string) {
 	if err != nil {
 		fmt.Println("Error: Image could not be decoded")
 		os.Exit(1)
+	}
+
+	// Resize the image
+	if height == 0 {
+		img = resize.Resize(width, 0, img, resize.Lanczos3)
+	} else {
+		img = resize.Resize(width, height, img, resize.Lanczos3)
 	}
 
 	finalRes := imageToAnsi(img)
