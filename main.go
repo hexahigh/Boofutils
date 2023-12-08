@@ -9,6 +9,7 @@ import (
 	"os/user"
 
 	m "github.com/hexahigh/boofutils/modules"
+	m_ansivid "github.com/hexahigh/boofutils/modules/ansivid"
 )
 
 //go:embed LICENSE
@@ -20,6 +21,11 @@ var subD_threads int
 var skipTo, subD_domain, FIA_in, FIA_out, bua_in, bua_out, ansiimg_filename, ansiimg_output string
 var version, showLicense *bool
 var FIA_decode, FIA_compress, update_binary, bua_encode, bua_b2, update_allow_win bool
+
+var ansivid_musicFile, ansivid_gifFile, ansivid_gifSeq string
+var ansivid_duration, ansivid_gifWidth, ansivid_gifHeight, ansivid_loopNum int
+var ansivid_gifContrast, ansivid_gifSigma float64
+var ansivid_gifMode, ansivid_gifAsciiMode, ansivid_blockMode bool
 
 func init() {
 	version = flag.Bool("v", false, "Prints the current version")
@@ -68,6 +74,21 @@ func init() {
 	ansiimgCommand.StringVar(&ansiimg_filename, "i", "", "Input file")
 	ansiimgCommand.StringVar(&ansiimg_output, "o", "", "Output file")
 
+	ansividCommand := flag.NewFlagSet("ansivid", flag.ExitOnError)
+	// func Ansivid_main(musicFile string, gifWidth int, gifHeight int, duration int, gifFile string, gifSeq string, loopNum int, gifMode bool, gifContrast float64, gifAsciiMode bool, gifSigma float64, blockMode bool) {
+	ansividCommand.StringVar(&ansivid_musicFile, "a", "", "AUdio file")
+	ansividCommand.StringVar(&ansivid_gifFile, "g", "", "GIF file")
+	ansividCommand.StringVar(&ansivid_gifSeq, "s", "0", "GIF sequence")
+	ansividCommand.IntVar(&ansivid_duration, "d", 10, "GIF duration")
+	ansividCommand.IntVar(&ansivid_gifWidth, "w", 100, "GIF width")
+	ansividCommand.IntVar(&ansivid_gifHeight, "h", 100, "GIF height")
+	ansividCommand.Float64Var(&ansivid_gifContrast, "c", 0, "GIF contrast")
+	ansividCommand.Float64Var(&ansivid_gifSigma, "sigma", 0, "GIF sigma")
+	ansividCommand.BoolVar(&ansivid_gifMode, "m", false, "GIF mode")
+	ansividCommand.BoolVar(&ansivid_gifAsciiMode, "ascii", false, "GIF ascii mode")
+	ansividCommand.BoolVar(&ansivid_blockMode, "block", false, "GIF block mode")
+	ansiimgCommand.IntVar(&ansivid_loopNum, "l", 1, "GIF loop number")
+
 	flag.Parse()
 
 	subdomainCommand.Usage = func() {
@@ -97,6 +118,9 @@ func init() {
 			ansiimgCommand.Parse(os.Args[2:])
 			m.Ansiimg_main(ansiimg_filename, ansiimg_output)
 			os.Exit(0)
+		case "ansivid":
+			ansividCommand.Parse(os.Args[2:])
+			m_ansivid.Ansivid_main(ansivid_musicFile, ansivid_gifWidth, ansivid_gifHeight, ansivid_duration, ansivid_gifFile, ansivid_gifSeq, ansivid_loopNum, ansivid_gifMode, ansivid_gifContrast, ansivid_gifAsciiMode, ansivid_gifSigma, ansivid_blockMode)
 		default:
 		}
 	}
