@@ -42,6 +42,9 @@ func init() {
 		fmt.Println("update")
 		fmt.Println("fileinaudio")
 		fmt.Println("fileinimage")
+		fmt.Println("bua")
+		fmt.Println("ansivid")
+		fmt.Println("ansiimg")
 	}
 
 	// Subcommands
@@ -72,24 +75,8 @@ func init() {
 	buaCommand.BoolVar(&bua_b2, "b2", false, "Use bzip2 compression")
 
 	ansiimgCommand := flag.NewFlagSet("ansiimg", flag.ExitOnError)
-	ansiimgCommand.StringVar(&ansiimg_filename, "i", "", "Input file")
-	ansiimgCommand.StringVar(&ansiimg_output, "o", "", "Output file")
-	ansiimgCommand.UintVar(&ansiimg_width, "w", 100, "Width")
-	ansiimgCommand.UintVar(&ansiimg_height, "h", 0, "Height")
-
+	donutCommand := flag.NewFlagSet("donut", flag.ExitOnError)
 	ansividCommand := flag.NewFlagSet("ansivid", flag.ExitOnError)
-	ansividCommand.StringVar(&ansivid_musicFile, "a", "", "AUdio file")
-	ansividCommand.StringVar(&ansivid_gifFile, "g", "", "GIF file")
-	ansividCommand.StringVar(&ansivid_gifSeq, "s", "0", "GIF sequence")
-	ansividCommand.IntVar(&ansivid_duration, "d", 10, "GIF duration")
-	ansividCommand.IntVar(&ansivid_gifWidth, "w", 100, "GIF width")
-	ansividCommand.IntVar(&ansivid_gifHeight, "h", 100, "GIF height")
-	ansividCommand.Float64Var(&ansivid_gifContrast, "c", 0, "GIF contrast")
-	ansividCommand.Float64Var(&ansivid_gifSigma, "sigma", 0, "GIF sigma")
-	ansividCommand.BoolVar(&ansivid_gifMode, "m", false, "GIF mode")
-	ansividCommand.BoolVar(&ansivid_gifAsciiMode, "ascii", false, "GIF ascii mode")
-	ansividCommand.BoolVar(&ansivid_blockMode, "block", false, "GIF block mode")
-	ansividCommand.IntVar(&ansivid_loopNum, "l", 1, "GIF loop number")
 
 	flag.Parse()
 
@@ -117,12 +104,32 @@ func init() {
 			m.Bua_main(bua_in, bua_out, bua_encode, bua_b2)
 			os.Exit(0)
 		case "ansiimg":
+			ansiimgCommand.StringVar(&ansiimg_filename, "i", "", "Input file")
+			ansiimgCommand.StringVar(&ansiimg_output, "o", "", "Output file")
+			ansiimgCommand.UintVar(&ansiimg_width, "w", 100, "Width")
+			ansiimgCommand.UintVar(&ansiimg_height, "h", 0, "Height")
 			ansiimgCommand.Parse(os.Args[2:])
 			m.Ansiimg_main(ansiimg_filename, ansiimg_output, ansiimg_width, ansiimg_height)
 			os.Exit(0)
 		case "ansivid":
+			ansividCommand.StringVar(&ansivid_musicFile, "a", "", "AUdio file")
+			ansividCommand.StringVar(&ansivid_gifFile, "g", "", "GIF file")
+			ansividCommand.StringVar(&ansivid_gifSeq, "s", "0", "GIF sequence")
+			ansividCommand.IntVar(&ansivid_duration, "d", 10, "GIF duration")
+			ansividCommand.IntVar(&ansivid_gifWidth, "w", 100, "GIF width")
+			ansividCommand.IntVar(&ansivid_gifHeight, "h", 100, "GIF height")
+			ansividCommand.Float64Var(&ansivid_gifContrast, "c", 0, "GIF contrast")
+			ansividCommand.Float64Var(&ansivid_gifSigma, "sigma", 0, "GIF sigma")
+			ansividCommand.BoolVar(&ansivid_gifMode, "m", false, "GIF mode")
+			ansividCommand.BoolVar(&ansivid_gifAsciiMode, "ascii", false, "GIF ascii mode")
+			ansividCommand.BoolVar(&ansivid_blockMode, "block", false, "GIF block mode")
+			ansividCommand.IntVar(&ansivid_loopNum, "l", 1, "GIF loop number")
 			ansividCommand.Parse(os.Args[2:])
 			m_ansivid.Ansivid_main(ansivid_musicFile, ansivid_gifWidth, ansivid_gifHeight, ansivid_duration, ansivid_gifFile, ansivid_gifSeq, ansivid_loopNum, ansivid_gifMode, ansivid_gifContrast, ansivid_gifAsciiMode, ansivid_gifSigma, ansivid_blockMode)
+			os.Exit(0)
+		case "donut":
+			donutCommand.Parse(os.Args[2:])
+			m.Donut_main()
 		default:
 		}
 	}
