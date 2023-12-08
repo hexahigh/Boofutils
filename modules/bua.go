@@ -28,11 +28,6 @@ var audioFS embed.FS
 
 func Bua_main(inFile string, outFile string, encode bool, b2 bool) {
 	if b2 {
-		fmt.Println("Please choose either b2 or u")
-		os.Exit(0)
-
-	}
-	if b2 {
 		outFile += ".bua2"
 	} else {
 		outFile += ".bua"
