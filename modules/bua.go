@@ -14,7 +14,6 @@ import (
 	"os"
 	"path/filepath"
 	"strings"
-	"sync"
 	"time"
 
 	"github.com/dsnet/compress/bzip2"
@@ -203,67 +202,67 @@ func Bua_decode_bzip2(inFile string, outDir string, mute bool) {
 		inFile = AskInput()
 	}
 
+	// Open the bzip2 compressed file
 	br, err := os.Open(inFile)
 	if err != nil {
 		log.Fatal(err)
 	}
 	defer br.Close()
 
+	// Create a bzip2 reader
 	dec, err := bzip2.NewReader(br, nil)
 	if err != nil {
 		log.Fatal(err)
 	}
 
+	// Create a tar reader
 	tr := tar.NewReader(dec)
 
-	var wg sync.WaitGroup
-
+	// Iterate over the files in the tar archive
 	for {
 		header, err := tr.Next()
 		if err == io.EOF {
-			break
+			break // End of archive
 		}
 		if err != nil {
 			log.Fatal(err)
 		}
 
+		// The target location where to decompress the file
 		target := filepath.Join(outDir, header.Name)
 
-		wg.Add(1)
-		go func() {
-			defer wg.Done()
-
-			switch header.Typeflag {
-			case tar.TypeDir:
-				if err := os.MkdirAll(target, os.FileMode(header.Mode)); err != nil {
-					log.Fatal(err)
-				}
-			case tar.TypeReg:
-				if err := os.MkdirAll(filepath.Dir(target), 0755); err != nil {
-					log.Fatal(err)
-				}
-
-				f, err := os.Create(target)
-				if err != nil {
-					log.Fatal(err)
-				}
-				defer f.Close()
-
-				if _, err := io.Copy(f, tr); err != nil {
-					log.Fatal(err)
-				}
-				fmt.Println("Extracted: ", target)
-			default:
-				log.Printf("Can't: %c, %s\n", header.Typeflag, target)
+		// Check the file type
+		switch header.Typeflag {
+		case tar.TypeDir: // if a dir
+			if err := os.MkdirAll(target, os.FileMode(header.Mode)); err != nil {
+				log.Fatal(err)
 			}
-		}()
+		case tar.TypeReg: // if a file
+			// Ensure the parent directory exists
+			if err := os.MkdirAll(filepath.Dir(target), 0755); err != nil {
+				log.Fatal(err)
+			}
+
+			// Create the file
+			f, err := os.Create(target)
+			if err != nil {
+				log.Fatal(err)
+			}
+			defer f.Close()
+
+			// Copy data from the tar archive to the file
+			if _, err := io.Copy(f, tr); err != nil {
+				log.Fatal(err)
+			}
+			fmt.Println("Extracted: ", target)
+		default:
+			log.Printf("Can't: %c, %s\n", header.Typeflag, target)
+		}
 	}
-
-	wg.Wait()
-
 	fmt.Println("Done!")
 	fmt.Println("Press any key to exit")
 	fmt.Scanln()
+	cancel()
 }
 
 func Bua_encode_bzip2(inFile string, outFile string, mute bool) {
