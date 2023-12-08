@@ -19,6 +19,7 @@ require (
 	github.com/dsnet/compress v0.0.1 // indirect
 	github.com/ebitengine/oto/v3 v3.1.0 // indirect
 	github.com/ebitengine/purego v0.5.0 // indirect
+	github.com/eiannone/keyboard v0.0.0-20220611211555-0d226195f203 // indirect
 	github.com/emirpasic/gods v1.18.1 // indirect
 	github.com/faiface/beep v1.1.0 // indirect
 	github.com/go-audio/audio v1.0.0 // indirect

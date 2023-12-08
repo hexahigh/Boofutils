@@ -16,6 +16,7 @@ import (
 
 	"github.com/dsnet/compress/bzip2"
 	"github.com/ebitengine/oto/v3"
+	"github.com/eiannone/keyboard"
 	"github.com/hajimehoshi/go-mp3"
 	"github.com/klauspost/compress/zstd"
 )
@@ -393,6 +394,32 @@ func PlayAudioMult(ctx context.Context, audioFiles string) {
 	// Split the audioFiles string into a slice of file names
 	files := strings.Split(audioFiles, ",")
 
+	// Open the keyboard
+	if err := keyboard.Open(); err != nil {
+		log.Fatal(err)
+	}
+	defer keyboard.Close()
+
+	paused := false
+
+	go func() {
+		for {
+			_, key, err := keyboard.GetKey()
+			if err != nil {
+				// handle error
+				log.Fatal(err)
+			}
+			if key == 'p' {
+				paused = !paused
+				if paused {
+					fmt.Println("Audio paused")
+				} else {
+					fmt.Println("Audio resumed")
+				}
+			}
+		}
+	}()
+
 	for {
 		select {
 		case <-ctx.Done():
@@ -437,6 +464,11 @@ func PlayAudioMult(ctx context.Context, audioFiles string) {
 
 			// We can wait for the sound to finish playing using something like this
 			for player.IsPlaying() {
+				if paused {
+					player.Pause()
+				} else {
+					player.Play()
+				}
 				time.Sleep(time.Millisecond)
 			}
 
