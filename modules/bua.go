@@ -26,9 +26,9 @@ import (
 var audioFS embed.FS
 
 func Bua_main(inFile string, outFile string, encode bool, b2 bool, mute bool) {
-	if b2 {
+	if b2 && encode {
 		outFile += ".bua2"
-	} else {
+	} else if !b2 && encode {
 		outFile += ".bua"
 	}
 
