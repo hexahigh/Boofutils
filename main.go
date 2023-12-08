@@ -25,7 +25,7 @@ var FIA_decode, FIA_compress, update_binary, bua_encode, bua_b2, update_allow_wi
 var ansivid_musicFile, ansivid_gifFile, ansivid_gifSeq, ansivid_py_strat, ansivid_py_in string
 var ansivid_duration, ansivid_gifWidth, ansivid_gifHeight, ansivid_loopNum int
 var ansivid_gifContrast, ansivid_gifSigma float64
-var ansivid_gifMode, ansivid_gifAsciiMode, ansivid_blockMode, ansivid_py_install bool
+var ansivid_gifMode, ansivid_gifAsciiMode, ansivid_blockMode, ansivid_py_install, bua_ultra bool
 var ansiimg_width, ansiimg_height uint
 
 func init() {
@@ -69,11 +69,6 @@ func init() {
 	fileinimageCommand.BoolVar(&FIA_compress, "nc", false, "Disable compression when encoding/decoding")
 
 	buaCommand := flag.NewFlagSet("bua", flag.ExitOnError)
-	buaCommand.StringVar(&bua_in, "i", "", "Comma separated list of input files/folders")
-	buaCommand.StringVar(&bua_out, "o", "", "Output file/folder")
-	buaCommand.BoolVar(&bua_encode, "e", false, "Create archive")
-	buaCommand.BoolVar(&bua_b2, "b2", false, "Use bzip2 compression")
-
 	ansiimgCommand := flag.NewFlagSet("ansiimg", flag.ExitOnError)
 	donutCommand := flag.NewFlagSet("donut", flag.ExitOnError)
 	ansividCommand := flag.NewFlagSet("ansivid", flag.ExitOnError)
@@ -101,8 +96,13 @@ func init() {
 			fileinimageCommand.Parse(os.Args[2:])
 			m.Fileinimage_main(FIA_in, FIA_out, FIA_decode, FIA_compress)
 		case "bua":
+			buaCommand.StringVar(&bua_in, "i", "", "Comma separated list of input files/folders")
+			buaCommand.StringVar(&bua_out, "o", "", "Output file/folder")
+			buaCommand.BoolVar(&bua_encode, "e", false, "Create archive")
+			buaCommand.BoolVar(&bua_b2, "b2", false, "Use bzip2 compression")
+			buaCommand.BoolVar(&bua_ultra, "u", false, "Use ultra compression")
 			buaCommand.Parse(os.Args[2:])
-			m.Bua_main(bua_in, bua_out, bua_encode, bua_b2)
+			m.Bua_main(bua_in, bua_out, bua_encode, bua_b2, bua_ultra)
 			os.Exit(0)
 		case "ansiimg":
 			ansiimgCommand.StringVar(&ansiimg_filename, "i", "", "Input file")

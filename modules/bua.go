@@ -3,6 +3,8 @@ package modules
 import (
 	"archive/tar"
 	"bytes"
+	"compress/flate"
+	"compress/gzip"
 	"context"
 	"embed"
 	"fmt"
@@ -16,7 +18,6 @@ import (
 
 	"github.com/dsnet/compress/bzip2"
 	"github.com/ebitengine/oto/v3"
-	"github.com/eiannone/keyboard"
 	"github.com/hajimehoshi/go-mp3"
 	"github.com/klauspost/compress/zstd"
 )
@@ -24,16 +25,37 @@ import (
 //go:embed embed/audio/*
 var audioFS embed.FS
 
-func Bua_main(inFile string, outFile string, encode bool, b2 bool) {
-	if encode || !b2 {
+func Bua_main(inFile string, outFile string, encode bool, b2 bool, u bool) {
+	if b2 && u {
+		fmt.Println("Please choose either b2 or u")
+		os.Exit(0)
+
+	}
+	if b2 {
+		outFile += ".bua2"
+	} else if u {
+		outFile += ".bua3"
+	} else {
+		outFile += ".bua"
+	}
+
+	// Bua1
+	if encode && !b2 && !u {
 		Bua_encode(inFile, outFile)
-	} else if !b2 {
+	} else if !b2 && !u {
 		Bua_decode(inFile, outFile)
 	}
-	if encode && b2 {
+	// Bua2
+	if encode && b2 && !u {
 		Bua_encode_bzip2(inFile, outFile)
-	} else if b2 {
+	} else if b2 && !u {
 		Bua_decode_bzip2(inFile, outFile)
+	}
+	// Bua3
+	if encode && !b2 && u {
+		bua_encode_ultra(inFile, outFile)
+	} else if !b2 && u {
+		bua_decode_ultra(inFile, outFile)
 	}
 }
 
@@ -259,6 +281,7 @@ func Bua_encode_bzip2(inFile string, outFile string) {
 	// Split the inFile string into a slice of file paths
 
 	ctx, cancel := context.WithCancel(context.Background())
+	defer cancel()
 
 	go PlayAudioMult(ctx, "audio_test.mp3,01.mp3,02.mp3,03.mp3")
 	files := strings.Split(inFile, ",")
@@ -269,11 +292,182 @@ func Bua_encode_bzip2(inFile string, outFile string) {
 	}
 	defer tarfile.Close()
 
-	// create a new bzip2 writer
-	conf := &bzip2.WriterConfig{
-		Level: 9,
+	// First layer: gzip
+	gzipWriter := gzip.NewWriter(tarfile)
+	defer gzipWriter.Close()
+
+	// Second layer: flate
+	flateWriter, _ := flate.NewWriter(gzipWriter, flate.BestCompression)
+	defer flateWriter.Close()
+
+	// Third layer: bzip2
+	conf := &bzip2.WriterConfig{Level: 9}
+	bzip2Writer, _ := bzip2.NewWriter(flateWriter, conf)
+	defer bzip2Writer.Close()
+
+	tw := tar.NewWriter(bzip2Writer)
+	defer tw.Close()
+
+	// Iterate over the files and add them to the tar archive
+	for _, file := range files {
+		file = strings.TrimSpace(file) // Remove any leading/trailing white space
+		baseDir := filepath.Dir(file)
+		err = filepath.Walk(file, func(path string, info os.FileInfo, err error) error {
+			if err != nil {
+				return err
+			}
+
+			relPath, err := filepath.Rel(baseDir, path)
+			if err != nil {
+				return err
+			}
+
+			fmt.Println("Adding: ", relPath, "(", FileSize(path), ")")
+
+			header, err := tar.FileInfoHeader(info, relPath)
+			if err != nil {
+				return err
+			}
+
+			header.Name = relPath // Ensure the name is correct
+			if err := tw.WriteHeader(header); err != nil {
+				return err
+			}
+
+			if !info.Mode().IsRegular() { // Skip if not a regular file
+				return nil
+			}
+
+			f, err := os.Open(path)
+			if err != nil {
+				return err
+			}
+			defer f.Close()
+
+			_, err = io.Copy(tw, f)
+			return err
+		})
+
+		if err != nil {
+			log.Fatal(err)
+		}
 	}
-	bw, err := bzip2.NewWriter(tarfile, conf)
+	cancel()
+}
+
+func bua_decode_ultra(inFile string, outDir string) {
+	// Start the music and console logging
+	ctx, cancel := context.WithCancel(context.Background())
+	go PlayAudioMult(ctx, "audio_test.mp3,01.mp3,02.mp3,03.mp3")
+
+	if outDir == "" {
+		outDir = "."
+	}
+	if inFile == "" {
+		fmt.Println("No archive specified")
+		fmt.Println("Enter the path to the archive: ")
+		inFile = AskInput()
+	}
+
+	// Open the compressed file
+	file, err := os.Open(inFile)
+	if err != nil {
+		log.Fatal(err)
+	}
+	defer file.Close()
+
+	// Create a new bzip2 reader
+	br, err := bzip2.NewReader(file, nil)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	// Create a new flate reader
+	fr := flate.NewReader(br)
+
+	// Create a new gzip reader
+	gr, err := gzip.NewReader(fr)
+	if err != nil {
+		log.Fatal(err)
+	}
+	defer gr.Close()
+
+	tr := tar.NewReader(gr)
+
+	// Iterate over the files in the tar archive
+	for {
+		header, err := tr.Next()
+		if err == io.EOF {
+			break // End of archive
+		}
+		if err != nil {
+			log.Fatal(err)
+		}
+
+		// The target location where to decompress the file
+		target := filepath.Join(outDir, header.Name)
+
+		// Check the file type
+		switch header.Typeflag {
+		case tar.TypeDir: // if a dir
+			if err := os.MkdirAll(target, os.FileMode(header.Mode)); err != nil {
+				log.Fatal(err)
+			}
+		case tar.TypeReg: // if a file
+			// Ensure the parent directory exists
+			if err := os.MkdirAll(filepath.Dir(target), 0755); err != nil {
+				log.Fatal(err)
+			}
+
+			// Create the file
+			f, err := os.Create(target)
+			if err != nil {
+				log.Fatal(err)
+			}
+			defer f.Close()
+
+			// Copy data from the tar archive to the file
+			if _, err := io.Copy(f, tr); err != nil {
+				log.Fatal(err)
+			}
+			fmt.Println("Extracted: ", target)
+		default:
+			log.Printf("Can't: %c, %s\n", header.Typeflag, target)
+		}
+	}
+	fmt.Println("Done!")
+	fmt.Println("Press any key to exit")
+	fmt.Scanln()
+	cancel()
+}
+
+func bua_encode_ultra(inFile string, outFile string) {
+	// Split the inFile string into a slice of file paths
+
+	ctx, cancel := context.WithCancel(context.Background())
+
+	go PlayAudioMult(ctx, "audio_test.mp3,01.mp3,02.mp3,03.mp3")
+	files := strings.Split(inFile, ",")
+
+	tarfile, err := os.Create(outFile)
+	if err != nil {
+		log.Fatal(err)
+	}
+	defer tarfile.Close()
+
+	// create a new gzip writer
+	gw := gzip.NewWriter(tarfile)
+	defer gw.Close()
+
+	// create a new flate writer
+	fw, err := flate.NewWriter(gw, flate.BestCompression)
+	if err != nil {
+		log.Fatal(err)
+	}
+	defer fw.Close()
+
+	// create a new bzip2 writer
+	bw, err := bzip2.NewWriter(fw, nil)
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -397,31 +591,18 @@ func PlayAudioMult(ctx context.Context, audioFiles string) {
 	// Split the audioFiles string into a slice of file names
 	files := strings.Split(audioFiles, ",")
 
-	// Open the keyboard
-	if err := keyboard.Open(); err != nil {
-		log.Fatal(err)
+	// Prepare an Oto context (this will use your default audio device) that will
+	// play all our sounds. Its configuration can't be changed later.
+	op := &oto.NewContextOptions{}
+	op.SampleRate = 44100
+	op.ChannelCount = 2
+	op.Format = oto.FormatSignedInt16LE
+
+	otoCtx, readyChan, err := oto.NewContext(op)
+	if err != nil {
+		panic("oto.NewContext failed: " + err.Error())
 	}
-	defer keyboard.Close()
-
-	paused := false
-
-	go func() {
-		for {
-			_, key, err := keyboard.GetKey()
-			if err != nil {
-				// handle error
-				log.Fatal(err)
-			}
-			if key == 'p' {
-				paused = !paused
-				if paused {
-					fmt.Println("Audio paused")
-				} else {
-					fmt.Println("Audio resumed")
-				}
-			}
-		}
-	}()
+	<-readyChan
 
 	for {
 		select {
@@ -446,19 +627,6 @@ func PlayAudioMult(ctx context.Context, audioFiles string) {
 				panic("mp3.NewDecoder failed: " + err.Error())
 			}
 
-			// Prepare an Oto context (this will use your default audio device) that will
-			// play all our sounds. Its configuration can't be changed later.
-			op := &oto.NewContextOptions{}
-			op.SampleRate = 44100
-			op.ChannelCount = 2
-			op.Format = oto.FormatSignedInt16LE
-
-			otoCtx, readyChan, err := oto.NewContext(op)
-			if err != nil {
-				panic("oto.NewContext failed: " + err.Error())
-			}
-			<-readyChan
-
 			// Create a new 'player' that will handle our sound. Paused by default.
 			player := otoCtx.NewPlayer(decodedMp3)
 
@@ -467,11 +635,6 @@ func PlayAudioMult(ctx context.Context, audioFiles string) {
 
 			// We can wait for the sound to finish playing using something like this
 			for player.IsPlaying() {
-				if paused {
-					player.Pause()
-				} else {
-					player.Play()
-				}
 				time.Sleep(time.Millisecond)
 			}
 
