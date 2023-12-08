@@ -1,4 +1,4 @@
-name: Go Build and Pre-release
+name: go build and Pre-release
 
 on:
   workflow_dispatch:
@@ -30,183 +30,183 @@ jobs:
         run: go get -v -t -d ./...
 
       - name: Build aix/ppc64
-        run: GOOS=aix GOARCH=ppc64 go build -v -o boofutils-aix-ppc64 .
+        run: GOOS=aix GOARCH=ppc64 go build -ldflags "-w" -v -o boofutils-aix-ppc64 .
         continue-on-error: true
 
       - name: Build android/386
-        run: GOOS=android GOARCH=386 go build -v -o boofutils-android-386 .
+        run: GOOS=android GOARCH=386 go build -ldflags "-w" -v -o boofutils-android-386 .
         continue-on-error: true
 
       - name: Build android/amd64
-        run: GOOS=android GOARCH=amd64 go build -v -o boofutils-android-amd64 .
+        run: GOOS=android GOARCH=amd64 go build -ldflags "-w" -v -o boofutils-android-amd64 .
         continue-on-error: true
 
       - name: Build android/arm
-        run: GOOS=android GOARCH=arm go build -v -o boofutils-android-arm .
+        run: GOOS=android GOARCH=arm go build -ldflags "-w" -v -o boofutils-android-arm .
         continue-on-error: true
 
       - name: Build android/arm64
-        run: GOOS=android GOARCH=arm64 go build -v -o boofutils-android-arm64 .
+        run: GOOS=android GOARCH=arm64 go build -ldflags "-w" -v -o boofutils-android-arm64 .
         continue-on-error: true
 
       - name: Build darwin/amd64
-        run: GOOS=darwin GOARCH=amd64 go build -v -o boofutils-darwin-amd64 .
+        run: GOOS=darwin GOARCH=amd64 go build -ldflags "-w" -v -o boofutils-darwin-amd64 .
         continue-on-error: true
 
       - name: Build darwin/arm64
-        run: GOOS=darwin GOARCH=arm64 go build -v -o boofutils-darwin-arm64 .
+        run: GOOS=darwin GOARCH=arm64 go build -ldflags "-w" -v -o boofutils-darwin-arm64 .
         continue-on-error: true
 
       - name: Build dragonfly/amd64
-        run: GOOS=dragonfly GOARCH=amd64 go build -v -o boofutils-dragonfly-amd64 .
+        run: GOOS=dragonfly GOARCH=amd64 go build -ldflags "-w" -v -o boofutils-dragonfly-amd64 .
         continue-on-error: true
 
       - name: Build freebsd/386
-        run: GOOS=freebsd GOARCH=386 go build -v -o boofutils-freebsd-386 .
+        run: GOOS=freebsd GOARCH=386 go build -ldflags "-w" -v -o boofutils-freebsd-386 .
         continue-on-error: true
 
       - name: Build freebsd/amd64
-        run: GOOS=freebsd GOARCH=amd64 go build -v -o boofutils-freebsd-amd64 .
+        run: GOOS=freebsd GOARCH=amd64 go build -ldflags "-w" -v -o boofutils-freebsd-amd64 .
         continue-on-error: true
 
       - name: Build freebsd/arm
-        run: GOOS=freebsd GOARCH=arm go build -v -o boofutils-freebsd-arm .
+        run: GOOS=freebsd GOARCH=arm go build -ldflags "-w" -v -o boofutils-freebsd-arm .
         continue-on-error: true
 
       - name: Build freebsd/arm64
-        run: GOOS=freebsd GOARCH=arm64 go build -v -o boofutils-freebsd-arm64 .
+        run: GOOS=freebsd GOARCH=arm64 go build -ldflags "-w" -v -o boofutils-freebsd-arm64 .
         continue-on-error: true
 
       - name: Build freebsd/riscv64
-        run: GOOS=freebsd GOARCH=riscv64 go build -v -o boofutils-freebsd-riscv64 .
+        run: GOOS=freebsd GOARCH=riscv64 go build -ldflags "-w" -v -o boofutils-freebsd-riscv64 .
         continue-on-error: true
 
       - name: Build illumos/amd64
-        run: GOOS=illumos GOARCH=amd64 go build -v -o boofutils-illumos-amd64 .
+        run: GOOS=illumos GOARCH=amd64 go build -ldflags "-w" -v -o boofutils-illumos-amd64 .
         continue-on-error: true
 
       - name: Build ios/amd64
-        run: GOOS=darwin GOARCH=amd64 go build -v -o boofutils-ios-amd64 .
+        run: GOOS=darwin GOARCH=amd64 go build -ldflags "-w" -v -o boofutils-ios-amd64 .
         continue-on-error: true
 
       - name: Build ios/arm64
-        run: GOOS=darwin GOARCH=arm64 go build -v -o boofutils-ios-arm64 .
+        run: GOOS=darwin GOARCH=arm64 go build -ldflags "-w" -v -o boofutils-ios-arm64 .
         continue-on-error: true
 
       - name: Build js/wasm
-        run: GOOS=js GOARCH=wasm go build -v -o boofutils-js-wasm .
+        run: GOOS=js GOARCH=wasm go build -ldflags "-w" -v -o boofutils-js-wasm .
         continue-on-error: true
 
       - name: Build linux/386
-        run: GOOS=linux GOARCH=386 go build -v -o boofutils-linux-386 .
+        run: GOOS=linux GOARCH=386 go build -ldflags "-w" -v -o boofutils-linux-386 .
         continue-on-error: true
 
       - name: Build linux/amd64
-        run: GOOS=linux GOARCH=amd64 go build -v -o boofutils-linux-amd64 .
+        run: GOOS=linux GOARCH=amd64 go build -ldflags "-w" -v -o boofutils-linux-amd64 .
         continue-on-error: true
 
       - name: Build linux/arm
-        run: GOOS=linux GOARCH=arm go build -v -o boofutils-linux-arm .
+        run: GOOS=linux GOARCH=arm go build -ldflags "-w" -v -o boofutils-linux-arm .
         continue-on-error: true
 
       - name: Build linux/arm64
-        run: GOOS=linux GOARCH=arm64 go build -v -o boofutils-linux-arm64 .
+        run: GOOS=linux GOARCH=arm64 go build -ldflags "-w" -v -o boofutils-linux-arm64 .
         continue-on-error: true
 
       - name: Build linux/loong64
-        run: GOOS=linux GOARCH=loong64 go build -v -o boofutils-linux-loong64 .
+        run: GOOS=linux GOARCH=loong64 go build -ldflags "-w" -v -o boofutils-linux-loong64 .
         continue-on-error: true
 
       - name: Build linux/mips
-        run: GOOS=linux GOARCH=mips go build -v -o boofutils-linux-mips .
+        run: GOOS=linux GOARCH=mips go build -ldflags "-w" -v -o boofutils-linux-mips .
         continue-on-error: true
 
       - name: Build linux/mips64
-        run: GOOS=linux GOARCH=mips64 go build -v -o boofutils-linux-mips64 .
+        run: GOOS=linux GOARCH=mips64 go build -ldflags "-w" -v -o boofutils-linux-mips64 .
         continue-on-error: true
 
       - name: Build linux/mips64le
-        run: GOOS=linux GOARCH=mips64le go build -v -o boofutils-linux-mips64le .
+        run: GOOS=linux GOARCH=mips64le go build -ldflags "-w" -v -o boofutils-linux-mips64le .
         continue-on-error: true
 
       - name: Build linux/mipsle
-        run: GOOS=linux GOARCH=mipsle go build -v -o boofutils-linux-mipsle .
+        run: GOOS=linux GOARCH=mipsle go build -ldflags "-w" -v -o boofutils-linux-mipsle .
         continue-on-error: true
 
       - name: Build linux/ppc64
-        run: GOOS=linux GOARCH=ppc64 go build -v -o boofutils-linux-ppc64 .
+        run: GOOS=linux GOARCH=ppc64 go build -ldflags "-w" -v -o boofutils-linux-ppc64 .
         continue-on-error: true
 
       - name: Build linux/ppc64le
-        run: GOOS=linux GOARCH=ppc64le go build -v -o boofutils-linux-ppc64le .
+        run: GOOS=linux GOARCH=ppc64le go build -ldflags "-w" -v -o boofutils-linux-ppc64le .
         continue-on-error: true
 
       - name: Build linux/riscv64
-        run: GOOS=linux GOARCH=riscv64 go build -v -o boofutils-linux-riscv64 .
+        run: GOOS=linux GOARCH=riscv64 go build -ldflags "-w" -v -o boofutils-linux-riscv64 .
         continue-on-error: true
 
       - name: Build linux/s390x
-        run: GOOS=linux GOARCH=s390x go build -v -o boofutils-linux-s390x .
+        run: GOOS=linux GOARCH=s390x go build -ldflags "-w" -v -o boofutils-linux-s390x .
         continue-on-error: true
 
       - name: Build netbsd/386
-        run: GOOS=netbsd GOARCH=386 go build -v -o boofutils-netbsd-386 .
+        run: GOOS=netbsd GOARCH=386 go build -ldflags "-w" -v -o boofutils-netbsd-386 .
         continue-on-error: true
 
       - name: Build netbsd/amd64
-        run: GOOS=netbsd GOARCH=amd64 go build -v -o boofutils-netbsd-amd64 .
+        run: GOOS=netbsd GOARCH=amd64 go build -ldflags "-w" -v -o boofutils-netbsd-amd64 .
         continue-on-error: true
 
       - name: Build netbsd/arm
-        run: GOOS=netbsd GOARCH=arm go build -v -o boofutils-netbsd-arm .
+        run: GOOS=netbsd GOARCH=arm go build -ldflags "-w" -v -o boofutils-netbsd-arm .
         continue-on-error: true
 
       - name: Build netbsd/arm64
-        run: GOOS=netbsd GOARCH=arm64 go build -v -o boofutils-netbsd-arm64 .
+        run: GOOS=netbsd GOARCH=arm64 go build -ldflags "-w" -v -o boofutils-netbsd-arm64 .
         continue-on-error: true
 
       - name: Build openbsd/386
-        run: GOOS=openbsd GOARCH=386 go build -v -o boofutils-openbsd-386 .
+        run: GOOS=openbsd GOARCH=386 go build -ldflags "-w" -v -o boofutils-openbsd-386 .
         continue-on-error: true
 
       - name: Build openbsd/amd64
-        run: GOOS=openbsd GOARCH=amd64 go build -v -o boofutils-openbsd-amd64 .
+        run: GOOS=openbsd GOARCH=amd64 go build -ldflags "-w" -v -o boofutils-openbsd-amd64 .
         continue-on-error: true
 
       - name: Build openbsd/arm
-        run: GOOS=openbsd GOARCH=arm go build -v -o boofutils-openbsd-arm .
+        run: GOOS=openbsd GOARCH=arm go build -ldflags "-w" -v -o boofutils-openbsd-arm .
         continue-on-error: true
 
       - name: Build openbsd/arm64
-        run: GOOS=openbsd GOARCH=arm64 go build -v -o boofutils-openbsd-arm64 .
+        run: GOOS=openbsd GOARCH=arm64 go build -ldflags "-w" -v -o boofutils-openbsd-arm64 .
         continue-on-error: true
 
       - name: Build plan9/386
-        run: GOOS=plan9 GOARCH=386 go build -v -o boofutils-plan9-386 .
+        run: GOOS=plan9 GOARCH=386 go build -ldflags "-w" -v -o boofutils-plan9-386 .
         continue-on-error: true
 
       - name: Build plan9/amd64
-        run: GOOS=plan9 GOARCH=amd64 go build -v -o boofutils-plan9-amd64 .
+        run: GOOS=plan9 GOARCH=amd64 go build -ldflags "-w" -v -o boofutils-plan9-amd64 .
         continue-on-error: true
 
       - name: Build plan9/arm
-        run: GOOS=plan9 GOARCH=arm go build -v -o boofutils-plan9-arm .
+        run: GOOS=plan9 GOARCH=arm go build -ldflags "-w" -v -o boofutils-plan9-arm .
         continue-on-error: true
 
       - name: Build windows/386
-        run: GOOS=windows GOARCH=386 go build -v -o boofutils-windows-386.exe .
+        run: GOOS=windows GOARCH=386 go build -ldflags "-w" -v -o boofutils-windows-386.exe .
         continue-on-error: true
 
       - name: Build windows/amd64
-        run: GOOS=windows GOARCH=amd64 go build -v -o boofutils-windows-amd64.exe .
+        run: GOOS=windows GOARCH=amd64 go build -ldflags "-w" -v -o boofutils-windows-amd64.exe .
         continue-on-error: true
 
       - name: Build windows/arm
-        run: GOOS=windows GOARCH=arm go build -v -o boofutils-windows-arm.exe .
+        run: GOOS=windows GOARCH=arm go build -ldflags "-w" -v -o boofutils-windows-arm.exe .
         continue-on-error: true
 
       - name: Build windows/arm64
-        run: GOOS=windows GOARCH=arm64 go build -v -o boofutils-windows-arm64.exe .
+        run: GOOS=windows GOARCH=arm64 go build -ldflags "-w" -v -o boofutils-windows-arm64.exe .
         continue-on-error: true
 
       - name: Upload the artifact
