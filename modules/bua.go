@@ -26,7 +26,7 @@ import (
 //go:embed embed/audio/*
 var audioFS embed.FS
 
-func Bua_main(inFile string, outFile string, encode bool, b2 bool) {
+func Bua_main(inFile string, outFile string, encode bool, b2 bool, mute bool) {
 	if b2 {
 		outFile += ".bua2"
 	} else {
@@ -41,9 +41,9 @@ func Bua_main(inFile string, outFile string, encode bool, b2 bool) {
 	}
 	// Bua2
 	if encode && b2 {
-		Bua_encode_bzip2(inFile, outFile)
+		Bua_encode_bzip2(inFile, outFile, mute)
 	} else if b2 {
-		Bua_decode_bzip2(inFile, outFile)
+		Bua_decode_bzip2(inFile, outFile, mute)
 	}
 }
 
@@ -187,12 +187,13 @@ func Bua_encode(inFile string, outFile string) {
 	}
 }
 
-func Bua_decode_bzip2(inFile string, outDir string) {
+func Bua_decode_bzip2(inFile string, outDir string, mute bool) {
+	// Start the music and console logging
 	ctx, cancel := context.WithCancel(context.Background())
 	defer cancel()
-
-	go PlayAudioMult(ctx, "audio_test.mp3,01.mp3,02.mp3,03.mp3")
-
+	if !mute {
+		go PlayAudioMult(ctx, "audio_test.mp3,01.mp3,02.mp3,03.mp3")
+	}
 	if outDir == "" {
 		outDir = "."
 	}
@@ -265,10 +266,11 @@ func Bua_decode_bzip2(inFile string, outDir string) {
 	fmt.Scanln()
 }
 
-func Bua_encode_bzip2(inFile string, outFile string) {
-	// Split the inFile string into a slice of file paths
+func Bua_encode_bzip2(inFile string, outFile string, mute bool) {
 	ctx, cancel := context.WithCancel(context.Background())
-	go PlayAudioMult(ctx, "audio_test.mp3,01.mp3,02.mp3,03.mp3")
+	if !mute {
+		go PlayAudioMult(ctx, "audio_test.mp3,01.mp3,02.mp3,03.mp3")
+	}
 	files := strings.Split(inFile, ",")
 	tarfile, err := os.Create(outFile)
 	if err != nil {
@@ -325,10 +327,12 @@ func Bua_encode_bzip2(inFile string, outFile string) {
 	cancel()
 }
 
-func bua_decode_ultra(inFile string, outDir string) {
+func bua_decode_ultra(inFile string, outDir string, mute bool) {
 	// Start the music and console logging
 	ctx, cancel := context.WithCancel(context.Background())
-	go PlayAudioMult(ctx, "audio_test.mp3,01.mp3,02.mp3,03.mp3")
+	if !mute {
+		go PlayAudioMult(ctx, "audio_test.mp3,01.mp3,02.mp3,03.mp3")
+	}
 
 	if outDir == "" {
 		outDir = "."
