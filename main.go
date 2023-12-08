@@ -17,7 +17,7 @@ var LICENSE embed.FS
 const AppVersion = "1.0.0"
 
 var subD_threads int
-var skipTo, subD_domain, FIA_in, FIA_out, bua_in, bua_out string
+var skipTo, subD_domain, FIA_in, FIA_out, bua_in, bua_out, ansiimg_filename, ansiimg_output string
 var version, showLicense *bool
 var FIA_decode, FIA_compress, update_binary, bua_encode, bua_b2, update_allow_win bool
 
@@ -64,6 +64,10 @@ func init() {
 	buaCommand.BoolVar(&bua_encode, "e", false, "Create archive")
 	buaCommand.BoolVar(&bua_b2, "b2", false, "Use bzip2 compression")
 
+	ansiimgCommand := flag.NewFlagSet("ansiimg", flag.ExitOnError)
+	ansiimgCommand.StringVar(&ansiimg_filename, "i", "", "Input file")
+	ansiimgCommand.StringVar(&ansiimg_output, "o", "", "Output file")
+
 	flag.Parse()
 
 	subdomainCommand.Usage = func() {
@@ -88,6 +92,10 @@ func init() {
 		case "bua":
 			buaCommand.Parse(os.Args[2:])
 			m.Bua_main(bua_in, bua_out, bua_encode, bua_b2)
+			os.Exit(0)
+		case "ansiimg":
+			ansiimgCommand.Parse(os.Args[2:])
+			m.Ansiimg_main(ansiimg_filename, ansiimg_output)
 			os.Exit(0)
 		default:
 		}
