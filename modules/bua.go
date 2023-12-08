@@ -14,6 +14,7 @@ import (
 	"os"
 	"path/filepath"
 	"strings"
+	"sync"
 	"time"
 
 	"github.com/dsnet/compress/bzip2"
@@ -192,8 +193,8 @@ func Bua_encode(inFile string, outFile string) {
 }
 
 func Bua_decode_bzip2(inFile string, outDir string) {
-
 	ctx, cancel := context.WithCancel(context.Background())
+	defer cancel()
 
 	go PlayAudioMult(ctx, "audio_test.mp3,01.mp3,02.mp3,03.mp3")
 
@@ -206,145 +207,167 @@ func Bua_decode_bzip2(inFile string, outDir string) {
 		inFile = AskInput()
 	}
 
-	// Open the bzip2 compressed file
 	br, err := os.Open(inFile)
 	if err != nil {
 		log.Fatal(err)
 	}
 	defer br.Close()
 
-	// Create a bzip2 reader
 	dec, err := bzip2.NewReader(br, nil)
 	if err != nil {
 		log.Fatal(err)
 	}
 
-	// Create a tar reader
 	tr := tar.NewReader(dec)
 
-	// Iterate over the files in the tar archive
+	var wg sync.WaitGroup
+
 	for {
 		header, err := tr.Next()
 		if err == io.EOF {
-			break // End of archive
+			break
 		}
 		if err != nil {
 			log.Fatal(err)
 		}
 
-		// The target location where to decompress the file
 		target := filepath.Join(outDir, header.Name)
 
-		// Check the file type
-		switch header.Typeflag {
-		case tar.TypeDir: // if a dir
-			if err := os.MkdirAll(target, os.FileMode(header.Mode)); err != nil {
-				log.Fatal(err)
-			}
-		case tar.TypeReg: // if a file
-			// Ensure the parent directory exists
-			if err := os.MkdirAll(filepath.Dir(target), 0755); err != nil {
-				log.Fatal(err)
-			}
+		wg.Add(1)
+		go func() {
+			defer wg.Done()
 
-			// Create the file
-			f, err := os.Create(target)
-			if err != nil {
-				log.Fatal(err)
-			}
-			defer f.Close()
+			switch header.Typeflag {
+			case tar.TypeDir:
+				if err := os.MkdirAll(target, os.FileMode(header.Mode)); err != nil {
+					log.Fatal(err)
+				}
+			case tar.TypeReg:
+				if err := os.MkdirAll(filepath.Dir(target), 0755); err != nil {
+					log.Fatal(err)
+				}
 
-			// Copy data from the tar archive to the file
-			if _, err := io.Copy(f, tr); err != nil {
-				log.Fatal(err)
+				f, err := os.Create(target)
+				if err != nil {
+					log.Fatal(err)
+				}
+				defer f.Close()
+
+				if _, err := io.Copy(f, tr); err != nil {
+					log.Fatal(err)
+				}
+				fmt.Println("Extracted: ", target)
+			default:
+				log.Printf("Can't: %c, %s\n", header.Typeflag, target)
 			}
-			fmt.Println("Extracted: ", target)
-		default:
-			log.Printf("Can't: %c, %s\n", header.Typeflag, target)
-		}
+		}()
 	}
+
+	wg.Wait()
+
 	fmt.Println("Done!")
 	fmt.Println("Press any key to exit")
 	fmt.Scanln()
-	cancel()
 }
 
 func Bua_encode_bzip2(inFile string, outFile string) {
 	// Split the inFile string into a slice of file paths
-
 	ctx, cancel := context.WithCancel(context.Background())
-	defer cancel()
-
 	go PlayAudioMult(ctx, "audio_test.mp3,01.mp3,02.mp3,03.mp3")
 	files := strings.Split(inFile, ",")
-
 	tarfile, err := os.Create(outFile)
 	if err != nil {
 		log.Fatal(err)
 	}
 	defer tarfile.Close()
-
-	// First layer: gzip
-	gzipWriter := gzip.NewWriter(tarfile)
-	defer gzipWriter.Close()
-
-	// Second layer: flate
-	flateWriter, _ := flate.NewWriter(gzipWriter, flate.BestCompression)
-	defer flateWriter.Close()
-
-	// Third layer: bzip2
-	conf := &bzip2.WriterConfig{Level: 9}
-	bzip2Writer, _ := bzip2.NewWriter(flateWriter, conf)
-	defer bzip2Writer.Close()
-
-	tw := tar.NewWriter(bzip2Writer)
+	// create a new bzip2 writer
+	conf := &bzip2.WriterConfig{
+		Level: 9,
+	}
+	bw, err := bzip2.NewWriter(tarfile, conf)
+	if err != nil {
+		log.Fatal(err)
+	}
+	defer bw.Close()
+	tw := tar.NewWriter(bw)
 	defer tw.Close()
+
+	type fileData struct {
+		header *tar.Header
+		data   []byte
+	}
+
+	dataChan := make(chan fileData)
+	errChan := make(chan error)
+
+	go func() {
+		for fd := range dataChan {
+			if err := tw.WriteHeader(fd.header); err != nil {
+				errChan <- err
+				return
+			}
+			if _, err := tw.Write(fd.data); err != nil {
+				errChan <- err
+				return
+			}
+		}
+	}()
+
+	var wg sync.WaitGroup
 
 	// Iterate over the files and add them to the tar archive
 	for _, file := range files {
-		file = strings.TrimSpace(file) // Remove any leading/trailing white space
-		baseDir := filepath.Dir(file)
-		err = filepath.Walk(file, func(path string, info os.FileInfo, err error) error {
-			if err != nil {
-				return err
-			}
-
-			relPath, err := filepath.Rel(baseDir, path)
-			if err != nil {
-				return err
-			}
-
-			fmt.Println("Adding: ", relPath, "(", FileSize(path), ")")
-
-			header, err := tar.FileInfoHeader(info, relPath)
-			if err != nil {
-				return err
-			}
-
-			header.Name = relPath // Ensure the name is correct
-			if err := tw.WriteHeader(header); err != nil {
-				return err
-			}
-
-			if !info.Mode().IsRegular() { // Skip if not a regular file
+		wg.Add(1)
+		go func(file string) {
+			defer wg.Done()
+			file = strings.TrimSpace(file) // Remove any leading/trailing white space
+			baseDir := filepath.Dir(file)
+			err = filepath.Walk(file, func(path string, info os.FileInfo, err error) error {
+				if err != nil {
+					return err
+				}
+				relPath, err := filepath.Rel(baseDir, path)
+				if err != nil {
+					return err
+				}
+				fmt.Println("Adding: ", relPath, "(", FileSize(path), ")")
+				header, err := tar.FileInfoHeader(info, relPath)
+				if err != nil {
+					return err
+				}
+				header.Name = relPath         // Ensure the name is correct
+				if !info.Mode().IsRegular() { // Skip if not a regular file
+					return nil
+				}
+				f, err := os.Open(path)
+				if err != nil {
+					return err
+				}
+				defer f.Close()
+				data, err := io.ReadAll(f)
+				if err != nil {
+					return err
+				}
+				dataChan <- fileData{header: header, data: data}
 				return nil
-			}
-
-			f, err := os.Open(path)
+			})
 			if err != nil {
-				return err
+				errChan <- err
 			}
-			defer f.Close()
-
-			_, err = io.Copy(tw, f)
-			return err
-		})
-
-		if err != nil {
-			log.Fatal(err)
-		}
+		}(file)
 	}
-	cancel()
+
+	go func() {
+		wg.Wait()
+		close(dataChan)
+	}()
+
+	select {
+	case err := <-errChan:
+		log.Fatal(err)
+	case <-ctx.Done():
+		cancel()
+	}
 }
 
 func bua_decode_ultra(inFile string, outDir string) {
