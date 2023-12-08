@@ -286,83 +286,43 @@ func Bua_encode_bzip2(inFile string, outFile string) {
 	defer bw.Close()
 	tw := tar.NewWriter(bw)
 	defer tw.Close()
-
-	type fileData struct {
-		header *tar.Header
-		data   []byte
-	}
-
-	dataChan := make(chan fileData)
-	errChan := make(chan error)
-
-	go func() {
-		for fd := range dataChan {
-			if err := tw.WriteHeader(fd.header); err != nil {
-				errChan <- err
-				return
-			}
-			if _, err := tw.Write(fd.data); err != nil {
-				errChan <- err
-				return
-			}
-		}
-	}()
-
-	var wg sync.WaitGroup
-
 	// Iterate over the files and add them to the tar archive
 	for _, file := range files {
-		wg.Add(1)
-		go func(file string) {
-			defer wg.Done()
-			file = strings.TrimSpace(file) // Remove any leading/trailing white space
-			baseDir := filepath.Dir(file)
-			err = filepath.Walk(file, func(path string, info os.FileInfo, err error) error {
-				if err != nil {
-					return err
-				}
-				relPath, err := filepath.Rel(baseDir, path)
-				if err != nil {
-					return err
-				}
-				fmt.Println("Adding: ", relPath, "(", FileSize(path), ")")
-				header, err := tar.FileInfoHeader(info, relPath)
-				if err != nil {
-					return err
-				}
-				header.Name = relPath         // Ensure the name is correct
-				if !info.Mode().IsRegular() { // Skip if not a regular file
-					return nil
-				}
-				f, err := os.Open(path)
-				if err != nil {
-					return err
-				}
-				defer f.Close()
-				data, err := io.ReadAll(f)
-				if err != nil {
-					return err
-				}
-				dataChan <- fileData{header: header, data: data}
-				return nil
-			})
+		file = strings.TrimSpace(file) // Remove any leading/trailing white space
+		baseDir := filepath.Dir(file)
+		err = filepath.Walk(file, func(path string, info os.FileInfo, err error) error {
 			if err != nil {
-				errChan <- err
+				return err
 			}
-		}(file)
+			relPath, err := filepath.Rel(baseDir, path)
+			if err != nil {
+				return err
+			}
+			fmt.Println("Adding: ", relPath, "(", FileSize(path), ")")
+			header, err := tar.FileInfoHeader(info, relPath)
+			if err != nil {
+				return err
+			}
+			header.Name = relPath // Ensure the name is correct
+			if err := tw.WriteHeader(header); err != nil {
+				return err
+			}
+			if !info.Mode().IsRegular() { // Skip if not a regular file
+				return nil
+			}
+			f, err := os.Open(path)
+			if err != nil {
+				return err
+			}
+			defer f.Close()
+			_, err = io.Copy(tw, f)
+			return err
+		})
+		if err != nil {
+			log.Fatal(err)
+		}
 	}
-
-	go func() {
-		wg.Wait()
-		close(dataChan)
-	}()
-
-	select {
-	case err := <-errChan:
-		log.Fatal(err)
-	case <-ctx.Done():
-		cancel()
-	}
+	cancel()
 }
 
 func bua_decode_ultra(inFile string, outDir string) {
