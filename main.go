@@ -22,10 +22,10 @@ var skipTo, subD_domain, FIA_in, FIA_out, bua_in, bua_out, ansiimg_filename, ans
 var version, showLicense *bool
 var FIA_decode, FIA_compress, update_binary, bua_encode, bua_b2, update_allow_win bool
 
-var ansivid_musicFile, ansivid_gifFile, ansivid_gifSeq string
+var ansivid_musicFile, ansivid_gifFile, ansivid_gifSeq, ansivid_py_strat, ansivid_py_in string
 var ansivid_duration, ansivid_gifWidth, ansivid_gifHeight, ansivid_loopNum int
 var ansivid_gifContrast, ansivid_gifSigma float64
-var ansivid_gifMode, ansivid_gifAsciiMode, ansivid_blockMode bool
+var ansivid_gifMode, ansivid_gifAsciiMode, ansivid_blockMode, ansivid_py_install bool
 var ansiimg_width, ansiimg_height uint
 
 func init() {
@@ -77,6 +77,7 @@ func init() {
 	ansiimgCommand := flag.NewFlagSet("ansiimg", flag.ExitOnError)
 	donutCommand := flag.NewFlagSet("donut", flag.ExitOnError)
 	ansividCommand := flag.NewFlagSet("ansivid", flag.ExitOnError)
+	ansivid_pyCommand := flag.NewFlagSet("ansivid-py", flag.ExitOnError)
 
 	flag.Parse()
 
@@ -130,6 +131,14 @@ func init() {
 		case "donut":
 			donutCommand.Parse(os.Args[2:])
 			m.Donut_main()
+			os.Exit(0)
+		case "ansivid-py":
+			ansivid_pyCommand.StringVar(&ansivid_py_in, "i", "", "Input file")
+			ansivid_pyCommand.StringVar(&ansivid_py_strat, "s", "1", "Strategy")
+			ansivid_pyCommand.BoolVar(&ansivid_py_install, "ins", false, "Install")
+			ansivid_pyCommand.Parse(os.Args[2:])
+			m.Ansivid_py_main(ansivid_py_in, ansivid_py_strat, ansivid_py_install)
+			os.Exit(0)
 		default:
 		}
 	}
