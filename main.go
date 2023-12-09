@@ -22,7 +22,7 @@ var skipTo, subD_domain, FIA_in, FIA_out, bua_in, bua_out, ansiimg_filename, ans
 var version, showLicense *bool
 var FIA_decode, FIA_compress, update_binary, bua_encode, bua_b2, update_allow_win, bua_mute, ansivid_gifMode, ansivid_gifAsciiMode, ansivid_blockMode, ansivid_py_install bool
 
-var ansivid_musicFile, ansivid_gifFile, ansivid_gifSeq, ansivid_py_strat, ansivid_py_in string
+var ansivid_musicFile, ansivid_gifFile, ansivid_gifSeq, ansivid_py_strat, ansivid_py_in, scraper_allowedDomains, scraper_template string
 var ansivid_duration, ansivid_gifWidth, ansivid_gifHeight, ansivid_loopNum int
 var ansivid_gifContrast, ansivid_gifSigma float64
 var ansiimg_width, ansiimg_height uint
@@ -142,8 +142,10 @@ func init() {
 		case "scraper":
 			domainPtr := scraperCommand.String("domain", "https://example.com", "The domain to scan")
 			outputFilePtr := scraperCommand.String("output", "urls.txt", "The output file")
+			scraperCommand.StringVar(&scraper_allowedDomains, "allowed", "", "CS Allowed domains")
+			scraperCommand.StringVar(&scraper_template, "t", "", "Template")
 			scraperCommand.Parse(os.Args[2:])
-			m.Scrape_main(*domainPtr, *outputFilePtr)
+			m.Scrape_main(*domainPtr, *outputFilePtr, scraper_allowedDomains, scraper_template)
 			os.Exit(0)
 		default:
 		}
