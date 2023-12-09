@@ -72,6 +72,7 @@ func init() {
 	donutCommand := flag.NewFlagSet("donut", flag.ExitOnError)
 	ansividCommand := flag.NewFlagSet("ansivid", flag.ExitOnError)
 	ansivid_pyCommand := flag.NewFlagSet("ansivid-py", flag.ExitOnError)
+	scraperCommand := flag.NewFlagSet("scraper", flag.ExitOnError)
 
 	flag.Parse()
 
@@ -137,6 +138,12 @@ func init() {
 			ansivid_pyCommand.BoolVar(&ansivid_py_install, "ins", false, "Install")
 			ansivid_pyCommand.Parse(os.Args[2:])
 			m.Ansivid_py_main(ansivid_py_in, ansivid_py_strat, ansivid_py_install)
+			os.Exit(0)
+		case "scraper":
+			domainPtr := scraperCommand.String("domain", "https://example.com", "The domain to scan")
+			outputFilePtr := scraperCommand.String("output", "urls.txt", "The output file")
+			scraperCommand.Parse(os.Args[2:])
+			m.Scrape_main(*domainPtr, *outputFilePtr)
 			os.Exit(0)
 		default:
 		}
