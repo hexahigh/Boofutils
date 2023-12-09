@@ -20,8 +20,20 @@ func Scrape_main(domain string, outputFile string) {
 		colly.Async(true),
 	)
 
-	c.OnHTML("a[href]", func(e *colly.HTMLElement) {
+	c.OnHTML("[href]", func(e *colly.HTMLElement) {
 		link := e.Attr("href")
+		absoluteLink := e.Request.AbsoluteURL(link)
+		if strings.Contains(absoluteLink, domain) {
+			mux.Lock()
+			urls = append(urls, absoluteLink)
+			mux.Unlock()
+			c.Visit(absoluteLink)
+			writeToFile(outputFile, absoluteLink)
+		}
+	})
+
+	c.OnHTML("[src]", func(e *colly.HTMLElement) {
+		link := e.Attr("src")
 		absoluteLink := e.Request.AbsoluteURL(link)
 		if strings.Contains(absoluteLink, domain) {
 			mux.Lock()
