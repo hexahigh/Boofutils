@@ -20,7 +20,7 @@ const AppVersion = "1.2.1"
 var subD_threads int
 var skipTo, subD_domain, FIA_in, FIA_out, bua_in, bua_out, ansiimg_filename, ansiimg_output string
 var version, showLicense *bool
-var FIA_decode, FIA_compress, update_binary, bua_encode, bua_b2, update_allow_win, bua_mute, ansivid_gifMode, ansivid_gifAsciiMode, ansivid_blockMode, ansivid_py_install, donutRainbow bool
+var FIA_decode, FIA_compress, update_binary, bua_encode, bua_b2, update_allow_win, bua_mute, ansivid_gifMode, ansivid_gifAsciiMode, ansivid_blockMode, ansivid_py_install, donutRainbow, donutColor bool
 
 var ansivid_musicFile, ansivid_gifFile, ansivid_gifSeq, ansivid_py_strat, ansivid_py_in, scraper_allowedDomains, scraper_template string
 var ansivid_duration, ansivid_gifWidth, ansivid_gifHeight, ansivid_loopNum int
@@ -129,10 +129,11 @@ func init() {
 			m_ansivid.Ansivid_main(ansivid_musicFile, ansivid_gifWidth, ansivid_gifHeight, ansivid_duration, ansivid_gifFile, ansivid_gifSeq, ansivid_loopNum, ansivid_gifMode, ansivid_gifContrast, ansivid_gifAsciiMode, ansivid_gifSigma, ansivid_blockMode)
 			os.Exit(0)
 		case "donut":
+			donutCommand.BoolVar(&donutColor, "tc", false, "Use true color")
 			donutCommand.Float64Var(&donutSpeed, "s", 1, "Speed")
 			donutCommand.BoolVar(&donutRainbow, "r", false, "Rainbow")
 			donutCommand.Parse(os.Args[2:])
-			m.Donut_main(donutSpeed, donutRainbow)
+			m.Donut_main(donutSpeed, donutRainbow, donutColor)
 			os.Exit(0)
 		case "ansivid-py":
 			ansivid_pyCommand.StringVar(&ansivid_py_in, "i", "", "Input file")
