@@ -11,28 +11,7 @@ func Donut_main(spinSpeed float64, isRainbow bool, trueColor bool) {
 	B := 0.0
 	var b [1760]byte
 	var z [1760]float64
-	/*var colors []string
-	if trueColor {
-		colors = []string{
-			"\033[38;2;255;0;0m",     // Red
-			"\033[38;2;255;165;0m",   // Orange
-			"\033[38;2;255;255;0m",   // Yellow
-			"\033[38;2;0;128;0m",     // Green
-			"\033[38;2;0;0;255m",     // Blue
-			"\033[38;2;75;0;130m",    // Indigo
-			"\033[38;2;238;130;238m", // Violet
-		}
-	} else {
-		colors = []string{
-			"\033[38;5;196m", // Red
-			"\033[38;5;202m", // Orange
-			"\033[38;5;226m", // Yellow
-			"\033[38;5;46m",  // Green
-			"\033[38;5;21m",  // Blue
-			"\033[38;5;129m", // Indigo
-			"\033[38;5;201m", // Violet
-		}
-	}*/
+
 	for {
 		for i := range b {
 			b[i] = ' '
