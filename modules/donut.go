@@ -6,12 +6,20 @@ import (
 	"time"
 )
 
-func Donut_main() {
+func Donut_main(spinSpeed float64, isRainbow bool) {
 	A := 0.0
 	B := 0.0
 	var b [1760]byte
 	var z [1760]float64
-
+	var colors = []string{
+		"\033[38;5;196m", // Red
+		"\033[38;5;202m", // Orange
+		"\033[38;5;226m", // Yellow
+		"\033[38;5;46m",  // Green
+		"\033[38;5;21m",  // Blue
+		"\033[38;5;129m", // Indigo
+		"\033[38;5;201m", // Violet
+	}
 	for {
 		for i := range b {
 			b[i] = ' '
@@ -50,7 +58,11 @@ func Donut_main() {
 		fmt.Print("\x1b[H")
 		for k := 0; k < 1761; k++ {
 			if k%80 > 0 {
-				fmt.Printf("%c", b[k])
+				if isRainbow {
+					fmt.Printf("%s%c", colors[k%len(colors)], b[k])
+				} else {
+					fmt.Printf("%c", b[k])
+				}
 			} else {
 				fmt.Print("\n")
 			}
@@ -58,7 +70,7 @@ func Donut_main() {
 
 		time.Sleep(time.Second / 24)
 
-		A += 0.04
-		B += 0.02
+		A += 0.04 * spinSpeed
+		B += 0.02 * spinSpeed
 	}
 }
