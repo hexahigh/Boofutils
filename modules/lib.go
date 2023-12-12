@@ -80,6 +80,7 @@ func RandomCatFact() string {
 
 func CheckIfError(err error) {
 	if err != nil {
+		fmt.Println(err)
 		panic(err)
 	}
 }

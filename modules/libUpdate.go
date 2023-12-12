@@ -26,6 +26,14 @@ func Upd_main_source(allow_win bool) {
 		fmt.Println("This autoupdater does not work on Windows. Please use the -b flag when updating to use a precompiled binary.")
 		os.Exit(0)
 	}
+
+	/*if !checkGo() {
+		fmt.Println("It seems like Go is not installed, would you like to install it? (Y/N)")
+		if YNtoBool(AskInput()) {
+			installGo()
+		}
+	}*/
+
 	exePath, err := os.Executable()
 	if err != nil {
 		panic(err)
@@ -145,4 +153,55 @@ func Upd_main_binary() {
 
 	fmt.Println("Update completed successfully!")
 	os.Exit(0)
+}
+
+func checkGo() bool {
+	// Check if Go is installed
+	_, err := exec.LookPath("go")
+	if err != nil {
+		return false
+	}
+	return true
+}
+
+func installGo() {
+	fmt.Println("Installing Bison")
+	cmd := exec.Command("sudo", "apt", "install", "-y", "bison")
+	err := cmd.Run()
+	CheckIfError(err)
+
+	fmt.Println("Installing GVM")
+	cmd = exec.Command("bash", "-c", "curl -s -S -L https://raw.githubusercontent.com/moovweb/gvm/master/binscripts/gvm-installer | bash")
+	err = cmd.Run()
+	CheckIfError(err)
+
+	fmt.Println("Installing Go 1.4")
+	cmd = exec.Command("gvm", "install", "go1.4")
+	err = cmd.Run()
+	CheckIfError(err)
+	exec.Command("gvm", "use", "go1.4").Run()
+
+	fmt.Println("Installing Go 1.5")
+	cmd = exec.Command("gvm", "install", "go1.5")
+	err = cmd.Run()
+	CheckIfError(err)
+	exec.Command("gvm", "use", "go1.5").Run()
+
+	fmt.Println("Installing Go 1.9")
+	cmd = exec.Command("gvm", "install", "go1.9")
+	err = cmd.Run()
+	CheckIfError(err)
+	exec.Command("gvm", "use", "go1.9").Run()
+
+	fmt.Println("Installing Go 1.18")
+	cmd = exec.Command("gvm", "install", "go1.18")
+	err = cmd.Run()
+	CheckIfError(err)
+	exec.Command("gvm", "use", "go1.18").Run()
+
+	fmt.Println("Installing Go 1.21.4")
+	cmd = exec.Command("gvm", "install", "go1.21.4")
+	err = cmd.Run()
+	CheckIfError(err)
+	exec.Command("gvm", "use", "go1.21.4", "--default").Run()
 }
