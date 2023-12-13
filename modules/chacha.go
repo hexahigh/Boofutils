@@ -19,7 +19,7 @@ func Chacha_main(password string, decrypt bool, file string, outFile string) {
 
 	if password == "" {
 		fmt.Println("No password provided, using default.")
-		fmt.Println(ColorRedHighIntensity24bit, "THIS SHOULD ONLY BE USED FOR TESTING", ColorReset)
+		fmt.Println(ColorYellowHighIntensity24bit, "THIS SHOULD ONLY BE USED FOR TESTING", ColorReset)
 		password = "cb62kZQ6si3fwvTEAvpJUg5KywN6YBurJKr8C7at5y6BtshnoqYSva3wktNfXzkfDDNH4zZGmdJ9w55bVLeYBdWZVParZHXks2otJ4rUdG2VU4rn6CcuCSdwRKhvFRzj"
 	}
 
