@@ -5,22 +5,20 @@ import (
 )
 
 // Greet returns a string greeting based on the current time.
-//
-// It does not take any parameters.
-// It returns a string.
 func Greet() string {
-	currentTime := time.Now()
-	hour := currentTime.Hour()
+	now := time.Now()
+	hour := now.Hour()
 
-	if hour < 12 && hour >= 5 {
+	switch {
+	case hour < 3:
+		return "It's late, go to bed"
+	case hour < 12:
 		return "Good morning"
-	} else if hour < 17 {
+	case hour < 17:
 		return "Good afternoon"
-	} else if hour < 20 {
+	case hour < 20:
 		return "Good evening"
-	} else if hour < 24 {
+	default:
 		return "Good night"
-	} else {
-		return "You should go to bed, im looking at you Simon!"
 	}
 }
