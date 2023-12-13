@@ -78,7 +78,7 @@ func Upd_main_source(allow_win bool) {
 	}
 
 	fmt.Println("Cleaning up...")
-	err = os.RemoveAll("/tmp/bu")
+	err = os.RemoveAll(tempPath)
 	if err != nil {
 		panic(err)
 	}
