@@ -20,9 +20,9 @@ const AppVersion = "1.2.1"
 var subD_threads int
 var skipTo, subD_domain, FIA_in, FIA_out, bua_in, bua_out, ansiimg_filename, ansiimg_output string
 var version, showLicense *bool
-var FIA_decode, FIA_compress, update_binary, bua_encode, bua_b2, update_allow_win, bua_mute, ansivid_gifMode, ansivid_gifAsciiMode, ansivid_blockMode, ansivid_py_install, donutRainbow, donutColor bool
+var FIA_decode, FIA_compress, update_binary, bua_encode, bua_b2, update_allow_win, bua_mute, ansivid_gifMode, ansivid_gifAsciiMode, ansivid_blockMode, ansivid_py_install, donutRainbow, donutColor, chachacha_decrypt bool
 
-var ansivid_musicFile, ansivid_gifFile, ansivid_gifSeq, ansivid_py_strat, ansivid_py_in, scraper_allowedDomains, scraper_template string
+var ansivid_musicFile, ansivid_gifFile, ansivid_gifSeq, ansivid_py_strat, ansivid_py_in, scraper_allowedDomains, scraper_template, chachacha_in, chachacha_out, chachacha_password string
 var ansivid_duration, ansivid_gifWidth, ansivid_gifHeight, ansivid_loopNum int
 var ansivid_gifContrast, ansivid_gifSigma, donutSpeed float64
 var ansiimg_width, ansiimg_height uint
@@ -73,6 +73,7 @@ func init() {
 	ansividCommand := flag.NewFlagSet("ansivid", flag.ExitOnError)
 	ansivid_pyCommand := flag.NewFlagSet("ansivid-py", flag.ExitOnError)
 	scraperCommand := flag.NewFlagSet("scraper", flag.ExitOnError)
+	chachachaCommand := flag.NewFlagSet("chachacha", flag.ExitOnError)
 
 	flag.Parse()
 
@@ -149,6 +150,14 @@ func init() {
 			scraperCommand.StringVar(&scraper_template, "t", "", "Template")
 			scraperCommand.Parse(os.Args[2:])
 			m.Scrape_main(*domainPtr, *outputFilePtr, scraper_allowedDomains, scraper_template)
+			os.Exit(0)
+		case "chachacha":
+			chachachaCommand.StringVar(&chachacha_in, "i", "", "Input file")
+			chachachaCommand.StringVar(&chachacha_out, "o", "", "Output file")
+			chachachaCommand.BoolVar(&chachacha_decrypt, "d", false, "Decrypt")
+			chachachaCommand.StringVar(&chachacha_password, "p", "", "Password")
+			chachachaCommand.Parse(os.Args[2:])
+			m.Chacha_main(chachacha_password, chachacha_decrypt, chachacha_in, chachacha_out)
 			os.Exit(0)
 		default:
 		}
