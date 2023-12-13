@@ -71,3 +71,33 @@ const ColorBlueBackgroundHighIntensity = "\033[0;104m"
 const ColorPurpleBackgroundHighIntensity = "\033[0;105m"
 const ColorCyanBackgroundHighIntensity = "\033[0;106m"
 const ColorWhiteBackgroundHighIntensity = "\033[0;107m"
+
+// Regular 24bit
+const ColorBlack24bit = "\033[0;38;2;0;0;0m"
+const ColorRed24bit = "\033[0;38;2;255;0;0m"
+const ColorGreen24bit = "\033[0;38;2;0;255;0m"
+const ColorYellow24bit = "\033[0;38;2;255;255;0m"
+const ColorBlue24bit = "\033[0;38;2;0;0;255m"
+const ColorPurple24bit = "\033[0;38;2;255;0;255m"
+const ColorCyan24bit = "\033[0;38;2;0;255;255m"
+const ColorWhite24bit = "\033[0;38;2;255;255;255m"
+
+// Bold 24bit
+const ColorWhiteBold24bit = "\033[1;38;2;255;255;255m"
+const ColorRedBold24bit = "\033[1;38;2;255;0;0m"
+const ColorGreenBold24bit = "\033[1;38;2;0;255;0m"
+const ColorYellowBold24bit = "\033[1;38;2;255;255;0m"
+const ColorBlueBold24bit = "\033[1;38;2;0;0;255m"
+const ColorPurpleBold24bit = "\033[1;38;2;255;0;255m"
+const ColorCyanBold24bit = "\033[1;38;2;0;255;255m"
+const ColorBlackBold24bit = "\033[1;38;2;0;0;0m"
+
+// High Intensity 24bit
+const ColorWhiteHighIntensity24bit = "\033[0;38;2;255;255;255m"
+const ColorRedHighIntensity24bit = "\033[0;38;2;255;0;0m"
+const ColorGreenHighIntensity24bit = "\033[0;38;2;0;255;0m"
+const ColorYellowHighIntensity24bit = "\033[0;38;2;255;255;0m"
+const ColorBlueHighIntensity24bit = "\033[0;38;2;0;0;255m"
+const ColorPurpleHighIntensity24bit = "\033[0;38;2;255;0;255m"
+const ColorCyanHighIntensity24bit = "\033[0;38;2;0;255;255m"
+const ColorBlackHighIntensity24bit = "\033[0;38;2;0;0;0m"
