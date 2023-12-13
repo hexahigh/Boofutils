@@ -6,6 +6,7 @@ import (
 	"net/http"
 	"os"
 	"os/exec"
+	"path"
 	"runtime"
 
 	"github.com/go-git/go-git/v5"
@@ -20,10 +21,9 @@ func Upd_main(binary bool, allow_win bool) {
 }
 
 func Upd_main_source(allow_win bool) {
-
 	// Check if we are on Windows
 	if runtime.GOOS == "windows" && !allow_win {
-		fmt.Println("This autoupdater does not work on Windows. Please use the -b flag when updating to use a precompiled binary.")
+		fmt.Println("This autoupdater has not been tested on Windows. Please use the -b flag when updating to use a precompiled binary. Or use the -w flag to ignore this warning.")
 		os.Exit(0)
 	}
 
@@ -34,6 +34,7 @@ func Upd_main_source(allow_win bool) {
 		}
 	}*/
 
+	tempPath := path.Join(os.TempDir(), "bu")
 	exePath, err := os.Executable()
 	if err != nil {
 		panic(err)
@@ -42,7 +43,7 @@ func Upd_main_source(allow_win bool) {
 	fmt.Println("Starting the update process...")
 
 	fmt.Println("Cloning the latest version from:", "https://github.com/hexahigh/boofutils")
-	_, err = git.PlainClone("/tmp/bu", false, &git.CloneOptions{
+	_, err = git.PlainClone(tempPath, false, &git.CloneOptions{
 		URL:      "https://github.com/hexahigh/boofutils",
 		Progress: os.Stdout,
 	})
@@ -53,7 +54,7 @@ func Upd_main_source(allow_win bool) {
 	outputFile := exePath + "_new"
 
 	cmd := exec.Command("go", "build", "-o", outputFile)
-	cmd.Dir = "/tmp/bu"
+	cmd.Dir = tempPath
 	err = cmd.Run()
 	CheckIfError(err)
 
@@ -170,6 +171,10 @@ func installGo() {
 	err := cmd.Run()
 	CheckIfError(err)
 
+	/*
+		TODO: Fix the GVM installer.
+		? I believe it is the bash command being wrongly formatted.
+	*/
 	fmt.Println("Installing GVM")
 	cmd = exec.Command("bash", "-c", "curl -s -S -L https://raw.githubusercontent.com/moovweb/gvm/master/binscripts/gvm-installer | bash")
 	err = cmd.Run()
