@@ -15,7 +15,7 @@ import (
 //go:embed LICENSE
 var LICENSE embed.FS
 
-const AppVersion = "1.2.1"
+const AppVersion = "1.4.0"
 
 var subD_threads int
 var skipTo, subD_domain, FIA_in, FIA_out, bua_in, bua_out, ansiimg_filename, ansiimg_output string
@@ -44,6 +44,9 @@ func init() {
 		fmt.Println("bua")
 		fmt.Println("ansivid")
 		fmt.Println("ansiimg")
+		fmt.Println("chachacha")
+		fmt.Println("scraper")
+		fmt.Println("donut")
 	}
 
 	// Subcommands

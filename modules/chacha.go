@@ -4,6 +4,7 @@ import (
 	"crypto/rand"
 	"fmt"
 	"os"
+	"strings"
 
 	"golang.org/x/crypto/argon2"
 	"golang.org/x/crypto/chacha20"
@@ -21,9 +22,13 @@ func Chacha_main(password string, decrypt bool, file string, outFile string) {
 		password = "cb62kZQ6si3fwvTEAvpJUg5KywN6YBurJKr8C7at5y6BtshnoqYSva3wktNfXzkfDDNH4zZGmdJ9w55bVLeYBdWZVParZHXks2otJ4rUdG2VU4rn6CcuCSdwRKhvFRzj"
 	}
 
-	if outFile == "" {
+	if outFile == "" && !decrypt {
 		outFile = file + ".chachacha"
 	}
+	if outFile == "" && decrypt {
+		outFile = strings.TrimSuffix(file, ".chachacha")
+	}
+
 	// Call the appropriate function
 	if decrypt {
 		if err := decryptFile(file, password, outFile); err != nil {
