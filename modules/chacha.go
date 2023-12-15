@@ -6,12 +6,19 @@ import (
 	"os"
 	"strings"
 
+	"context"
+
 	"golang.org/x/crypto/argon2"
 	"golang.org/x/crypto/chacha20"
 )
 
-func Chacha_main(password string, decrypt bool, file string, outFile string) {
-
+func Chacha_main(password string, decrypt bool, file string, outFile string, mute bool) {
+	// Start the music and console logging
+	ctx, cancel := context.WithCancel(context.Background())
+	defer cancel()
+	if !mute {
+		go PlayAudioMult(ctx, "audio_test.mp3,01.mp3,02.mp3,03.mp3")
+	}
 	if file == "" {
 		fmt.Println("No file provided")
 		os.Exit(1)
@@ -40,6 +47,7 @@ func Chacha_main(password string, decrypt bool, file string, outFile string) {
 			panic(err)
 		}
 	}
+	cancel()
 }
 
 func encryptFile(filePath string, password string, outFile string) error {

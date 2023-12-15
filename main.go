@@ -20,7 +20,7 @@ const AppVersion = "1.4.0"
 var subD_threads int
 var skipTo, subD_domain, FIA_in, FIA_out, bua_in, bua_out, ansiimg_filename, ansiimg_output string
 var version, showLicense *bool
-var FIA_decode, FIA_compress, update_binary, bua_encode, bua_b2, update_allow_win, bua_mute, ansivid_gifMode, ansivid_gifAsciiMode, ansivid_blockMode, ansivid_py_install, donutRainbow, donutColor, chachacha_decrypt bool
+var FIA_decode, FIA_compress, update_binary, bua_encode, bua_b2, update_allow_win, bua_mute, ansivid_gifMode, ansivid_gifAsciiMode, ansivid_blockMode, ansivid_py_install, donutRainbow, donutColor, chachacha_decrypt, chachacha_mute bool
 
 var ansivid_musicFile, ansivid_gifFile, ansivid_gifSeq, ansivid_py_strat, ansivid_py_in, scraper_allowedDomains, scraper_template, chachacha_in, chachacha_out, chachacha_password string
 var ansivid_duration, ansivid_gifWidth, ansivid_gifHeight, ansivid_loopNum int
@@ -159,8 +159,9 @@ func init() {
 			chachachaCommand.StringVar(&chachacha_out, "o", "", "Output file")
 			chachachaCommand.BoolVar(&chachacha_decrypt, "d", false, "Decrypt")
 			chachachaCommand.StringVar(&chachacha_password, "p", "", "Password")
+			chachachaCommand.BoolVar(&chachacha_mute, "m", false, "Mute audio")
 			chachachaCommand.Parse(os.Args[2:])
-			m.Chacha_main(chachacha_password, chachacha_decrypt, chachacha_in, chachacha_out)
+			m.Chacha_main(chachacha_password, chachacha_decrypt, chachacha_in, chachacha_out, chachacha_mute)
 			os.Exit(0)
 		default:
 		}
