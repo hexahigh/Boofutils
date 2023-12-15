@@ -192,7 +192,7 @@ func main() {
 	if !m.CheckConfigFileExists() {
 		fmt.Println("Boofutils has not been configured yet. Would you like to answer some quick questions to get started?")
 		fmt.Println("Y/N (Default: Y)")
-		if m.AskInput() == "y" || m.AskInput() == "Y" {
+		if m.YNtoBool(m.AskInput()) == true {
 			m.AskUserQuestions()
 		} else {
 			m.GenerateDefaultConfig()
