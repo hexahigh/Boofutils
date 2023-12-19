@@ -26,8 +26,12 @@ func Chacha_main(password string, decrypt bool, file string, outFile string, mut
 
 	if password == "" {
 		fmt.Println("No password provided, using default.")
-		fmt.Println(ColorYellowHighIntensity24bit, "THIS SHOULD ONLY BE USED FOR TESTING", ColorReset)
+		fmt.Println(ColorRedHighIntensity24bit, "THIS SHOULD ONLY BE USED FOR TESTING", ColorReset)
 		password = "cb62kZQ6si3fwvTEAvpJUg5KywN6YBurJKr8C7at5y6BtshnoqYSva3wktNfXzkfDDNH4zZGmdJ9w55bVLeYBdWZVParZHXks2otJ4rUdG2VU4rn6CcuCSdwRKhvFRzj"
+	}
+
+	if len(password) < 16 {
+		fmt.Println(ColorRedBoldHighIntensity24bit, "Password is less than 16 characters, consider using a stronger password", ColorReset)
 	}
 
 	if outFile == "" && !decrypt {
@@ -103,4 +107,13 @@ func decryptFile(filePath string, password string, outFile string) error {
 
 	// Write the decrypted data back to the file
 	return os.WriteFile(outFile, data, 0644)
+}
+
+// TODO: Add Quad encryption
+func encryptFileQuad(filePath string, password string, outFile string) error {
+	return nil
+}
+
+func decryptFileQuad(filePath string, password string, outFile string) error {
+	return nil
 }
