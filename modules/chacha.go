@@ -13,7 +13,8 @@ import (
 	"golang.org/x/crypto/chacha20"
 )
 
-func Chacha_main(password string, decrypt bool, file string, outFile string, mute bool, keyfile string) {
+func Chacha_main(password string, decrypt bool, file string, outFile string, mute bool, keyfile string, verbose bool) {
+	v := verbose
 	// Start the music and console logging
 	ctx, cancel := context.WithCancel(context.Background())
 	defer cancel()
@@ -26,6 +27,7 @@ func Chacha_main(password string, decrypt bool, file string, outFile string, mut
 	}
 
 	if keyfile != "" {
+		verbosePrintln("Using keyfile: "+keyfile, v)
 		key, err := os.ReadFile(keyfile)
 		if err != nil {
 			fmt.Println("Error reading keyfile:", err)
@@ -50,13 +52,16 @@ func Chacha_main(password string, decrypt bool, file string, outFile string, mut
 	if outFile == "" && decrypt {
 		outFile = strings.TrimSuffix(file, ".chachacha")
 	}
+	verbosePrintln("Output file: "+outFile, v)
 
 	// Call the appropriate function
 	if decrypt {
+		verbosePrintln("Decrypting file: "+file, v)
 		if err := decryptFile(file, password, outFile); err != nil {
 			panic(err)
 		}
 	} else {
+		verbosePrintln("Encrypting file: "+file, v)
 		if err := encryptFile(file, password, outFile); err != nil {
 			panic(err)
 		}

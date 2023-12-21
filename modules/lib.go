@@ -116,3 +116,9 @@ func waitForKeypress() {
 	}
 	os.Exit(0)
 }
+
+func verbosePrintln(s string, v bool) {
+	if v {
+		fmt.Println(s)
+	}
+}
