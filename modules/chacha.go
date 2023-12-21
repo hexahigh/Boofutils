@@ -61,6 +61,8 @@ func Chacha_main(password string, decrypt bool, file string, outFile string, mut
 			panic(err)
 		}
 	}
+	fmt.Println("Done! Press enter to exit.")
+	fmt.Scanln()
 	cancel()
 }
 
