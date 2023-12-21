@@ -2,6 +2,7 @@ package modules
 
 import (
 	"crypto/rand"
+	"encoding/base64"
 	"fmt"
 	"os"
 	"strings"
@@ -12,7 +13,7 @@ import (
 	"golang.org/x/crypto/chacha20"
 )
 
-func Chacha_main(password string, decrypt bool, file string, outFile string, mute bool) {
+func Chacha_main(password string, decrypt bool, file string, outFile string, mute bool, keyfile string) {
 	// Start the music and console logging
 	ctx, cancel := context.WithCancel(context.Background())
 	defer cancel()
@@ -22,6 +23,15 @@ func Chacha_main(password string, decrypt bool, file string, outFile string, mut
 	if file == "" {
 		fmt.Println("No file provided")
 		os.Exit(1)
+	}
+
+	if keyfile != "" {
+		key, err := os.ReadFile(keyfile)
+		if err != nil {
+			fmt.Println("Error reading keyfile:", err)
+			os.Exit(1)
+		}
+		password = base64.StdEncoding.EncodeToString(key)
 	}
 
 	if password == "" {

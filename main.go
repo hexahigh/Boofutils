@@ -155,13 +155,15 @@ func init() {
 			m.Scrape_main(*domainPtr, *outputFilePtr, scraper_allowedDomains, scraper_template)
 			os.Exit(0)
 		case "chachacha":
+			var chachacha_in, chachacha_out, chachacha_password, chachacha_keyfile string
 			chachachaCommand.StringVar(&chachacha_in, "i", "", "Input file")
 			chachachaCommand.StringVar(&chachacha_out, "o", "", "Output file")
 			chachachaCommand.BoolVar(&chachacha_decrypt, "d", false, "Decrypt")
 			chachachaCommand.StringVar(&chachacha_password, "p", "", "Password")
 			chachachaCommand.BoolVar(&chachacha_mute, "m", false, "Mute audio")
+			chachachaCommand.StringVar(&chachacha_keyfile, "k", "", "Use a keyfile as password")
 			chachachaCommand.Parse(os.Args[2:])
-			m.Chacha_main(chachacha_password, chachacha_decrypt, chachacha_in, chachacha_out, chachacha_mute)
+			m.Chacha_main(chachacha_password, chachacha_decrypt, chachacha_in, chachacha_out, chachacha_mute, chachacha_keyfile)
 			os.Exit(0)
 		default:
 		}
