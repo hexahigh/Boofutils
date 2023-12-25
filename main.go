@@ -77,6 +77,7 @@ func init() {
 	ansivid_pyCommand := flag.NewFlagSet("ansivid-py", flag.ExitOnError)
 	scraperCommand := flag.NewFlagSet("scraper", flag.ExitOnError)
 	chachachaCommand := flag.NewFlagSet("chachacha", flag.ExitOnError)
+	urlCommand := flag.NewFlagSet("url", flag.ExitOnError)
 
 	flag.Parse()
 
@@ -90,6 +91,15 @@ func init() {
 		case "subdomain":
 			subdomainCommand.Parse(os.Args[2:])
 			m.SubD_main(subD_threads, subD_domain)
+		case "url":
+			var urlCommandURL string
+			var urlCommandBrute bool
+			var urlCommandThreads int
+			urlCommand.StringVar(&urlCommandURL, "u", "", "URL to scan")
+			urlCommand.IntVar(&urlCommandThreads, "t", 10, "Number of threads to use")
+			urlCommand.BoolVar(&urlCommandBrute, "b", false, "Bruteforce")
+			urlCommand.Parse(os.Args[2:])
+			m.Url_main(urlCommandThreads, urlCommandURL, urlCommandBrute)
 		case "update":
 			updateCommand.Parse(os.Args[2:])
 			m.Upd_main(update_binary, update_allow_win)
