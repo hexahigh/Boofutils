@@ -19,7 +19,7 @@ func Chacha_main(password string, decrypt bool, file string, outFile string, mut
 	ctx, cancel := context.WithCancel(context.Background())
 	defer cancel()
 	if !mute {
-		go PlayAudioMult(ctx, "audio_test.mp3,01.mp3,02.mp3,03.mp3")
+		go PlayAudioMult(ctx, "valiant.wav,move.wav,legacy.wav,honor.wav,carry_on.wav,back_to_work.wav")
 	}
 	if file == "" {
 		fmt.Println("No file provided")

@@ -189,7 +189,7 @@ func Bua_decode_bzip2(inFile string, outDir string, mute bool) {
 	ctx, cancel := context.WithCancel(context.Background())
 	defer cancel()
 	if !mute {
-		go PlayAudioMult(ctx, "audio_test.mp3,01.mp3,02.mp3,03.mp3")
+		go PlayAudioMult(ctx, "valiant.wav,move.wav,legacy.wav,honor.wav,carry_on.wav,back_to_work.wav")
 	}
 	if outDir == "" {
 		outDir = "."
@@ -266,7 +266,7 @@ func Bua_decode_bzip2(inFile string, outDir string, mute bool) {
 func Bua_encode_bzip2(inFile string, outFile string, mute bool) {
 	ctx, cancel := context.WithCancel(context.Background())
 	if !mute {
-		go PlayAudioMult(ctx, "audio_test.mp3,01.mp3,02.mp3,03.mp3")
+		go PlayAudioMult(ctx, "valiant.wav,move.wav,legacy.wav,honor.wav,carry_on.wav,back_to_work.wav")
 	}
 	files := strings.Split(inFile, ",")
 	tarfile, err := os.Create(outFile)
