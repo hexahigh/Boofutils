@@ -55,8 +55,6 @@ func init() {
 	subdomainCommand.StringVar(&subD_domain, "d", "undef", "Domain to scan")
 
 	updateCommand := flag.NewFlagSet("update", flag.ExitOnError)
-	updateCommand.BoolVar(&update_binary, "b", false, "Update using a pre-compiled binary")
-	updateCommand.BoolVar(&update_allow_win, "w", false, "Allow Windows")
 
 	fileinaudioCommand := flag.NewFlagSet("fileinaudio", flag.ExitOnError)
 	fileinaudioCommand.StringVar(&FIA_in, "i", "", "Input file")
@@ -101,8 +99,12 @@ func init() {
 			urlCommand.Parse(os.Args[2:])
 			m.Url_main(urlCommandThreads, urlCommandURL, urlCommandBrute)
 		case "update":
+			var update_ignore_req, update_allow_win, update_binary bool
+			updateCommand.BoolVar(&update_binary, "b", false, "Update using a pre-compiled binary")
+			updateCommand.BoolVar(&update_allow_win, "w", false, "Allow Windows")
+			updateCommand.BoolVar(&update_ignore_req, "ignore-req", false, "Ignore requirements")
 			updateCommand.Parse(os.Args[2:])
-			m.Upd_main(update_binary, update_allow_win)
+			m.Upd_main(update_binary, update_allow_win, update_ignore_req)
 		case "fileinaudio":
 			fileinaudioCommand.Parse(os.Args[2:])
 			m.Fileinaudio_main(FIA_in, FIA_out, FIA_decode, FIA_compress)
