@@ -47,6 +47,7 @@ func init() {
 		fmt.Println("chachacha")
 		fmt.Println("scraper")
 		fmt.Println("donut")
+		fmt.Println("report")
 	}
 
 	// Subcommands
@@ -77,6 +78,7 @@ func init() {
 	ansivid_pyCommand := flag.NewFlagSet("ansivid-py", flag.ExitOnError)
 	scraperCommand := flag.NewFlagSet("scraper", flag.ExitOnError)
 	chachachaCommand := flag.NewFlagSet("chachacha", flag.ExitOnError)
+	reportCommand := flag.NewFlagSet("report", flag.ExitOnError)
 
 	flag.Parse()
 
@@ -87,6 +89,11 @@ func init() {
 
 	if len(os.Args) > 1 {
 		switch os.Args[1] {
+		case "report":
+			out := reportCommand.String("o", "", "Output file")
+			stdout := reportCommand.Bool("s", false, "Print to stdout")
+			reportCommand.Parse(os.Args[2:])
+			m.Report(*out, *stdout)
 		case "subdomain":
 			subdomainCommand.Parse(os.Args[2:])
 			m.SubD_main(subD_threads, subD_domain)
