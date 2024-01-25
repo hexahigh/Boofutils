@@ -10,6 +10,7 @@ import (
 	"os"
 	"strings"
 
+	"github.com/eiannone/keyboard"
 	"github.com/klauspost/compress/zstd"
 )
 
@@ -100,4 +101,24 @@ func FileSize(filePath string) int64 {
 	}
 
 	return fi.Size()
+}
+
+func waitForKeypress() {
+	err := keyboard.Open()
+	if err != nil {
+		panic(err)
+	}
+	defer keyboard.Close()
+
+	_, _, err = keyboard.GetKey()
+	if err != nil {
+		panic(err)
+	}
+	os.Exit(0)
+}
+
+func verbosePrintln(s string, v bool) {
+	if v {
+		fmt.Println(s)
+	}
 }

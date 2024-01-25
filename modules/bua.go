@@ -189,7 +189,7 @@ func Bua_decode_bzip2(inFile string, outDir string, mute bool) {
 	ctx, cancel := context.WithCancel(context.Background())
 	defer cancel()
 	if !mute {
-		go PlayAudioMult(ctx, "audio_test.mp3,01.mp3,02.mp3,03.mp3")
+		go PlayAudioMult(ctx, "valiant.wav,move.wav,legacy.wav,honor.wav,carry_on.wav,back_to_work.wav")
 	}
 	if outDir == "" {
 		outDir = "."
@@ -266,7 +266,7 @@ func Bua_decode_bzip2(inFile string, outDir string, mute bool) {
 func Bua_encode_bzip2(inFile string, outFile string, mute bool) {
 	ctx, cancel := context.WithCancel(context.Background())
 	if !mute {
-		go PlayAudioMult(ctx, "audio_test.mp3,01.mp3,02.mp3,03.mp3")
+		go PlayAudioMult(ctx, "valiant.wav,move.wav,legacy.wav,honor.wav,carry_on.wav,back_to_work.wav")
 	}
 	files := strings.Split(inFile, ",")
 	tarfile, err := os.Create(outFile)
@@ -324,6 +324,7 @@ func Bua_encode_bzip2(inFile string, outFile string, mute bool) {
 	cancel()
 }
 
+// ! DEPRECATED! Use PlayAudioMult instead
 func PlayAudioLoop(ctx context.Context, audioFile string) {
 	// Read the mp3 file into memory
 	fileBytes, err := audioFS.ReadFile("embed/audio/" + audioFile)
@@ -388,6 +389,11 @@ func PlayAudioLoop(ctx context.Context, audioFile string) {
 	}
 }
 
+/*
+Decodes and plays a random audio file from a comma separated list.
+Audio files must be located in the modules/embed/audio directory.
+Supports wav and mp3.
+*/
 func PlayAudioMult(ctx context.Context, audioFiles string) {
 	// Split the audioFiles string into a slice of file names
 	files := strings.Split(audioFiles, ",")
@@ -413,23 +419,31 @@ func PlayAudioMult(ctx context.Context, audioFiles string) {
 			// Choose a random file from the slice
 			audioFile := files[rand.Intn(len(files))]
 
-			// Read the mp3 file into memory
+			// Read the audio file into memory
 			fileBytes, err := audioFS.ReadFile("embed/audio/" + audioFile)
 			if err != nil {
 				panic("reading " + audioFile + " failed: " + err.Error())
 			}
 
-			// Convert the pure bytes into a reader object that can be used with the mp3 decoder
+			// Convert the bytes into a reader object that can be used with the decoder
 			fileBytesReader := bytes.NewReader(fileBytes)
 
-			// Decode file
-			decodedMp3, err := mp3.NewDecoder(fileBytesReader)
-			if err != nil {
-				panic("mp3.NewDecoder failed: " + err.Error())
-			}
+			var player *oto.Player
 
-			// Create a new 'player' that will handle our sound. Paused by default.
-			player := otoCtx.NewPlayer(decodedMp3)
+			// Check the file extension and use the appropriate decoder
+			if strings.HasSuffix(audioFile, ".wav") {
+				// Skip the first 44 bytes as they are the wav header
+				fileBytesReader.Seek(44, io.SeekStart)
+				player = otoCtx.NewPlayer(fileBytesReader)
+			} else if strings.HasSuffix(audioFile, ".mp3") {
+				decodedMp3, err := mp3.NewDecoder(fileBytesReader)
+				if err != nil {
+					panic("mp3.NewDecoder failed: " + err.Error())
+				}
+				player = otoCtx.NewPlayer(decodedMp3)
+			} else {
+				panic("unsupported audio format: " + audioFile)
+			}
 
 			// Play starts playing the sound and returns without waiting for it (Play() is async).
 			player.Play()

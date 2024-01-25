@@ -2,6 +2,7 @@ package modules
 
 import (
 	"crypto/rand"
+	"encoding/base64"
 	"fmt"
 	"os"
 	"strings"
@@ -12,16 +13,27 @@ import (
 	"golang.org/x/crypto/chacha20"
 )
 
-func Chacha_main(password string, decrypt bool, file string, outFile string, mute bool) {
+func Chacha_main(password string, decrypt bool, file string, outFile string, mute bool, keyfile string, verbose bool) {
+	v := verbose
 	// Start the music and console logging
 	ctx, cancel := context.WithCancel(context.Background())
 	defer cancel()
 	if !mute {
-		go PlayAudioMult(ctx, "audio_test.mp3,01.mp3,02.mp3,03.mp3")
+		go PlayAudioMult(ctx, "valiant.wav,move.wav,legacy.wav,honor.wav,carry_on.wav,back_to_work.wav")
 	}
 	if file == "" {
 		fmt.Println("No file provided")
 		os.Exit(1)
+	}
+
+	if keyfile != "" {
+		verbosePrintln("Using keyfile: "+keyfile, v)
+		key, err := os.ReadFile(keyfile)
+		if err != nil {
+			fmt.Println("Error reading keyfile:", err)
+			os.Exit(1)
+		}
+		password = base64.StdEncoding.EncodeToString(key)
 	}
 
 	if password == "" {
@@ -40,17 +52,22 @@ func Chacha_main(password string, decrypt bool, file string, outFile string, mut
 	if outFile == "" && decrypt {
 		outFile = strings.TrimSuffix(file, ".chachacha")
 	}
+	verbosePrintln("Output file: "+outFile, v)
 
 	// Call the appropriate function
 	if decrypt {
+		verbosePrintln("Decrypting file: "+file, v)
 		if err := decryptFile(file, password, outFile); err != nil {
 			panic(err)
 		}
 	} else {
+		verbosePrintln("Encrypting file: "+file, v)
 		if err := encryptFile(file, password, outFile); err != nil {
 			panic(err)
 		}
 	}
+	fmt.Println("Done! Press enter to exit.")
+	fmt.Scanln()
 	cancel()
 }
 

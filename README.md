@@ -2,7 +2,8 @@
 ![Build and release](https://github.com/hexahigh/boofutils/actions/workflows/build&release.yml/badge.svg)
 [![Release](https://img.shields.io/github/release/hexahigh/boofutils.svg)](https://github.com/hexahigh/boofutils/releases)
 [![License](https://img.shields.io/github/license/hexahigh/boofutils)](https://github.com/hexahigh/boofutils/blob/main/LICENSE)
-[![Downloads](https://img.shields.io/github/downloads/hexahigh/boofutils/total.svg)](https://github.com/hexahigh/boofutils/releases)<br>
+[![Downloads](https://img.shields.io/github/downloads/hexahigh/boofutils/total.svg)](https://github.com/hexahigh/boofutils/releases)
+![Go report card](https://goreportcard.com/badge/github.com/hexahigh/boofutils)<br>
 A utility program im working on.
 <br>
 Booftutils is very unigue.

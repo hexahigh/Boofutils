@@ -15,7 +15,7 @@ import (
 //go:embed LICENSE
 var LICENSE embed.FS
 
-const AppVersion = "1.4.2"
+const AppVersion = "1.5.1"
 
 var subD_threads int
 var skipTo, subD_domain, FIA_in, FIA_out, bua_in, bua_out, ansiimg_filename, ansiimg_output string
@@ -56,8 +56,6 @@ func init() {
 	subdomainCommand.StringVar(&subD_domain, "d", "undef", "Domain to scan")
 
 	updateCommand := flag.NewFlagSet("update", flag.ExitOnError)
-	updateCommand.BoolVar(&update_binary, "b", false, "Update using a pre-compiled binary")
-	updateCommand.BoolVar(&update_allow_win, "w", false, "Allow Windows")
 
 	fileinaudioCommand := flag.NewFlagSet("fileinaudio", flag.ExitOnError)
 	fileinaudioCommand.StringVar(&FIA_in, "i", "", "Input file")
@@ -78,6 +76,7 @@ func init() {
 	ansivid_pyCommand := flag.NewFlagSet("ansivid-py", flag.ExitOnError)
 	scraperCommand := flag.NewFlagSet("scraper", flag.ExitOnError)
 	chachachaCommand := flag.NewFlagSet("chachacha", flag.ExitOnError)
+	urlCommand := flag.NewFlagSet("url", flag.ExitOnError)
 	reportCommand := flag.NewFlagSet("report", flag.ExitOnError)
 
 	flag.Parse()
@@ -97,9 +96,22 @@ func init() {
 		case "subdomain":
 			subdomainCommand.Parse(os.Args[2:])
 			m.SubD_main(subD_threads, subD_domain)
+		case "url":
+			var urlCommandURL string
+			var urlCommandBrute bool
+			var urlCommandThreads int
+			urlCommand.StringVar(&urlCommandURL, "u", "", "URL to scan")
+			urlCommand.IntVar(&urlCommandThreads, "t", 10, "Number of threads to use")
+			urlCommand.BoolVar(&urlCommandBrute, "b", false, "Bruteforce")
+			urlCommand.Parse(os.Args[2:])
+			m.Url_main(urlCommandThreads, urlCommandURL, urlCommandBrute)
 		case "update":
+			var update_ignore_req, update_allow_win, update_binary bool
+			updateCommand.BoolVar(&update_binary, "b", false, "Update using a pre-compiled binary")
+			updateCommand.BoolVar(&update_allow_win, "w", false, "Allow Windows")
+			updateCommand.BoolVar(&update_ignore_req, "ignore-req", false, "Ignore requirements")
 			updateCommand.Parse(os.Args[2:])
-			m.Upd_main(update_binary, update_allow_win)
+			m.Upd_main(update_binary, update_allow_win, update_ignore_req)
 		case "fileinaudio":
 			fileinaudioCommand.Parse(os.Args[2:])
 			m.Fileinaudio_main(FIA_in, FIA_out, FIA_decode, FIA_compress)
@@ -162,13 +174,17 @@ func init() {
 			m.Scrape_main(*domainPtr, *outputFilePtr, scraper_allowedDomains, scraper_template)
 			os.Exit(0)
 		case "chachacha":
+			var chachacha_in, chachacha_out, chachacha_password, chachacha_keyfile string
+			var chachacha_verbose bool
 			chachachaCommand.StringVar(&chachacha_in, "i", "", "Input file")
 			chachachaCommand.StringVar(&chachacha_out, "o", "", "Output file")
 			chachachaCommand.BoolVar(&chachacha_decrypt, "d", false, "Decrypt")
 			chachachaCommand.StringVar(&chachacha_password, "p", "", "Password")
 			chachachaCommand.BoolVar(&chachacha_mute, "m", false, "Mute audio")
+			chachachaCommand.StringVar(&chachacha_keyfile, "k", "", "Use a keyfile as password")
+			chachachaCommand.BoolVar(&chachacha_verbose, "v", false, "Verbose")
 			chachachaCommand.Parse(os.Args[2:])
-			m.Chacha_main(chachacha_password, chachacha_decrypt, chachacha_in, chachacha_out, chachacha_mute)
+			m.Chacha_main(chachacha_password, chachacha_decrypt, chachacha_in, chachacha_out, chachacha_mute, chachacha_keyfile, chachacha_verbose)
 			os.Exit(0)
 		default:
 		}

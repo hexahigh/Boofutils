@@ -8,19 +8,20 @@ import (
 	"os/exec"
 	"path"
 	"runtime"
+	"strings"
 
 	"github.com/go-git/go-git/v5"
 )
 
-func Upd_main(binary bool, allow_win bool) {
+func Upd_main(binary bool, allow_win bool, ignore_req bool) {
 	if binary {
 		Upd_main_binary()
 	} else {
-		Upd_main_source(allow_win)
+		Upd_main_source(allow_win, ignore_req)
 	}
 }
 
-func Upd_main_source(allow_win bool) {
+func Upd_main_source(allow_win bool, ignore_req bool) {
 	// Check if we are on Windows
 	if runtime.GOOS == "windows" && !allow_win {
 		fmt.Println("This autoupdater has not been tested on Windows. Please use the -b flag when updating to use a precompiled binary. Or use the -w flag to ignore this warning.")
@@ -41,6 +42,14 @@ func Upd_main_source(allow_win bool) {
 	}
 
 	fmt.Println("Starting the update process...")
+
+	/*fmt.Println("Checking requirements...")
+
+	// Check if "libasound2-dev" and "pkg-config" are installed
+	if !checkPackageInstalled("libasound2-dev") || !checkPackageInstalled("pkg-config") || !ignore_req {
+		fmt.Println("Required packages 'libasound2-dev' and 'pkg-config' are not installed. Please install them and try again. Or use the -ignore-req flag to ignore this warning.")
+		os.Exit(0)
+	}*/
 
 	fmt.Println("Cloning the latest version from:", "https://github.com/hexahigh/boofutils")
 	_, err = git.PlainClone(tempPath, false, &git.CloneOptions{
@@ -209,4 +218,13 @@ func installGo() {
 	err = cmd.Run()
 	CheckIfError(err)
 	exec.Command("gvm", "use", "go1.21.4", "--default").Run()
+}
+
+func checkPackageInstalled(pkg string) bool {
+	cmd := exec.Command("/bin/sh", "-c", fmt.Sprintf("dpkg -s %s", pkg))
+	output, err := cmd.CombinedOutput()
+	if err != nil || strings.Contains(string(output), "is not installed") {
+		return false
+	}
+	return true
 }
