@@ -15,7 +15,7 @@ import (
 //go:embed LICENSE
 var LICENSE embed.FS
 
-const AppVersion = "1.5.2"
+const AppVersion = "1.5.3"
 
 var subD_threads int
 var skipTo, subD_domain, FIA_in, FIA_out, bua_in, bua_out, ansiimg_filename, ansiimg_output string
@@ -84,6 +84,25 @@ func init() {
 	subdomainCommand.Usage = func() {
 		fmt.Fprintf(os.Stderr, "Usage of %s:\n", "subdomain")
 		subdomainCommand.PrintDefaults()
+	}
+
+	if *showLicense {
+		data, err := LICENSE.ReadFile("LICENSE")
+		if err != nil {
+			fmt.Println("Error reading file:", err)
+			os.Exit(1)
+		}
+		fmt.Println(string(data))
+		os.Exit(0)
+	}
+
+	if *version {
+		fmt.Println(m.ColorCyanBold24bit, "Boofutils", m.ColorReset)
+		fmt.Println("Version:", AppVersion)
+		fmt.Println("Boofdev")
+		fmt.Println("github.com/hexahigh/boofutils")
+		fmt.Println(m.ColorPurpleBold24bit, "\nRandom cat fact:", m.ColorOrangeBold24bit, m.RandomCatFact())
+		os.Exit(0)
 	}
 
 	if len(os.Args) > 1 {
@@ -192,26 +211,6 @@ func init() {
 }
 
 func main() {
-
-	if *showLicense {
-		data, err := LICENSE.ReadFile("LICENSE")
-		if err != nil {
-			fmt.Println("Error reading file:", err)
-			os.Exit(1)
-		}
-		fmt.Println(string(data))
-		os.Exit(0)
-	}
-
-	if *version {
-		fmt.Println(m.ColorCyanBold24bit, "Boofutils", m.ColorReset)
-		fmt.Println("Version:", AppVersion)
-		fmt.Println("2023 - Boofdev")
-		fmt.Println("github.com/hexahigh/boofutils")
-		fmt.Println(m.ColorPurpleBold24bit, "\nRandom cat fact:", m.ColorOrangeBold24bit, m.RandomCatFact())
-		os.Exit(0)
-	}
-
 	if !m.CheckConfigFileExists() {
 		fmt.Println("Boofutils has not been configured yet. Would you like to answer some quick questions to get started?")
 		fmt.Println("Y/N (Default: Y)")
