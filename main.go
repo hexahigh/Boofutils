@@ -15,7 +15,7 @@ import (
 //go:embed LICENSE
 var LICENSE embed.FS
 
-const AppVersion = "1.5.4"
+const AppVersion = "1.5.5"
 
 var subD_threads int
 var skipTo, subD_domain, FIA_in, FIA_out, bua_in, bua_out, ansiimg_filename, ansiimg_output string
@@ -112,9 +112,11 @@ func init() {
 			stdout := reportCommand.Bool("s", false, "Print to stdout")
 			reportCommand.Parse(os.Args[2:])
 			m.Report(*out, *stdout)
+			os.Exit(0)
 		case "subdomain":
 			subdomainCommand.Parse(os.Args[2:])
 			m.SubD_main(subD_threads, subD_domain)
+			os.Exit(0)
 		case "url":
 			var urlCommandURL string
 			var urlCommandBrute bool
@@ -134,9 +136,11 @@ func init() {
 		case "fileinaudio":
 			fileinaudioCommand.Parse(os.Args[2:])
 			m.Fileinaudio_main(FIA_in, FIA_out, FIA_decode, FIA_compress)
+			os.Exit(0)
 		case "fileinimage":
 			fileinimageCommand.Parse(os.Args[2:])
 			m.Fileinimage_main(FIA_in, FIA_out, FIA_decode, FIA_compress)
+			os.Exit(0)
 		case "bua":
 			buaCommand.StringVar(&bua_in, "i", "", "Comma separated list of input files/folders")
 			buaCommand.StringVar(&bua_out, "o", "", "Output file/folder")
