@@ -10,7 +10,15 @@ Booftutils is very unigue.
 In contrary to other utility programs, Boofutils uses a sh*t ton of memory.
 ![alot of memory](https://pomf2.lain.la/f/zxi1cpji.png)
 ## Download
-I recommend that you build this program from source.
+If you are using a debian based distro you can install boofutils using my apt repository.
+Simply run these commands:
+```bash
+echo "deb [signed-by=/usr/share/keyrings/boofdev.apt.pub] https://apt.080609.xyz stable main" | sudo tee -a /etc/apt/sources.list.d/boofdev.list && sudo wget -q -O /usr/share/keyrings/boofdev.apt.pub https://apt.080609.xyz/pgp-key.public
+sudo apt update
+sudo apt install -y boofutils
+```
+
+### Building from source:
 You will need go version 1.21 or higher. If you do not have it installed then i recommend using [GVM.](https://github.com/moovweb/gvm)
 
 You will also need to install libasound and pkg-config.
