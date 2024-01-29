@@ -17,6 +17,7 @@ type SystemReport struct {
 	MEMInfo      map[string]string `json:"mem_info"`
 	Env          map[string]string `json:"environment_variables"`
 	BlockDevices []BlockDevice     `json:"block_devices"`
+	LSCPU        LSCPUOutput       `json:"lscpu"`
 }
 
 type BlockDevice struct {
@@ -28,6 +29,22 @@ type BlockDevice struct {
 	Type        string   `json:"type"`
 	MountPoints []string `json:"mountpoints"`
 }
+
+type LSCPUOutput struct {
+	Lscpu []struct {
+		Field    string `json:"field"`
+		Data     string `json:"data"`
+		Children []struct {
+			Field string `json:"field"`
+			Data  string `json:"data"`
+		} `json:"children"`
+	} `json:"lscpu"`
+}
+
+var lsblkOutput struct {
+	BlockDevices []BlockDevice `json:"blockdevices"`
+}
+var lscpuOutput LSCPUOutput
 
 func Report(out_file string, stdout bool) {
 	// Get CPU Info
@@ -118,22 +135,31 @@ func Report(out_file string, stdout bool) {
 
 	// Execute lsblk -J
 	cmd := exec.Command("lsblk", "-J")
-	var out bytes.Buffer
-	cmd.Stdout = &out
-	err = cmd.Run()
+	out, err := executeCmd(cmd)
 	if err != nil {
 		fmt.Println("Error executing lsblk -J:", err)
-		return
+	} else {
+
+		// Parse lsblk output
+		err = json.Unmarshal(out, &lsblkOutput)
+		if err != nil {
+			fmt.Println("Error parsing lsblk output:", err)
+			return
+		}
 	}
 
-	// Parse lsblk output
-	var lsblkOutput struct {
-		BlockDevices []BlockDevice `json:"blockdevices"`
-	}
-	err = json.Unmarshal(out.Bytes(), &lsblkOutput)
+	// LsCpu
+	cmd = exec.Command("lscpu", "-J")
+	out, err = executeCmd(cmd)
 	if err != nil {
-		fmt.Println("Error parsing lsblk output:", err)
-		return
+		fmt.Println("Error executing lscpu -J:", err)
+	} else {
+		// parse
+		var lscpuOutput LSCPUOutput
+		err = json.Unmarshal(out, &lscpuOutput)
+		if err != nil {
+			fmt.Println("Error parsing lscpu output:", err)
+		}
 	}
 
 	report := &SystemReport{
@@ -142,6 +168,7 @@ func Report(out_file string, stdout bool) {
 		MEMInfo:      memMap,
 		Env:          envMap,
 		BlockDevices: lsblkOutput.BlockDevices,
+		LSCPU:        lscpuOutput,
 	}
 
 	// Marshal the report to JSON
@@ -164,4 +191,11 @@ func Report(out_file string, stdout bool) {
 
 		fmt.Println("System report completed.")
 	}
+}
+
+func executeCmd(cmd *exec.Cmd) ([]byte, error) {
+	var out bytes.Buffer
+	cmd.Stdout = &out
+	err := cmd.Run()
+	return out.Bytes(), err
 }
