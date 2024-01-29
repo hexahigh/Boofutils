@@ -17,7 +17,7 @@ type SystemReport struct {
 	MEMInfo      map[string]string `json:"mem_info"`
 	Env          map[string]string `json:"environment_variables"`
 	BlockDevices []BlockDevice     `json:"block_devices"`
-	LSCPU        LSCPUOutput       `json:"lscpu"`
+	SwapInfo     map[string]string `json:"swap_info"`
 }
 
 type BlockDevice struct {
@@ -30,96 +30,85 @@ type BlockDevice struct {
 	MountPoints []string `json:"mountpoints"`
 }
 
-type LSCPUOutput struct {
-	Lscpu []struct {
-		Field    string `json:"field"`
-		Data     string `json:"data"`
-		Children []struct {
-			Field string `json:"field"`
-			Data  string `json:"data"`
-		} `json:"children"`
-	} `json:"lscpu"`
-}
-
 var lsblkOutput struct {
 	BlockDevices []BlockDevice `json:"blockdevices"`
 }
-var lscpuOutput LSCPUOutput
+
+var memMap, cpuMap, osMap, swapMap map[string]string
 
 func Report(out_file string, stdout bool) {
 	// Get CPU Info
 	cpuInfo, err := os.Open("/proc/cpuinfo")
 	if err != nil {
 		fmt.Println("Error opening /proc/cpuinfo:", err)
-		return
-	}
-	defer cpuInfo.Close()
+	} else {
+		defer cpuInfo.Close()
 
-	scanner := bufio.NewScanner(cpuInfo)
-	cpuMap := make(map[string]string)
-	for scanner.Scan() {
-		line := scanner.Text()
-		parts := strings.SplitN(line, ":", 2)
-		if len(parts) == 2 {
-			key := strings.TrimSpace(parts[0])
-			val := strings.TrimSpace(parts[1])
-			cpuMap[key] = val
+		scanner := bufio.NewScanner(cpuInfo)
+		cpuMap = make(map[string]string)
+		for scanner.Scan() {
+			line := scanner.Text()
+			parts := strings.SplitN(line, ":", 2)
+			if len(parts) == 2 {
+				key := strings.TrimSpace(parts[0])
+				val := strings.TrimSpace(parts[1])
+				cpuMap[key] = val
+			}
 		}
-	}
-
-	if err := scanner.Err(); err != nil {
-		fmt.Println("Error reading /proc/cpuinfo:", err)
-		return
+		if err := scanner.Err(); err != nil {
+			fmt.Println("Error reading /proc/cpuinfo:", err)
+			return
+		}
 	}
 
 	// Get OS Info
 	osInfo, err := os.Open("/etc/os-release")
 	if err != nil {
 		fmt.Println("Error opening /etc/os-release:", err)
-		return
-	}
-	defer osInfo.Close()
+	} else {
+		defer osInfo.Close()
 
-	scanner = bufio.NewScanner(osInfo)
-	osMap := make(map[string]string)
-	for scanner.Scan() {
-		line := scanner.Text()
-		parts := strings.SplitN(line, "=", 2)
-		if len(parts) == 2 {
-			key := parts[0]
-			val := strings.Trim(parts[1], `"`)
-			osMap[key] = val
+		scanner := bufio.NewScanner(osInfo)
+		osMap = make(map[string]string)
+		for scanner.Scan() {
+			line := scanner.Text()
+			parts := strings.SplitN(line, "=", 2)
+			if len(parts) == 2 {
+				key := parts[0]
+				val := strings.Trim(parts[1], `"`)
+				osMap[key] = val
+			}
 		}
-	}
 
-	if err := scanner.Err(); err != nil {
-		fmt.Println("Error reading /etc/os-release:", err)
-		return
+		if err := scanner.Err(); err != nil {
+			fmt.Println("Error reading /etc/os-release:", err)
+			return
+		}
 	}
 
 	// Get mem info
 	memInfo, err := os.Open("/proc/meminfo")
 	if err != nil {
 		fmt.Println("Error opening /proc/meminfo:", err)
-		return
-	}
-	defer cpuInfo.Close()
+	} else {
+		defer cpuInfo.Close()
 
-	scanner = bufio.NewScanner(memInfo)
-	memMap := make(map[string]string)
-	for scanner.Scan() {
-		line := scanner.Text()
-		parts := strings.SplitN(line, ":", 2)
-		if len(parts) == 2 {
-			key := strings.TrimSpace(parts[0])
-			val := strings.TrimSpace(parts[1])
-			memMap[key] = val
+		scanner := bufio.NewScanner(memInfo)
+		memMap = make(map[string]string)
+		for scanner.Scan() {
+			line := scanner.Text()
+			parts := strings.SplitN(line, ":", 2)
+			if len(parts) == 2 {
+				key := strings.TrimSpace(parts[0])
+				val := strings.TrimSpace(parts[1])
+				memMap[key] = val
+			}
 		}
-	}
 
-	if err := scanner.Err(); err != nil {
-		fmt.Println("Error reading /proc/meminfo:", err)
-		return
+		if err := scanner.Err(); err != nil {
+			fmt.Println("Error reading /proc/meminfo:", err)
+			return
+		}
 	}
 
 	// Get env
@@ -130,6 +119,31 @@ func Report(out_file string, stdout bool) {
 			key := parts[0]
 			val := parts[1]
 			envMap[key] = val
+		}
+	}
+
+	// Get swap info
+	swapInfo, err := os.Open("/proc/swaps")
+	if err != nil {
+		fmt.Println("Error opening /proc/swaps:", err)
+	} else {
+		defer swapInfo.Close()
+
+		scanner := bufio.NewScanner(swapInfo)
+		swapMap = make(map[string]string)
+		for scanner.Scan() {
+			line := scanner.Text()
+			parts := strings.Fields(line)
+			if len(parts) >= 3 {
+				key := parts[0]
+				val := strings.Join(parts[1:], " ")
+				swapMap[key] = val
+			}
+		}
+
+		if err := scanner.Err(); err != nil {
+			fmt.Println("Error reading /proc/swaps:", err)
+			return
 		}
 	}
 
@@ -148,27 +162,13 @@ func Report(out_file string, stdout bool) {
 		}
 	}
 
-	// LsCpu
-	cmd = exec.Command("lscpu", "-J")
-	out, err = executeCmd(cmd)
-	if err != nil {
-		fmt.Println("Error executing lscpu -J:", err)
-	} else {
-		// parse
-		var lscpuOutput LSCPUOutput
-		err = json.Unmarshal(out, &lscpuOutput)
-		if err != nil {
-			fmt.Println("Error parsing lscpu output:", err)
-		}
-	}
-
 	report := &SystemReport{
 		CPUInfo:      cpuMap,
 		OS:           osMap,
 		MEMInfo:      memMap,
 		Env:          envMap,
 		BlockDevices: lsblkOutput.BlockDevices,
-		LSCPU:        lscpuOutput,
+		SwapInfo:     swapMap,
 	}
 
 	// Marshal the report to JSON
