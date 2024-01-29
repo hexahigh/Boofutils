@@ -2,18 +2,31 @@ package modules
 
 import (
 	"bufio"
+	"bytes"
 	"encoding/json"
 	"fmt"
 	"io/fs"
 	"os"
+	"os/exec"
 	"strings"
 )
 
 type SystemReport struct {
-	CPUInfo map[string]string `json:"cpu_info"`
-	OS      map[string]string `json:"os"`
-	MEMInfo map[string]string `json:"mem_info"`
-	Env     map[string]string `json:"environment_variables"`
+	CPUInfo      map[string]string `json:"cpu_info"`
+	OS           map[string]string `json:"os"`
+	MEMInfo      map[string]string `json:"mem_info"`
+	Env          map[string]string `json:"environment_variables"`
+	BlockDevices []BlockDevice     `json:"block_devices"`
+}
+
+type BlockDevice struct {
+	Name        string   `json:"name"`
+	MajMin      string   `json:"maj:min"`
+	Rm          bool     `json:"rm"`
+	Size        string   `json:"size"`
+	Ro          bool     `json:"ro"`
+	Type        string   `json:"type"`
+	MountPoints []string `json:"mountpoints"`
 }
 
 func Report(out_file string, stdout bool) {
@@ -103,12 +116,32 @@ func Report(out_file string, stdout bool) {
 		}
 	}
 
-	// Create a new system report
+	// Execute lsblk -J
+	cmd := exec.Command("lsblk", "-J")
+	var out bytes.Buffer
+	cmd.Stdout = &out
+	err = cmd.Run()
+	if err != nil {
+		fmt.Println("Error executing lsblk -J:", err)
+		return
+	}
+
+	// Parse lsblk output
+	var lsblkOutput struct {
+		BlockDevices []BlockDevice `json:"blockdevices"`
+	}
+	err = json.Unmarshal(out.Bytes(), &lsblkOutput)
+	if err != nil {
+		fmt.Println("Error parsing lsblk output:", err)
+		return
+	}
+
 	report := &SystemReport{
-		CPUInfo: cpuMap,
-		OS:      osMap,
-		MEMInfo: memMap,
-		Env:     envMap,
+		CPUInfo:      cpuMap,
+		OS:           osMap,
+		MEMInfo:      memMap,
+		Env:          envMap,
+		BlockDevices: lsblkOutput.BlockDevices,
 	}
 
 	// Marshal the report to JSON
