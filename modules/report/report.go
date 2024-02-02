@@ -213,7 +213,7 @@ func Report(out_file string, stdout bool, pl int) {
 		}
 		lines := strings.Split(string(out), "\n")
 		for _, line := range lines {
-			if strings.HasPrefix(line, "install") || strings.HasPrefix(line, "deinstall") {
+			if strings.HasSuffix(line, "install") || strings.HasSuffix(line, "deinstall") {
 				continue
 			}
 			installedPackages = append(installedPackages, line)
