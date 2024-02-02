@@ -211,13 +211,6 @@ func Report(out_file string, stdout bool, pl int) {
 			m.VerbPrintln(pl, 0, "Error executing dpkg --get-selections:", err)
 			return
 		}
-		lines := strings.Split(string(out), "\n")
-		for _, line := range lines {
-			if strings.HasSuffix(line, "install") || strings.HasSuffix(line, "deinstall") {
-				continue
-			}
-			installedPackages = append(installedPackages, line)
-		}
 		installedPackages = strings.Split(string(out), "\n")
 	case "rhel":
 		cmd = exec.Command("rpm", "-qa")
