@@ -18,6 +18,7 @@ type SystemReport struct {
 	Env          map[string]string `json:"environment_variables"`
 	BlockDevices []BlockDevice     `json:"block_devices"`
 	SwapInfo     map[string]string `json:"swap_info"`
+	LscpuInfo    map[string]string `json:"lscpu_info"`
 }
 
 type BlockDevice struct {
@@ -34,7 +35,7 @@ var lsblkOutput struct {
 	BlockDevices []BlockDevice `json:"blockdevices"`
 }
 
-var memMap, cpuMap, osMap, swapMap map[string]string
+var memMap, cpuMap, osMap, swapMap, lscpuMap map[string]string
 
 func Report(out_file string, stdout bool) {
 	// Get CPU Info
@@ -162,6 +163,32 @@ func Report(out_file string, stdout bool) {
 		}
 	}
 
+	// Lscpu
+	cmd = exec.Command("lscpu")
+	out, err = executeCmd(cmd)
+	if err != nil {
+		fmt.Println("Error executing lscpu", err)
+	} else {
+		defer cpuInfo.Close()
+
+		scanner := bufio.NewScanner(bytes.NewReader(out))
+		lscpuMap = make(map[string]string)
+		for scanner.Scan() {
+			line := scanner.Text()
+			parts := strings.SplitN(line, ":", 2)
+			if len(parts) == 2 {
+				key := strings.TrimSpace(parts[0])
+				val := strings.TrimSpace(parts[1])
+				lscpuMap[key] = val
+			}
+		}
+
+		if err := scanner.Err(); err != nil {
+			fmt.Println("Error executing lscpu", err)
+			return
+		}
+	}
+
 	report := &SystemReport{
 		CPUInfo:      cpuMap,
 		OS:           osMap,
@@ -169,6 +196,7 @@ func Report(out_file string, stdout bool) {
 		Env:          envMap,
 		BlockDevices: lsblkOutput.BlockDevices,
 		SwapInfo:     swapMap,
+		LscpuInfo:    lscpuMap,
 	}
 
 	// Marshal the report to JSON
