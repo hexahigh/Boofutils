@@ -212,6 +212,12 @@ func Report(out_file string, stdout bool, pl int) {
 			return
 		}
 		installedPackages = strings.Split(string(out), "\n")
+		for i, pkg := range installedPackages {
+			fields := strings.Fields(pkg)
+			if len(fields) > 0 {
+				installedPackages[i] = fields[0] // Take the first field, which is the package name
+			}
+		}
 	case "rhel":
 		cmd = exec.Command("rpm", "-qa")
 		out, err = executeCmd(cmd)
