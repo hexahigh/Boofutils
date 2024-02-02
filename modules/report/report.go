@@ -1,4 +1,4 @@
-package modules
+package report
 
 import (
 	"bufio"
@@ -9,6 +9,8 @@ import (
 	"os"
 	"os/exec"
 	"strings"
+
+	m "github.com/hexahigh/boofutils/modules"
 )
 
 type SystemReport struct {
@@ -37,11 +39,12 @@ var lsblkOutput struct {
 
 var memMap, cpuMap, osMap, swapMap, lscpuMap map[string]string
 
-func Report(out_file string, stdout bool) {
+func Report(out_file string, stdout bool, pl int) {
 	// Get CPU Info
+	m.VerbPrintln(pl, 1, "Getting CPU Info...")
 	cpuInfo, err := os.Open("/proc/cpuinfo")
 	if err != nil {
-		fmt.Println("Error opening /proc/cpuinfo:", err)
+		m.VerbPrintln(pl, 0, "Error opening /proc/cpuinfo:", err)
 	} else {
 		defer cpuInfo.Close()
 
@@ -57,15 +60,16 @@ func Report(out_file string, stdout bool) {
 			}
 		}
 		if err := scanner.Err(); err != nil {
-			fmt.Println("Error reading /proc/cpuinfo:", err)
+			m.VerbPrintln(pl, 0, "Error reading /proc/cpuinfo:", err)
 			return
 		}
 	}
 
 	// Get OS Info
+	m.VerbPrintln(pl, 1, "Getting OS Info...")
 	osInfo, err := os.Open("/etc/os-release")
 	if err != nil {
-		fmt.Println("Error opening /etc/os-release:", err)
+		m.VerbPrintln(pl, 0, "Error opening /etc/os-release:", err)
 	} else {
 		defer osInfo.Close()
 
@@ -82,15 +86,16 @@ func Report(out_file string, stdout bool) {
 		}
 
 		if err := scanner.Err(); err != nil {
-			fmt.Println("Error reading /etc/os-release:", err)
+			m.VerbPrintln(pl, 0, "Error reading /etc/os-release:", err)
 			return
 		}
 	}
 
 	// Get mem info
+	m.VerbPrintln(pl, 1, "Getting Memory Info...")
 	memInfo, err := os.Open("/proc/meminfo")
 	if err != nil {
-		fmt.Println("Error opening /proc/meminfo:", err)
+		m.VerbPrintln(pl, 0, "Error opening /proc/meminfo:", err)
 	} else {
 		defer cpuInfo.Close()
 
@@ -107,12 +112,13 @@ func Report(out_file string, stdout bool) {
 		}
 
 		if err := scanner.Err(); err != nil {
-			fmt.Println("Error reading /proc/meminfo:", err)
+			m.VerbPrintln(pl, 0, "Error reading /proc/meminfo:", err)
 			return
 		}
 	}
 
 	// Get env
+	m.VerbPrintln(pl, 1, "Getting Environment Variables...")
 	envMap := make(map[string]string)
 	for _, envVar := range os.Environ() {
 		parts := strings.SplitN(envVar, "=", 2)
@@ -124,9 +130,10 @@ func Report(out_file string, stdout bool) {
 	}
 
 	// Get swap info
+	m.VerbPrintln(pl, 1, "Getting Swap Info...")
 	swapInfo, err := os.Open("/proc/swaps")
 	if err != nil {
-		fmt.Println("Error opening /proc/swaps:", err)
+		m.VerbPrintln(pl, 0, "Error opening /proc/swaps:", err)
 	} else {
 		defer swapInfo.Close()
 
@@ -143,31 +150,33 @@ func Report(out_file string, stdout bool) {
 		}
 
 		if err := scanner.Err(); err != nil {
-			fmt.Println("Error reading /proc/swaps:", err)
+			m.VerbPrintln(pl, 0, "Error reading /proc/swaps:", err)
 			return
 		}
 	}
 
 	// Execute lsblk -J
+	m.VerbPrintln(pl, 1, "Executing lsblk -J...")
 	cmd := exec.Command("lsblk", "-J")
 	out, err := executeCmd(cmd)
 	if err != nil {
-		fmt.Println("Error executing lsblk -J:", err)
+		m.VerbPrintln(pl, 0, "Error executing lsblk -J:", err)
 	} else {
 
 		// Parse lsblk output
 		err = json.Unmarshal(out, &lsblkOutput)
 		if err != nil {
-			fmt.Println("Error parsing lsblk output:", err)
+			m.VerbPrintln(pl, 0, "Error parsing lsblk output:", err)
 			return
 		}
 	}
 
 	// Lscpu
+	m.VerbPrintln(pl, 1, "Executing lscpu...")
 	cmd = exec.Command("lscpu")
 	out, err = executeCmd(cmd)
 	if err != nil {
-		fmt.Println("Error executing lscpu", err)
+		m.VerbPrintln(pl, 0, "Error executing lscpu", err)
 	} else {
 		defer cpuInfo.Close()
 
@@ -184,7 +193,7 @@ func Report(out_file string, stdout bool) {
 		}
 
 		if err := scanner.Err(); err != nil {
-			fmt.Println("Error executing lscpu", err)
+			m.VerbPrintln(pl, 0, "Error executing lscpu", err)
 			return
 		}
 	}
@@ -200,9 +209,10 @@ func Report(out_file string, stdout bool) {
 	}
 
 	// Marshal the report to JSON
+	m.VerbPrintln(pl, 1, "Marshalling report to JSON...")
 	jsonData, err := json.MarshalIndent(report, "", " ")
 	if err != nil {
-		fmt.Println("Error marshalling report to JSON:", err)
+		m.VerbPrintln(pl, 0, "Error marshalling report to JSON:", err)
 		return
 	}
 
@@ -213,11 +223,11 @@ func Report(out_file string, stdout bool) {
 		// Write the JSON data to the output file
 		err = os.WriteFile(out_file, jsonData, fs.ModePerm)
 		if err != nil {
-			fmt.Println("Error writing report to file:", err)
+			m.VerbPrintln(pl, 0, "Error writing report to file:", err)
 			return
 		}
 
-		fmt.Println("System report completed.")
+		m.VerbPrintln(pl, 0, "System report completed.")
 	}
 }
 

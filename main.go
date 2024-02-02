@@ -10,12 +10,13 @@ import (
 
 	m "github.com/hexahigh/boofutils/modules"
 	m_ansivid "github.com/hexahigh/boofutils/modules/ansivid"
+	report "github.com/hexahigh/boofutils/modules/report"
 )
 
 //go:embed LICENSE
 var LICENSE embed.FS
 
-const AppVersion = "1.6.0"
+const AppVersion = "1.6.1"
 
 var subD_threads int
 var skipTo, subD_domain, FIA_in, FIA_out, bua_in, bua_out, ansiimg_filename, ansiimg_output string
@@ -110,8 +111,9 @@ func init() {
 		case "report":
 			out := reportCommand.String("o", "report.json", "Output file")
 			stdout := reportCommand.Bool("s", false, "Print to stdout")
+			pl := reportCommand.Int("pl", 0, "Print level. -1: no output, 0: only errors, 1: verbose, 2: very verbose")
 			reportCommand.Parse(os.Args[2:])
-			m.Report(*out, *stdout)
+			report.Report(*out, *stdout, *pl)
 			os.Exit(0)
 		case "subdomain":
 			subdomainCommand.Parse(os.Args[2:])

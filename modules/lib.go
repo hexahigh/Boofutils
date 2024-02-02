@@ -122,3 +122,17 @@ func verbosePrintln(s string, v bool) {
 		fmt.Println(s)
 	}
 }
+
+// Prints the provided string if the pl argument is >= l argument
+// If pl is -1, nothing is printed
+// s is the string to be printed.
+// pl is the print level
+// l is the print level of the string
+func VerbPrintln(pl int, l int, s ...any) {
+	if pl == -1 {
+		return
+	}
+	if pl >= l {
+		fmt.Println(s...)
+	}
+}
