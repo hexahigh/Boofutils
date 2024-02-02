@@ -14,13 +14,14 @@ import (
 )
 
 type SystemReport struct {
-	CPUInfo      map[string]string `json:"cpu_info"`
-	OS           map[string]string `json:"os"`
-	MEMInfo      map[string]string `json:"mem_info"`
-	Env          map[string]string `json:"environment_variables"`
-	BlockDevices []BlockDevice     `json:"block_devices"`
-	SwapInfo     map[string]string `json:"swap_info"`
-	LscpuInfo    map[string]string `json:"lscpu_info"`
+	CPUInfo           map[string]string `json:"cpu_info"`
+	OS                map[string]string `json:"os"`
+	MEMInfo           map[string]string `json:"mem_info"`
+	Env               map[string]string `json:"environment_variables"`
+	BlockDevices      []BlockDevice     `json:"block_devices"`
+	SwapInfo          map[string]string `json:"swap_info"`
+	LscpuInfo         map[string]string `json:"lscpu_info"`
+	InstalledPackages []string          `json:"installed_packages"`
 }
 
 type BlockDevice struct {
@@ -36,6 +37,8 @@ type BlockDevice struct {
 var lsblkOutput struct {
 	BlockDevices []BlockDevice `json:"blockdevices"`
 }
+
+var installedPackages []string
 
 var memMap, cpuMap, osMap, swapMap, lscpuMap map[string]string
 
@@ -198,14 +201,49 @@ func Report(out_file string, stdout bool, pl int) {
 		}
 	}
 
+	// Get installed packages
+	m.VerbPrintln(pl, 1, "Getting installed packages...")
+	switch osMap["ID"] {
+	case "ubuntu", "debian":
+		cmd = exec.Command("dpkg", "--get-selections")
+		out, err = executeCmd(cmd)
+		if err != nil {
+			m.VerbPrintln(pl, 0, "Error executing dpkg --get-selections:", err)
+			return
+		}
+		lines := strings.Split(string(out), "\n")
+		for _, line := range lines {
+			if strings.HasPrefix(line, "install") || strings.HasPrefix(line, "deinstall") {
+				continue
+			}
+			installedPackages = append(installedPackages, line)
+		}
+		installedPackages = strings.Split(string(out), "\n")
+	case "rhel":
+		cmd = exec.Command("rpm", "-qa")
+		out, err = executeCmd(cmd)
+		if err != nil {
+			m.VerbPrintln(pl, 0, "Error executing rpm -qa:", err)
+			return
+		}
+		installedPackages = strings.Split(string(out), "\n")
+	default:
+		m.VerbPrintln(pl, 0, "Unsupported/Unknown OS:", osMap["ID"])
+		return
+	}
+
+	// Remove empty lines from the installed packages list
+	installedPackages = removeEmptyLines(installedPackages)
+
 	report := &SystemReport{
-		CPUInfo:      cpuMap,
-		OS:           osMap,
-		MEMInfo:      memMap,
-		Env:          envMap,
-		BlockDevices: lsblkOutput.BlockDevices,
-		SwapInfo:     swapMap,
-		LscpuInfo:    lscpuMap,
+		CPUInfo:           cpuMap,
+		OS:                osMap,
+		MEMInfo:           memMap,
+		Env:               envMap,
+		BlockDevices:      lsblkOutput.BlockDevices,
+		SwapInfo:          swapMap,
+		LscpuInfo:         lscpuMap,
+		InstalledPackages: installedPackages,
 	}
 
 	// Marshal the report to JSON
@@ -236,4 +274,13 @@ func executeCmd(cmd *exec.Cmd) ([]byte, error) {
 	cmd.Stdout = &out
 	err := cmd.Run()
 	return out.Bytes(), err
+}
+func removeEmptyLines(lines []string) []string {
+	var result []string
+	for _, line := range lines {
+		if line != "" {
+			result = append(result, line)
+		}
+	}
+	return result
 }
