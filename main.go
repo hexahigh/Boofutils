@@ -111,11 +111,11 @@ func init() {
 	if len(os.Args) > 1 {
 		switch os.Args[1] {
 		case "wavhide":
-			inputFile := flag.String("input", "", "Input file")
-			wavFile := flag.String("wav", "", "WAV file")
-			outputFile := flag.String("output", "", "Output WAV file")
+			inputFile := wavhideCommand.String("input", "", "Input file")
+			wavFile := wavhideCommand.String("wav", "", "WAV file")
+			outputFile := wavhideCommand.String("output", "", "Output WAV file")
 			wavhideCommand.Parse(os.Args[2:])
-			wavhide.Main(inputFile, wavFile, outputFile)
+			wavhide.Main(*inputFile, *wavFile, *outputFile)
 			os.Exit(0)
 		case "report":
 			out := reportCommand.String("o", "report.json", "Output file")

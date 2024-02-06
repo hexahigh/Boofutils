@@ -1,23 +1,15 @@
 package wavhide
 
 import (
-	"flag"
 	"fmt"
 	"log"
 	"os"
 )
 
-func Main(inputFile *string, wavFile *string, outputFile *string) {
-
-	flag.Parse()
-
-	if *inputFile == "" || *wavFile == "" || *outputFile == "" {
-		flag.Usage()
-		os.Exit(1)
-	}
+func Main(inputFile string, wavFile string, outputFile string) {
 
 	// Read the input file
-	data, err := os.ReadFile(*inputFile)
+	data, err := os.ReadFile(inputFile)
 	if err != nil {
 		log.Fatalf("Error reading input file: %v\n", err)
 	}
@@ -29,7 +21,7 @@ func Main(inputFile *string, wavFile *string, outputFile *string) {
 	}
 
 	// Read the WAV file
-	wavData, err := os.ReadFile(*wavFile)
+	wavData, err := os.ReadFile(wavFile)
 	if err != nil {
 		log.Fatalf("Error reading WAV file: %v\n", err)
 	}
@@ -38,7 +30,7 @@ func Main(inputFile *string, wavFile *string, outputFile *string) {
 	appendedData := append(wavData, processedData...)
 
 	// Write the appended data to the output file
-	err = os.WriteFile(*outputFile, appendedData, 0644)
+	err = os.WriteFile(outputFile, appendedData, 0644)
 	if err != nil {
 		log.Fatalf("Error writing output WAV file: %v\n", err)
 	}
