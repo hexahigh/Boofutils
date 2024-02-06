@@ -11,6 +11,7 @@ import (
 	m "github.com/hexahigh/boofutils/modules"
 	m_ansivid "github.com/hexahigh/boofutils/modules/ansivid"
 	report "github.com/hexahigh/boofutils/modules/report"
+	wavhide "github.com/hexahigh/boofutils/modules/wavhide"
 )
 
 //go:embed LICENSE
@@ -79,6 +80,7 @@ func init() {
 	chachachaCommand := flag.NewFlagSet("chachacha", flag.ExitOnError)
 	urlCommand := flag.NewFlagSet("url", flag.ExitOnError)
 	reportCommand := flag.NewFlagSet("report", flag.ExitOnError)
+	wavhideCommand := flag.NewFlagSet("wavhide", flag.ExitOnError)
 
 	flag.Parse()
 
@@ -108,6 +110,13 @@ func init() {
 
 	if len(os.Args) > 1 {
 		switch os.Args[1] {
+		case "wavhide":
+			inputFile := flag.String("input", "", "Input file")
+			wavFile := flag.String("wav", "", "WAV file")
+			outputFile := flag.String("output", "", "Output WAV file")
+			wavhideCommand.Parse(os.Args[2:])
+			wavhide.Main(inputFile, wavFile, outputFile)
+			os.Exit(0)
 		case "report":
 			out := reportCommand.String("o", "report.json", "Output file")
 			stdout := reportCommand.Bool("s", false, "Print to stdout")
