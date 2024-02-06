@@ -4,35 +4,40 @@ import (
 	"fmt"
 	"log"
 	"os"
+
+	"github.com/go-audio/audio"
+	"github.com/go-audio/wav"
 )
 
 func Main(inputFile string, wavFile string, outputFile string) {
-
-	// Read the input file
-	data, err := os.ReadFile(inputFile)
+	var buf *audio.IntBuffer
+	// Open the input file
+	inputFd, err := os.ReadFile(inputFile)
 	if err != nil {
-		log.Fatalf("Error reading input file: %v\n", err)
+		log.Fatalf("Error opening input file: %v\n", err)
+	}
+	// Create a new audio.IntBuffer
+	buf = &audio.IntBuffer{Data: make([]int, len(inputFd)), Format: &audio.Format{SampleRate: 44100, NumChannels: 1}}
+	// Map each byte to a frequency and add it to the buffer
+	for i, b := range inputFd {
+		buf.Data[i] = int(b) * 100 // Multiply by 100 to get a frequency in the audible range
 	}
 
-	// Process each byte
-	processedData := make([]byte, len(data))
-	for i, b := range data {
-		processedData[i] = b ^ byte(10000&0xFF) // XOR with the lower  8 bits of  10000
+	// Create a new wav.Encoder
+	out, err := os.Create(outputFile)
+	if err != nil {
+		log.Fatal(err)
+	}
+	enc := wav.NewEncoder(out, buf.Format.SampleRate, 16, buf.Format.NumChannels, 1)
+
+	// Write the buffer to the encoder
+	if err := enc.Write(buf); err != nil {
+		log.Fatal(err)
 	}
 
-	// Read the WAV file
-	wavData, err := os.ReadFile(wavFile)
-	if err != nil {
-		log.Fatalf("Error reading WAV file: %v\n", err)
-	}
-
-	// Append the processed data to the WAV file
-	appendedData := append(wavData, processedData...)
-
-	// Write the appended data to the output file
-	err = os.WriteFile(outputFile, appendedData, 0644)
-	if err != nil {
-		log.Fatalf("Error writing output WAV file: %v\n", err)
+	// Close the encoder
+	if err := enc.Close(); err != nil {
+		log.Fatal(err)
 	}
 
 	fmt.Println("Process completed successfully.")
