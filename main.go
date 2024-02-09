@@ -149,7 +149,7 @@ func init() {
 			var config f.BuaConfig
 			buaCommand.StringVar(&config.InFile, "i", "", "Comma separated list of input files/folders")
 			buaCommand.StringVar(&config.OutFile, "o", "file", "Output file")
-			buaCommand.BoolVar(&config.Encode, "e", false, "Create archive")
+			buaCommand.BoolVar(&config.Encode, "c", false, "Create archive")
 			buaCommand.BoolVar(&config.Mute, "m", false, "Mute audio")
 			buaCommand.IntVar(&config.Verbosity, "v", 0, "Logging level. -1: no output,  0: normal,  1: verbose,  2: very verbose")
 			buaCommand.BoolVar(&config.BestCompression, "b", false, "Best compression")
