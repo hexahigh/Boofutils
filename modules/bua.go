@@ -38,6 +38,9 @@ func Bua_main(config f.BuaConfig) {
 		config.OutFile = "./"
 	}
 
+	VerbPrintln(config.Verbosity, 1, "Starting with these options:")
+	VerbPrintln(config.Verbosity, 1, config)
+
 	if config.Encode {
 		Bua_encode(config.InFile, config.OutFile, config.Mute, config.Verbosity, l)
 	} else {
