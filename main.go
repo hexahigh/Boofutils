@@ -10,13 +10,14 @@ import (
 
 	m "github.com/hexahigh/boofutils/modules"
 	m_ansivid "github.com/hexahigh/boofutils/modules/ansivid"
+	f "github.com/hexahigh/boofutils/modules/flagmanager"
 	report "github.com/hexahigh/boofutils/modules/report"
 )
 
 //go:embed LICENSE
 var LICENSE embed.FS
 
-const AppVersion = "1.6.4"
+const AppVersion = "1.6.5"
 
 var subD_threads int
 var skipTo, subD_domain, FIA_in, FIA_out, bua_in, bua_out, ansiimg_filename, ansiimg_output string
@@ -144,13 +145,15 @@ func init() {
 			m.Fileinimage_main(FIA_in, FIA_out, FIA_decode, FIA_compress)
 			os.Exit(0)
 		case "bua":
-			buaCommand.StringVar(&bua_in, "i", "", "Comma separated list of input files/folders")
-			buaCommand.StringVar(&bua_out, "o", "file", "Output file")
-			buaCommand.BoolVar(&bua_encode, "e", false, "Create archive")
-			buaCommand.BoolVar(&bua_mute, "m", false, "Mute audio")
-			verb := buaCommand.Int("v", 0, "Logging level. -1: no output, 0: normal, 1: verbose, 2: very verbose")
+			var config f.BuaConfig
+			buaCommand.StringVar(&config.InFile, "i", "", "Comma separated list of input files/folders")
+			buaCommand.StringVar(&config.OutFile, "o", "file", "Output file")
+			buaCommand.BoolVar(&config.Encode, "e", false, "Create archive")
+			buaCommand.BoolVar(&config.Mute, "m", false, "Mute audio")
+			buaCommand.IntVar(&config.Verbosity, "v", 0, "Logging level. -1: no output,  0: normal,  1: verbose,  2: very verbose")
+			buaCommand.BoolVar(&config.BestCompression, "best", false, "Best compression")
 			buaCommand.Parse(os.Args[2:])
-			m.Bua_main(bua_in, bua_out, bua_encode, bua_mute, *verb)
+			m.Bua_main(config)
 			os.Exit(0)
 		case "ansiimg":
 			ansiimgCommand.StringVar(&ansiimg_filename, "i", "", "Input file")

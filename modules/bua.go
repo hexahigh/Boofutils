@@ -16,17 +16,23 @@ import (
 
 	"github.com/ebitengine/oto/v3"
 	"github.com/hajimehoshi/go-mp3"
+	f "github.com/hexahigh/boofutils/modules/flagmanager"
 	gzip "github.com/klauspost/pgzip"
 )
 
 //go:embed embed/audio/*
 var audioFS embed.FS
 
-func Bua_main(inFile string, outFile string, encode bool, mute bool, v int) {
-	if encode {
-		Bua_encode(inFile, outFile, mute, v)
+func Bua_main(config f.BuaConfig) {
+	l := gzip.DefaultCompression
+	if config.BestCompression {
+		l = gzip.BestCompression
+	}
+
+	if config.Encode {
+		Bua_encode(config.InFile, config.OutFile, config.Mute, config.Verbosity, l)
 	} else {
-		Bua_decode(inFile, outFile, mute, v)
+		Bua_decode(config.InFile, config.OutFile, config.Mute, config.Verbosity)
 	}
 }
 
@@ -109,7 +115,7 @@ func Bua_decode(inFile string, outDir string, mute bool, v int) {
 	cancel()
 }
 
-func Bua_encode(inFile string, outFile string, mute bool, v int) {
+func Bua_encode(inFile string, outFile string, mute bool, v int, l int) {
 	ctx, cancel := context.WithCancel(context.Background())
 	if !mute {
 		go PlayAudioMult(ctx, "carry_on.mp3")
@@ -117,10 +123,13 @@ func Bua_encode(inFile string, outFile string, mute bool, v int) {
 	files := strings.Split(inFile, ",")
 	tarfile, err := os.Create(outFile)
 	if err != nil {
-		log.Fatal(err)
+		VerbPrintln(v, 0, err.Error())
 	}
 	defer tarfile.Close()
-	bw := gzip.NewWriter(tarfile)
+	bw, err := gzip.NewWriterLevel(tarfile, l)
+	if err != nil {
+		VerbPrintln(v, 0, err.Error())
+	}
 	defer bw.Close()
 	tw := tar.NewWriter(bw)
 	defer tw.Close()
