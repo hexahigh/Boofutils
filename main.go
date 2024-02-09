@@ -110,11 +110,12 @@ func init() {
 	if len(os.Args) > 1 {
 		switch os.Args[1] {
 		case "report":
-			out := reportCommand.String("o", "report.json", "Output file")
-			stdout := reportCommand.Bool("s", false, "Print to stdout")
-			pl := reportCommand.Int("pl", 0, "Print level. -1: no output, 0: only errors, 1: verbose, 2: very verbose")
+			var config f.ReportConfig
+			reportCommand.StringVar(&config.OutFile, "o", "report.json", "Output file")
+			reportCommand.BoolVar(&config.Stdout, "s", false, "Print to stdout")
+			reportCommand.IntVar(&config.PrintLevel, "pl", 0, "Print level. -1: no output,  0: only errors,  1: verbose,  2: very verbose")
 			reportCommand.Parse(os.Args[2:])
-			report.Report(*out, *stdout, *pl)
+			report.Report(config)
 			os.Exit(0)
 		case "subdomain":
 			subdomainCommand.Parse(os.Args[2:])

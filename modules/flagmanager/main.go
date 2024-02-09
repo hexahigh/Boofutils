@@ -8,3 +8,9 @@ type BuaConfig struct {
 	Verbosity       int
 	BestCompression bool
 }
+
+type ReportConfig struct {
+	OutFile    string
+	Stdout     bool
+	PrintLevel int
+}

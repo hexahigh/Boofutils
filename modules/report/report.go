@@ -12,6 +12,7 @@ import (
 	"strings"
 
 	m "github.com/hexahigh/boofutils/modules"
+	f "github.com/hexahigh/boofutils/modules/flagmanager"
 )
 
 type SystemReport struct {
@@ -44,7 +45,10 @@ var installedPackages []string
 
 var memMap, cpuMap, osMap, swapMap, lscpuMap map[string]string
 
-func Report(out_file string, stdout bool, pl int) {
+func Report(config f.ReportConfig) {
+	pl := config.PrintLevel
+	stdout := config.Stdout
+	out_file := config.OutFile
 	// Get CPU Info
 	m.VerbPrintln(pl, 1, "Getting CPU Info...")
 	cpuInfo, err := os.Open("/proc/cpuinfo")
