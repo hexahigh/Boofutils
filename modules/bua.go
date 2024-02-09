@@ -14,191 +14,23 @@ import (
 	"strings"
 	"time"
 
-	"github.com/dsnet/compress/bzip2"
 	"github.com/ebitengine/oto/v3"
 	"github.com/hajimehoshi/go-mp3"
-	"github.com/klauspost/compress/zstd"
 	gzip "github.com/klauspost/pgzip"
 )
 
 //go:embed embed/audio/*
 var audioFS embed.FS
 
-func Bua_main(inFile string, outFile string, encode bool, b2 bool, mute bool, gz bool) {
-	if b2 && gz {
-		fmt.Println("Error: -b2 and -gz are mutually exclusive")
-		os.Exit(1)
-	}
-
-	if b2 && encode {
-		outFile += ".bua2"
-	} else if gz && encode {
-		outFile += ".buaz"
-	} else if !b2 && !gz && encode {
-		outFile += ".bua"
-	}
-
-	// Bua1
-	if encode && !b2 {
-		Bua_encode(inFile, outFile)
-	} else if !b2 {
-		Bua_decode(inFile, outFile)
-	}
-	// Bua2
-	if encode && b2 {
-		Bua_encode_bzip2(inFile, outFile, mute)
-	} else if b2 {
-		Bua_decode_bzip2(inFile, outFile, mute)
-	}
-	// BuaZ
-	if encode && gz {
-		Bua_encode_gzip(inFile, outFile, mute)
-	} else if gz {
-		Bua_decode_gzip(inFile, outFile, mute)
+func Bua_main(inFile string, outFile string, encode bool, mute bool, v int) {
+	if encode {
+		Bua_encode(inFile, outFile, mute, v)
+	} else {
+		Bua_decode(inFile, outFile, mute, v)
 	}
 }
 
-func Bua_decode(inFile string, outDir string) {
-
-	ctx, cancel := context.WithCancel(context.Background())
-
-	go PlayAudioLoop(ctx, "audio_test.mp3")
-
-	if outDir == "" {
-		outDir = "."
-	}
-	if inFile == "" {
-		fmt.Println("No archive specified")
-		fmt.Println("Enter the path to the archive: ")
-		inFile = AskInput()
-	}
-
-	// Open the zstd compressed file
-	zr, err := os.Open(inFile)
-	if err != nil {
-		log.Fatal(err)
-	}
-	defer zr.Close()
-
-	// Create a zstd decoder
-	dec, err := zstd.NewReader(zr)
-	if err != nil {
-		log.Fatal(err)
-	}
-	defer dec.Close()
-
-	// Create a tar reader
-	tr := tar.NewReader(dec)
-
-	// Iterate over the files in the tar archive
-	for {
-		header, err := tr.Next()
-		if err == io.EOF {
-			break // End of archive
-		}
-		if err != nil {
-			log.Fatal(err)
-		}
-
-		// The target location where to decompress the file
-		target := filepath.Join(outDir, header.Name)
-
-		// Check the file type
-		switch header.Typeflag {
-		case tar.TypeDir: // if a dir
-			if err := os.MkdirAll(target, os.FileMode(header.Mode)); err != nil {
-				log.Fatal(err)
-			}
-		case tar.TypeReg: // if a file
-			// Ensure the parent directory exists
-			if err := os.MkdirAll(filepath.Dir(target), 0755); err != nil {
-				log.Fatal(err)
-			}
-
-			// Create the file
-			f, err := os.Create(target)
-			if err != nil {
-				log.Fatal(err)
-			}
-			defer f.Close()
-
-			// Copy data from the tar archive to the file
-			if _, err := io.Copy(f, tr); err != nil {
-				log.Fatal(err)
-			}
-			fmt.Println("Extracted: ", target)
-		default:
-			log.Printf("Can't: %c, %s\n", header.Typeflag, target)
-		}
-	}
-	cancel()
-}
-
-func Bua_encode(inFile string, outFile string) {
-	// Split the inFile string into a slice of file paths
-	files := strings.Split(inFile, ",")
-
-	tarfile, err := os.Create(outFile)
-	if err != nil {
-		log.Fatal(err)
-	}
-	defer tarfile.Close()
-
-	// create a new zstd writer
-	zw, err := zstd.NewWriter(tarfile, zstd.WithEncoderLevel(zstd.SpeedBestCompression))
-	if err != nil {
-		log.Fatal(err)
-	}
-	defer zw.Close()
-
-	tw := tar.NewWriter(zw)
-	defer tw.Close()
-
-	// Iterate over the files and add them to the tar archive
-	for _, file := range files {
-		file = strings.TrimSpace(file) // Remove any leading/trailing white space
-		baseDir := filepath.Dir(file)
-		err = filepath.Walk(file, func(path string, info os.FileInfo, err error) error {
-			if err != nil {
-				return err
-			}
-
-			relPath, err := filepath.Rel(baseDir, path)
-			if err != nil {
-				return err
-			}
-
-			header, err := tar.FileInfoHeader(info, relPath)
-			if err != nil {
-				return err
-			}
-
-			header.Name = relPath // Ensure the name is correct
-			if err := tw.WriteHeader(header); err != nil {
-				return err
-			}
-
-			if !info.Mode().IsRegular() { // Skip if not a regular file
-				return nil
-			}
-
-			f, err := os.Open(path)
-			if err != nil {
-				return err
-			}
-			defer f.Close()
-
-			_, err = io.Copy(tw, f)
-			return err
-		})
-
-		if err != nil {
-			log.Fatal(err)
-		}
-	}
-}
-
-func Bua_decode_bzip2(inFile string, outDir string, mute bool) {
+func Bua_decode(inFile string, outDir string, mute bool, v int) {
 	// Start the music and console logging
 	ctx, cancel := context.WithCancel(context.Background())
 	defer cancel()
@@ -209,148 +41,8 @@ func Bua_decode_bzip2(inFile string, outDir string, mute bool) {
 		outDir = "."
 	}
 	if inFile == "" {
-		fmt.Println("No archive specified")
-		fmt.Println("Enter the path to the archive: ")
-		inFile = AskInput()
-	}
-
-	// Open the bzip2 compressed file
-	br, err := os.Open(inFile)
-	if err != nil {
-		log.Fatal(err)
-	}
-	defer br.Close()
-
-	// Create a bzip2 reader
-	dec, err := bzip2.NewReader(br, nil)
-	if err != nil {
-		log.Fatal(err)
-	}
-
-	// Create a tar reader
-	tr := tar.NewReader(dec)
-
-	// Iterate over the files in the tar archive
-	for {
-		header, err := tr.Next()
-		if err == io.EOF {
-			break // End of archive
-		}
-		if err != nil {
-			log.Fatal(err)
-		}
-
-		// The target location where to decompress the file
-		target := filepath.Join(outDir, header.Name)
-
-		// Check the file type
-		switch header.Typeflag {
-		case tar.TypeDir: // if a dir
-			if err := os.MkdirAll(target, os.FileMode(header.Mode)); err != nil {
-				log.Fatal(err)
-			}
-		case tar.TypeReg: // if a file
-			// Ensure the parent directory exists
-			if err := os.MkdirAll(filepath.Dir(target), 0755); err != nil {
-				log.Fatal(err)
-			}
-
-			// Create the file
-			f, err := os.Create(target)
-			if err != nil {
-				log.Fatal(err)
-			}
-			defer f.Close()
-
-			// Copy data from the tar archive to the file
-			if _, err := io.Copy(f, tr); err != nil {
-				log.Fatal(err)
-			}
-			fmt.Println("Extracted: ", target)
-		default:
-			log.Printf("Can't: %c, %s\n", header.Typeflag, target)
-		}
-	}
-	fmt.Println("Done!")
-	fmt.Println("Press any key to exit")
-	fmt.Scanln()
-	cancel()
-}
-
-func Bua_encode_bzip2(inFile string, outFile string, mute bool) {
-	ctx, cancel := context.WithCancel(context.Background())
-	if !mute {
-		go PlayAudioMult(ctx, "carry_on.mp3")
-	}
-	files := strings.Split(inFile, ",")
-	tarfile, err := os.Create(outFile)
-	if err != nil {
-		log.Fatal(err)
-	}
-	defer tarfile.Close()
-	// create a new bzip2 writer
-	conf := &bzip2.WriterConfig{
-		Level: 9,
-	}
-	bw, err := bzip2.NewWriter(tarfile, conf)
-	if err != nil {
-		log.Fatal(err)
-	}
-	defer bw.Close()
-	tw := tar.NewWriter(bw)
-	defer tw.Close()
-	// Iterate over the files and add them to the tar archive
-	for _, file := range files {
-		file = strings.TrimSpace(file) // Remove any leading/trailing white space
-		baseDir := filepath.Dir(file)
-		err = filepath.Walk(file, func(path string, info os.FileInfo, err error) error {
-			if err != nil {
-				return err
-			}
-			relPath, err := filepath.Rel(baseDir, path)
-			if err != nil {
-				return err
-			}
-			fmt.Println("Adding: ", relPath, "(", FileSize(path), ")")
-			header, err := tar.FileInfoHeader(info, relPath)
-			if err != nil {
-				return err
-			}
-			header.Name = relPath // Ensure the name is correct
-			if err := tw.WriteHeader(header); err != nil {
-				return err
-			}
-			if !info.Mode().IsRegular() { // Skip if not a regular file
-				return nil
-			}
-			f, err := os.Open(path)
-			if err != nil {
-				return err
-			}
-			defer f.Close()
-			_, err = io.Copy(tw, f)
-			return err
-		})
-		if err != nil {
-			log.Fatal(err)
-		}
-	}
-	cancel()
-}
-
-func Bua_decode_gzip(inFile string, outDir string, mute bool) {
-	// Start the music and console logging
-	ctx, cancel := context.WithCancel(context.Background())
-	defer cancel()
-	if !mute {
-		go PlayAudioMult(ctx, "carry_on.mp3")
-	}
-	if outDir == "" {
-		outDir = "."
-	}
-	if inFile == "" {
-		fmt.Println("No archive specified")
-		fmt.Println("Enter the path to the archive: ")
+		VerbPrintln(v, 0, "No archive specified")
+		VerbPrintln(v, 0, "Enter the path to the archive: ")
 		inFile = AskInput()
 	}
 
@@ -406,18 +98,18 @@ func Bua_decode_gzip(inFile string, outDir string, mute bool) {
 			if _, err := io.Copy(f, tr); err != nil {
 				log.Fatal(err)
 			}
-			fmt.Println("Extracted: ", target)
+			VerbPrintln(v, 0, "Extracted: ", target)
 		default:
 			log.Printf("Can't: %c, %s\n", header.Typeflag, target)
 		}
 	}
-	fmt.Println("Done!")
-	fmt.Println("Press any key to exit")
+	VerbPrintln(v, 0, "Done!")
+	VerbPrintln(v, 0, "Press any key to exit")
 	fmt.Scanln()
 	cancel()
 }
 
-func Bua_encode_gzip(inFile string, outFile string, mute bool) {
+func Bua_encode(inFile string, outFile string, mute bool, v int) {
 	ctx, cancel := context.WithCancel(context.Background())
 	if !mute {
 		go PlayAudioMult(ctx, "carry_on.mp3")
@@ -444,7 +136,7 @@ func Bua_encode_gzip(inFile string, outFile string, mute bool) {
 			if err != nil {
 				return err
 			}
-			fmt.Println("Adding: ", relPath, "(", FileSize(path), ")")
+			VerbPrintln(v, 0, "Adding: ", relPath, "(", FileSize(path), ")")
 			header, err := tar.FileInfoHeader(info, relPath)
 			if err != nil {
 				return err
