@@ -8,6 +8,7 @@ import (
 	"io/fs"
 	"os"
 	"os/exec"
+	"strconv"
 	"strings"
 
 	m "github.com/hexahigh/boofutils/modules"
@@ -22,6 +23,7 @@ type SystemReport struct {
 	SwapInfo          map[string]string `json:"swap_info"`
 	LscpuInfo         map[string]string `json:"lscpu_info"`
 	InstalledPackages []string          `json:"installed_packages"`
+	Nproc             int               `json:"nproc"`
 }
 
 type BlockDevice struct {
@@ -234,6 +236,20 @@ func Report(out_file string, stdout bool, pl int) {
 	// Remove empty lines from the installed packages list
 	installedPackages = removeEmptyLines(installedPackages)
 
+	//Run nproc
+	cmd = exec.Command("nproc")
+	out, err = executeCmd(cmd)
+	if err != nil {
+		m.VerbPrintln(pl, 0, "Error executing nproc:", err)
+		return
+	}
+	nproc := strings.TrimSpace(string(out))
+	nprocInt, err := strconv.Atoi(nproc)
+	if err != nil {
+		m.VerbPrintln(pl, 0, "Error converting nproc to integer:", err)
+		return
+	}
+
 	report := &SystemReport{
 		CPUInfo:           cpuMap,
 		OS:                osMap,
@@ -243,6 +259,7 @@ func Report(out_file string, stdout bool, pl int) {
 		SwapInfo:          swapMap,
 		LscpuInfo:         lscpuMap,
 		InstalledPackages: installedPackages,
+		Nproc:             nprocInt,
 	}
 
 	// Marshal the report to JSON
