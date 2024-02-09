@@ -149,8 +149,9 @@ func init() {
 			buaCommand.BoolVar(&bua_encode, "e", false, "Create archive")
 			buaCommand.BoolVar(&bua_b2, "b2", false, "Use bzip2 compression")
 			buaCommand.BoolVar(&bua_mute, "m", false, "Mute audio")
+			gz := buaCommand.Bool("gz", false, "Use gzip compression")
 			buaCommand.Parse(os.Args[2:])
-			m.Bua_main(bua_in, bua_out, bua_encode, bua_b2, bua_mute)
+			m.Bua_main(bua_in, bua_out, bua_encode, bua_b2, bua_mute, *gz)
 			os.Exit(0)
 		case "ansiimg":
 			ansiimgCommand.StringVar(&ansiimg_filename, "i", "", "Input file")

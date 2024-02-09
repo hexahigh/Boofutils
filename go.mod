@@ -3,7 +3,7 @@ module github.com/hexahigh/boofutils
 go 1.21.4
 
 require (
-	github.com/klauspost/compress v1.17.4
+	github.com/klauspost/compress v1.17.6
 	github.com/vbauerster/mpb/v8 v8.7.0
 )
 
@@ -48,6 +48,7 @@ require (
 	github.com/jedib0t/go-pretty/v6 v6.0.4 // indirect
 	github.com/kennygrant/sanitize v1.2.4 // indirect
 	github.com/kevinburke/ssh_config v1.2.0 // indirect
+	github.com/klauspost/pgzip v1.2.6 // indirect
 	github.com/korandiz/v4l v1.1.0 // indirect
 	github.com/kzahedi/goent v0.0.0-20190403094137-49773660fa36 // indirect
 	github.com/lazywei/go-opencv v0.0.0-20190115070742-a4fe8ec027cc // indirect
