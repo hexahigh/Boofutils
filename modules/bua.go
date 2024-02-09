@@ -10,6 +10,7 @@ import (
 	"log"
 	"math/rand"
 	"os"
+	"path"
 	"path/filepath"
 	"strings"
 	"time"
@@ -27,6 +28,14 @@ func Bua_main(config f.BuaConfig) {
 	l := gzip.DefaultCompression
 	if config.BestCompression {
 		l = gzip.BestCompression
+	}
+
+	// Add .bua to the output file if it has no extension
+	if path.Ext(config.OutFile) == "" && config.Encode {
+		config.OutFile = config.OutFile + ".bua"
+	}
+	if config.OutFile == "" && !config.Encode {
+		config.OutFile = "./"
 	}
 
 	if config.Encode {

@@ -17,7 +17,7 @@ import (
 //go:embed LICENSE
 var LICENSE embed.FS
 
-const AppVersion = "1.6.5"
+const AppVersion = "1.6.6"
 
 var subD_threads int
 var skipTo, subD_domain, FIA_in, FIA_out, bua_in, bua_out, ansiimg_filename, ansiimg_output string
@@ -148,7 +148,7 @@ func init() {
 		case "bua":
 			var config f.BuaConfig
 			buaCommand.StringVar(&config.InFile, "i", "", "Comma separated list of input files/folders")
-			buaCommand.StringVar(&config.OutFile, "o", "file", "Output file")
+			buaCommand.StringVar(&config.OutFile, "o", "", "Output file")
 			buaCommand.BoolVar(&config.Encode, "c", false, "Create archive")
 			buaCommand.BoolVar(&config.Mute, "m", false, "Mute audio")
 			buaCommand.IntVar(&config.Verbosity, "v", 0, "Logging level. -1: no output,  0: normal,  1: verbose,  2: very verbose")
