@@ -7,6 +7,7 @@ type BuaConfig struct {
 	Mute            bool
 	Verbosity       int
 	BestCompression bool
+	V2              bool
 }
 
 type ReportConfig struct {

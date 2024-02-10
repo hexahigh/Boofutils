@@ -17,7 +17,7 @@ import (
 //go:embed LICENSE
 var LICENSE embed.FS
 
-const AppVersion = "1.6.7"
+const AppVersion = "1.7.0"
 
 var subD_threads int
 var skipTo, subD_domain, FIA_in, FIA_out, bua_in, bua_out, ansiimg_filename, ansiimg_output string
@@ -153,6 +153,7 @@ func init() {
 			buaCommand.BoolVar(&config.Mute, "m", false, "Mute audio")
 			buaCommand.IntVar(&config.Verbosity, "v", 0, "Logging level. -1: no output,  0: normal,  1: verbose,  2: very verbose")
 			buaCommand.BoolVar(&config.BestCompression, "b", false, "Best compression")
+			buaCommand.BoolVar(&config.V2, "2", false, "Use v2 compression")
 			buaCommand.Parse(os.Args[2:])
 			m.Bua_main(config)
 			os.Exit(0)

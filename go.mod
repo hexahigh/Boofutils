@@ -20,6 +20,7 @@ require (
 	github.com/antchfx/xpath v1.1.8 // indirect
 	github.com/cheggaaa/pb/v3 v3.0.5 // indirect
 	github.com/cloudflare/circl v1.3.3 // indirect
+	github.com/cosnicolaou/pbzip2 v1.0.3 // indirect
 	github.com/cyphar/filepath-securejoin v0.2.4 // indirect
 	github.com/disintegration/imaging v1.6.2 // indirect
 	github.com/dsnet/compress v0.0.1 // indirect
