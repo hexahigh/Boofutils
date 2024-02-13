@@ -11,6 +11,8 @@ import (
 	"strconv"
 	"strings"
 
+	"gopkg.in/yaml.v3"
+
 	m "github.com/hexahigh/boofutils/modules"
 	f "github.com/hexahigh/boofutils/modules/flagmanager"
 )
@@ -266,20 +268,29 @@ func Report(config f.ReportConfig) {
 		Nproc:             nprocInt,
 	}
 
-	// Marshal the report to JSON
-	m.VerbPrintln(pl, 1, "Marshalling report to JSON...")
-	jsonData, err := json.MarshalIndent(report, "", " ")
-	if err != nil {
-		m.VerbPrintln(pl, 0, "Error marshalling report to JSON:", err)
-		return
+	// Marshal the report to either JSON or YAML
+	m.VerbPrintln(pl, 1, "Marshalling report...")
+	var data []byte
+	if config.Yaml {
+		data, err = yaml.Marshal(report)
+		if err != nil {
+			m.VerbPrintln(pl, 0, "Error marshalling report to YAML:", err)
+			return
+		}
+	} else {
+		data, err = json.MarshalIndent(report, "", " ")
+		if err != nil {
+			m.VerbPrintln(pl, 0, "Error marshalling report to JSON:", err)
+			return
+		}
 	}
 
 	if stdout {
-		fmt.Print(string(jsonData))
+		fmt.Print(string(data))
 		return
 	} else {
-		// Write the JSON data to the output file
-		err = os.WriteFile(out_file, jsonData, fs.ModePerm)
+		// Write the data to the output file
+		err = os.WriteFile(out_file, data, fs.ModePerm)
 		if err != nil {
 			m.VerbPrintln(pl, 0, "Error writing report to file:", err)
 			return
@@ -288,7 +299,6 @@ func Report(config f.ReportConfig) {
 		m.VerbPrintln(pl, 0, "System report completed.")
 	}
 }
-
 func executeCmd(cmd *exec.Cmd) ([]byte, error) {
 	var out bytes.Buffer
 	cmd.Stdout = &out
