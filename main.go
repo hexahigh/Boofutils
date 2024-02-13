@@ -10,6 +10,7 @@ import (
 
 	m "github.com/hexahigh/boofutils/modules"
 	m_ansivid "github.com/hexahigh/boofutils/modules/ansivid"
+	c "github.com/hexahigh/boofutils/modules/constants"
 	f "github.com/hexahigh/boofutils/modules/flagmanager"
 	report "github.com/hexahigh/boofutils/modules/report"
 )
@@ -17,14 +18,14 @@ import (
 //go:embed LICENSE
 var LICENSE embed.FS
 
-const AppVersion = "1.7.1"
+const AppVersion = c.AppVersion
 
 var subD_threads int
-var skipTo, subD_domain, FIA_in, FIA_out, bua_in, bua_out, ansiimg_filename, ansiimg_output string
+var skipTo, subD_domain, FIA_in, FIA_out, ansiimg_filename, ansiimg_output string
 var version, showLicense *bool
-var FIA_decode, FIA_compress, update_binary, bua_encode, bua_b2, update_allow_win, bua_mute, ansivid_gifMode, ansivid_gifAsciiMode, ansivid_blockMode, ansivid_py_install, donutRainbow, donutColor, chachacha_decrypt, chachacha_mute bool
+var FIA_decode, FIA_compress, ansivid_gifMode, ansivid_gifAsciiMode, ansivid_blockMode, ansivid_py_install, donutRainbow, donutColor, chachacha_decrypt, chachacha_mute bool
 
-var ansivid_musicFile, ansivid_gifFile, ansivid_gifSeq, ansivid_py_strat, ansivid_py_in, scraper_allowedDomains, scraper_template, chachacha_in, chachacha_out, chachacha_password string
+var ansivid_musicFile, ansivid_gifFile, ansivid_gifSeq, ansivid_py_strat, ansivid_py_in, scraper_allowedDomains, scraper_template string
 var ansivid_duration, ansivid_gifWidth, ansivid_gifHeight, ansivid_loopNum int
 var ansivid_gifContrast, ansivid_gifSigma, donutSpeed float64
 var ansiimg_width, ansiimg_height uint

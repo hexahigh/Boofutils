@@ -29,7 +29,7 @@ require (
 	github.com/eiannone/keyboard v0.0.0-20220611211555-0d226195f203 // indirect
 	github.com/emirpasic/gods v1.18.1 // indirect
 	github.com/faiface/beep v1.1.0 // indirect
-	github.com/fatih/color v1.7.0 // indirect
+	github.com/fatih/color v1.16.0 // indirect
 	github.com/go-audio/audio v1.0.0 // indirect
 	github.com/go-audio/riff v1.0.0 // indirect
 	github.com/go-audio/wav v1.1.0 // indirect
@@ -53,8 +53,8 @@ require (
 	github.com/korandiz/v4l v1.1.0 // indirect
 	github.com/kzahedi/goent v0.0.0-20190403094137-49773660fa36 // indirect
 	github.com/lazywei/go-opencv v0.0.0-20190115070742-a4fe8ec027cc // indirect
-	github.com/mattn/go-colorable v0.1.2 // indirect
-	github.com/mattn/go-isatty v0.0.12 // indirect
+	github.com/mattn/go-colorable v0.1.13 // indirect
+	github.com/mattn/go-isatty v0.0.20 // indirect
 	github.com/mattn/go-runewidth v0.0.15 // indirect
 	github.com/nfnt/resize v0.0.0-20180221191011-83c6a9932646 // indirect
 	github.com/nsf/termbox-go v1.1.1 // indirect
