@@ -3,7 +3,8 @@
 [![Release](https://img.shields.io/github/release/hexahigh/boofutils.svg)](https://github.com/hexahigh/boofutils/releases)
 [![License](https://img.shields.io/github/license/hexahigh/boofutils)](https://github.com/hexahigh/boofutils/blob/main/LICENSE)
 [![Downloads](https://img.shields.io/github/downloads/hexahigh/boofutils/total.svg)](https://github.com/hexahigh/boofutils/releases)
-![Go report card](https://goreportcard.com/badge/github.com/hexahigh/boofutils)<br>
+![Go report card](https://goreportcard.com/badge/github.com/hexahigh/boofutils)
+![Maintained](https://img.shields.io/badge/status-maintained-lime.svg)<br>
 A utility program im working on.
 <br>
 Booftutils is very unigue.
