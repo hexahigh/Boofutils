@@ -112,10 +112,11 @@ func init() {
 		switch os.Args[1] {
 		case "report":
 			var config f.ReportConfig
-			reportCommand.StringVar(&config.OutFile, "o", "report.json", "Output file")
+			reportCommand.StringVar(&config.OutFile, "o", "report.{EXT}", "Output file")
 			reportCommand.BoolVar(&config.Stdout, "s", false, "Print to stdout")
 			reportCommand.IntVar(&config.PrintLevel, "pl", 0, "Print level. -1: no output,  0: only errors,  1: verbose,  2: very verbose")
 			reportCommand.BoolVar(&config.Yaml, "Y", false, "Output in yaml format")
+			reportCommand.BoolVar(&config.Json, "J", false, "Output in json format")
 			reportCommand.Parse(os.Args[2:])
 			report.Report(config)
 			os.Exit(0)

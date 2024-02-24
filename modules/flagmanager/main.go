@@ -15,4 +15,5 @@ type ReportConfig struct {
 	Stdout     bool
 	PrintLevel int
 	Yaml       bool
+	Json       bool
 }
