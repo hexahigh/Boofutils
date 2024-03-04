@@ -17,9 +17,3 @@ type ReportConfig struct {
 	Yaml       bool
 	Json       bool
 }
-
-type TarmountConfig struct {
-	MountPoint string
-	Format     string
-	TarPath    string
-}

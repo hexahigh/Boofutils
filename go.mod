@@ -14,7 +14,6 @@ require (
 	github.com/go-git/go-git/v5 v5.10.1
 	github.com/gocolly/colly/v2 v2.1.0
 	github.com/hajimehoshi/go-mp3 v0.3.4
-	github.com/hanwen/go-fuse/v2 v2.5.0
 	github.com/klauspost/compress v1.17.6
 	github.com/klauspost/pgzip v1.2.6
 	github.com/nfnt/resize v0.0.0-20180221191011-83c6a9932646

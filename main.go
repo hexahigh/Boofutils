@@ -13,7 +13,6 @@ import (
 	c "github.com/hexahigh/boofutils/modules/constants"
 	f "github.com/hexahigh/boofutils/modules/flagmanager"
 	report "github.com/hexahigh/boofutils/modules/report"
-	m_tarmount "github.com/hexahigh/boofutils/modules/tarmount"
 )
 
 //go:embed LICENSE
@@ -82,7 +81,6 @@ func init() {
 	chachachaCommand := flag.NewFlagSet("chachacha", flag.ExitOnError)
 	urlCommand := flag.NewFlagSet("url", flag.ExitOnError)
 	reportCommand := flag.NewFlagSet("report", flag.ExitOnError)
-	tarmountCommand := flag.NewFlagSet("tarmount", flag.ExitOnError)
 
 	flag.Parse()
 
@@ -112,13 +110,6 @@ func init() {
 
 	if len(os.Args) > 1 {
 		switch os.Args[1] {
-		case "tarmount":
-			var config f.TarmountConfig
-			tarmountCommand.StringVar(&config.MountPoint, "m", "", "Mount point")
-			tarmountCommand.StringVar(&config.Format, "f", "gz", "Format (gz, bz2, zst, xz)")
-			tarmountCommand.StringVar(&config.TarPath, "t", "", "Tar file")
-			tarmountCommand.Parse(os.Args[2:])
-			m_tarmount.Main(config)
 		case "report":
 			var config f.ReportConfig
 			reportCommand.StringVar(&config.OutFile, "o", "report.{EXT}", "Output file")
