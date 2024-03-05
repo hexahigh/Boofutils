@@ -10,15 +10,22 @@ import (
 
 	m "github.com/hexahigh/boofutils/modules"
 	m_ansivid "github.com/hexahigh/boofutils/modules/ansivid"
-	c "github.com/hexahigh/boofutils/modules/constants"
+	con "github.com/hexahigh/boofutils/modules/constants"
+	m_credits "github.com/hexahigh/boofutils/modules/credits"
 	f "github.com/hexahigh/boofutils/modules/flagmanager"
-	report "github.com/hexahigh/boofutils/modules/report"
+	m_report "github.com/hexahigh/boofutils/modules/report"
 )
+
+/*
+#cgo LDFLAGS: -lnms
+#include <nms.h>
+*/
+import "C"
 
 //go:embed LICENSE
 var LICENSE embed.FS
 
-const AppVersion = c.AppVersion
+const AppVersion = con.AppVersion
 
 var subD_threads int
 var skipTo, subD_domain, FIA_in, FIA_out, ansiimg_filename, ansiimg_output string
@@ -51,6 +58,8 @@ func init() {
 		fmt.Println("scraper")
 		fmt.Println("donut")
 		fmt.Println("report")
+		fmt.Println("credits")
+		fmt.Println("version")
 	}
 
 	// Subcommands
@@ -100,16 +109,17 @@ func init() {
 	}
 
 	if *version {
-		fmt.Println(m.ColorCyanBold24bit, "Boofutils", m.ColorReset)
-		fmt.Println("Version:", AppVersion)
-		fmt.Println("Boofdev")
-		fmt.Println("github.com/hexahigh/boofutils")
-		fmt.Println(m.ColorPurpleBold24bit, "\nRandom cat fact:", m.ColorOrangeBold24bit, m.RandomCatFact())
-		os.Exit(0)
+		versionFunc()
 	}
 
 	if len(os.Args) > 1 {
 		switch os.Args[1] {
+		case "version", "v":
+			versionFunc()
+			os.Exit(0)
+		case "credits":
+			m_credits.Main()
+			os.Exit(0)
 		case "report":
 			var config f.ReportConfig
 			reportCommand.StringVar(&config.OutFile, "o", "report.{EXT}", "Output file")
@@ -118,7 +128,7 @@ func init() {
 			reportCommand.BoolVar(&config.Yaml, "Y", false, "Output in yaml format")
 			reportCommand.BoolVar(&config.Json, "J", false, "Output in json format")
 			reportCommand.Parse(os.Args[2:])
-			report.Report(config)
+			m_report.Report(config)
 			os.Exit(0)
 		case "subdomain":
 			subdomainCommand.Parse(os.Args[2:])
@@ -280,4 +290,12 @@ func checkInputAndDoStuff(input string) {
 		fmt.Println("Invalid input")
 		os.Exit(0)
 	}
+}
+func versionFunc() {
+	fmt.Println(m.ColorCyanBold24bit, "Boofutils", m.ColorReset)
+	fmt.Println("Version:", AppVersion)
+	fmt.Println("Boofdev")
+	fmt.Println("github.com/hexahigh/boofutils")
+	fmt.Println(m.ColorPurpleBold24bit, "\nRandom cat fact:", m.ColorOrangeBold24bit, m.RandomCatFact())
+	os.Exit(0)
 }

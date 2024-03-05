@@ -49,6 +49,7 @@ require (
 	github.com/golang/protobuf v1.4.2 // indirect
 	github.com/hajimehoshi/oto v0.7.1 // indirect
 	github.com/hybridgroup/mjpeg v0.0.0-20140228234708-4680f319790e // indirect
+	github.com/icza/bitio v1.1.0 // indirect
 	github.com/icza/huffman v0.0.0-20200205092023-031fa85c57cf // indirect
 	github.com/jbenet/go-context v0.0.0-20150711004518-d14ea06fba99 // indirect
 	github.com/jedib0t/go-pretty/v6 v6.0.4 // indirect
@@ -60,6 +61,8 @@ require (
 	github.com/mattn/go-colorable v0.1.13 // indirect
 	github.com/mattn/go-isatty v0.0.20 // indirect
 	github.com/mattn/go-runewidth v0.0.15 // indirect
+	github.com/mewkiz/flac v1.0.10 // indirect
+	github.com/mewkiz/pkg v0.0.0-20230226050401-4010bf0fec14 // indirect
 	github.com/nsf/termbox-go v1.1.1 // indirect
 	github.com/pion/opus v0.0.0-20230805182210-70baa277ae2f // indirect
 	github.com/pjbgf/sha1cd v0.3.0 // indirect

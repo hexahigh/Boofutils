@@ -1,6 +1,10 @@
 package constants
 
-const Version = "1.8.0"
+import (
+	color "github.com/hexahigh/boofutils/modules/color"
+)
+
+const Version = "1.9.0"
 
 const Art = `
 __/\\\\\\\\\\\\\______________________________________/\\\\\____________________________________/\\\\\\_________________        
@@ -13,6 +17,20 @@ __/\\\\\\\\\\\\\______________________________________/\\\\\____________________
        _\/\\\\\\\\\\\\\/___\///\\\\\/____\///\\\\\/______\/\\\______\//\\\\\\\\\_____\//\\\\\___\/\\\__/\\\\\\\\\__/\\\\\\\\\\_ 
         _\/////////////_______\/////________\/////________\///________\/////////_______\/////____\///__\/////////__\//////////__
 `
+
+var Credits = []string{
+	"A linux-first utility program written in Go",
+	"Made by Boofdev in 2023",
+	"Released under the GNU General Public License",
+	"Uses code from:",
+	"       https://github.com/Nellousan/px2ansi (GPLv3)",
+	"       https://github.com/bartobri/libnms (MIT)",
+	"Music:",
+	"       Carry On - Peppsen",
+	"       Serene Night - Peppsen",
+	"",
+	color.ColorRedBold24bit + "Thank you for using Boofutils!" + color.ColorReset,
+}
 
 // Old constants
 

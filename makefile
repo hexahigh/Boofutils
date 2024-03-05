@@ -1,18 +1,26 @@
-.PHONY: all
+all: main nms
 
-all: windows-386 windows-amd64 linux-386 linux-amd64 wasm
+main:
+	go build -o boofutils main.go
 
-windows-386:
-	GOOS=windows GOARCH=386 go build -v -o boofutils-windows-386.exe .
+nms:
+	@ORIG_DIR=$$(pwd)
+	@echo "Cloning repository..."
 
-windows-amd64:
-	GOOS=windows GOARCH=amd64 go build -v -o boofutils-windows-amd64.exe .
+	@if [ ! -d "/tmp/libnms-build" ]; then \
+		git clone https://github.com/bartobri/libnms.git "/tmp/libnms-build"; \
+	else \
+		echo "Directory /tmp/libnms-build already exists (Somehow)"; \
+	fi
+	
+	@echo "Building NMS..."
+	@cd "/tmp/libnms" && make -f /tmp/libnms-build/Makefile && sudo make install -f /tmp/libnms-build/Makefile
+	@rm -rf "/tmp/libnms-build"
+	@echo "Done!"
 
-linux-386:
-	GOOS=linux GOARCH=386 go build -v -o boofutils-linux-386 .
-
-linux-amd64:
-	GOOS=linux GOARCH=amd64 go build -v -o boofutils-linux-amd64 .
-
-wasm:
-	GOOS=js GOARCH=wasm go build -v -o boofutils-wasm.wasm .
+check_tools:
+	@echo "Checking for required tools to build nms..."
+	@if ! command -v make &> /dev/null; then echo "make not found"; exit 1; fi
+	@if ! command -v gcc &> /dev/null; then echo "gcc not found"; exit 1; fi
+	@if ! command -v git &> /dev/null; then echo "git not found"; exit 1; fi
+	@echo "All required tools found."
