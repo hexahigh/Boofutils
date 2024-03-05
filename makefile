@@ -14,7 +14,7 @@ nms:
 	fi
 	
 	@echo "Building NMS..."
-	@cd "/tmp/libnms" && make -f /tmp/libnms-build/Makefile && sudo make install -f /tmp/libnms-build/Makefile
+	@cd "/tmp/libnms-build" && make -f /tmp/libnms-build/Makefile && sudo make install -f /tmp/libnms-build/Makefile
 	@rm -rf "/tmp/libnms-build"
 	@echo "Done!"
 
