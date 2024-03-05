@@ -85,7 +85,7 @@ jobs:
         run: GOOS=linux GOARCH=s390x go build -ldflags "-w" -v -o boofutils-linux-s390x .
         continue-on-error: true
 
-     - name: Build windows/386
+      - name: Build windows/386
         run: GOOS=windows GOARCH=386 go build -ldflags "-w" -v -o boofutils-windows-386.exe .
         continue-on-error: true
 
