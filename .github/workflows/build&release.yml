@@ -9,8 +9,8 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
-    outputs:
-      asset_paths: "boofutils-linux-386,boofutils-linux-amd64,boofutils-linux-arm,boofutils-linux-arm64,boofutils-linux-loong64,boofutils-linux-mips,boofutils-linux-mips64,boofutils-linux-mips64le,boofutils-linux-mipsle,boofutils-linux-ppc64,boofutils-linux-ppc64le,boofutils-linux-riscv64,boofutils-linux-s390x,boofutils-windows-386,boofutils-windows-amd64,boofutils-windows-arm,boofutils-windows-arm64"
+    #outputs:
+      #asset_paths: "boofutils-linux-386,boofutils-linux-amd64,boofutils-linux-arm,boofutils-linux-arm64,boofutils-linux-loong64,boofutils-linux-mips,boofutils-linux-mips64,boofutils-linux-mips64le,boofutils-linux-mipsle,boofutils-linux-ppc64,boofutils-linux-ppc64le,boofutils-linux-riscv64,boofutils-linux-s390x,boofutils-windows-386,boofutils-windows-amd64,boofutils-windows-arm,boofutils-windows-arm64"
     steps:
       - name: Update apt packages
         run: |
