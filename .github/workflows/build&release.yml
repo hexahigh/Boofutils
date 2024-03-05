@@ -10,13 +10,13 @@ jobs:
   build:
     runs-on: ubuntu-latest
     outputs:
-      asset_paths: "boofutils-aix-ppc64,boofutils-android-386,boofutils-android-amd64,boofutils-android-arm,boofutils-android-arm64,boofutils-darwin-amd64,boofutils-darwin-arm64,boofutils-dragonfly-amd64,boofutils-freebsd-386,boofutils-freebsd-amd64,boofutils-freebsd-arm,boofutils-freebsd-arm64,boofutils-freebsd-riscv64,boofutils-illumos-amd64,boofutils-ios-amd64,boofutils-ios-arm64,boofutils-js-wasm,boofutils-linux-386,boofutils-linux-amd64,boofutils-linux-arm,boofutils-linux-arm64,boofutils-linux-loong64,boofutils-linux-mips,boofutils-linux-mips64,boofutils-linux-mips64le,boofutils-linux-mipsle,boofutils-linux-ppc64,boofutils-linux-ppc64le,boofutils-linux-riscv64,boofutils-linux-s390x,boofutils-netbsd-386,boofutils-netbsd-amd64,boofutils-netbsd-arm,boofutils-netbsd-arm64,boofutils-openbsd-386,boofutils-openbsd-amd64,boofutils-openbsd-arm,boofutils-openbsd-arm64,boofutils-plan9-386,boofutils-plan9-amd64,boofutils-plan9-arm,boofutils-solaris-amd64,boofutils-wasip1-wasm,boofutils-windows-386,boofutils-windows-amd64,boofutils-windows-arm,boofutils-windows-arm64"
+      asset_paths: "boofutils-linux-386,boofutils-linux-amd64,boofutils-linux-arm,boofutils-linux-arm64,boofutils-linux-loong64,boofutils-linux-mips,boofutils-linux-mips64,boofutils-linux-mips64le,boofutils-linux-mipsle,boofutils-linux-ppc64,boofutils-linux-ppc64le,boofutils-linux-riscv64,boofutils-linux-s390x,boofutils-windows-386,boofutils-windows-amd64,boofutils-windows-arm,boofutils-windows-arm64"
     steps:
       - name: Update apt packages
         run: |
           sudo apt update
           sudo apt upgrade -y
-          sudo apt install -y libasound2-dev pkg-config
+          sudo apt install -y libasound2-dev pkg-config make gcc
 
       - name: Set up Go
         uses: actions/setup-go@v2
@@ -26,76 +26,11 @@ jobs:
       - name: Check out code
         uses: actions/checkout@v2
 
+      - name: Build libnms
+        run: make nms
+
       - name: Get dependencies
         run: go get -v -t -d ./...
-
-      - name: Build aix/ppc64
-        run: GOOS=aix GOARCH=ppc64 go build -ldflags "-w" -v -o boofutils-aix-ppc64 .
-        continue-on-error: true
-
-      - name: Build android/386
-        run: GOOS=android GOARCH=386 go build -ldflags "-w" -v -o boofutils-android-386 .
-        continue-on-error: true
-
-      - name: Build android/amd64
-        run: GOOS=android GOARCH=amd64 go build -ldflags "-w" -v -o boofutils-android-amd64 .
-        continue-on-error: true
-
-      - name: Build android/arm
-        run: GOOS=android GOARCH=arm go build -ldflags "-w" -v -o boofutils-android-arm .
-        continue-on-error: true
-
-      - name: Build android/arm64
-        run: GOOS=android GOARCH=arm64 go build -ldflags "-w" -v -o boofutils-android-arm64 .
-        continue-on-error: true
-
-      - name: Build darwin/amd64
-        run: GOOS=darwin GOARCH=amd64 go build -ldflags "-w" -v -o boofutils-darwin-amd64 .
-        continue-on-error: true
-
-      - name: Build darwin/arm64
-        run: GOOS=darwin GOARCH=arm64 go build -ldflags "-w" -v -o boofutils-darwin-arm64 .
-        continue-on-error: true
-
-      - name: Build dragonfly/amd64
-        run: GOOS=dragonfly GOARCH=amd64 go build -ldflags "-w" -v -o boofutils-dragonfly-amd64 .
-        continue-on-error: true
-
-      - name: Build freebsd/386
-        run: GOOS=freebsd GOARCH=386 go build -ldflags "-w" -v -o boofutils-freebsd-386 .
-        continue-on-error: true
-
-      - name: Build freebsd/amd64
-        run: GOOS=freebsd GOARCH=amd64 go build -ldflags "-w" -v -o boofutils-freebsd-amd64 .
-        continue-on-error: true
-
-      - name: Build freebsd/arm
-        run: GOOS=freebsd GOARCH=arm go build -ldflags "-w" -v -o boofutils-freebsd-arm .
-        continue-on-error: true
-
-      - name: Build freebsd/arm64
-        run: GOOS=freebsd GOARCH=arm64 go build -ldflags "-w" -v -o boofutils-freebsd-arm64 .
-        continue-on-error: true
-
-      - name: Build freebsd/riscv64
-        run: GOOS=freebsd GOARCH=riscv64 go build -ldflags "-w" -v -o boofutils-freebsd-riscv64 .
-        continue-on-error: true
-
-      - name: Build illumos/amd64
-        run: GOOS=illumos GOARCH=amd64 go build -ldflags "-w" -v -o boofutils-illumos-amd64 .
-        continue-on-error: true
-
-      - name: Build ios/amd64
-        run: GOOS=darwin GOARCH=amd64 go build -ldflags "-w" -v -o boofutils-ios-amd64 .
-        continue-on-error: true
-
-      - name: Build ios/arm64
-        run: GOOS=darwin GOARCH=arm64 go build -ldflags "-w" -v -o boofutils-ios-arm64 .
-        continue-on-error: true
-
-      - name: Build js/wasm
-        run: GOOS=js GOARCH=wasm go build -ldflags "-w" -v -o boofutils-js-wasm .
-        continue-on-error: true
 
       - name: Build linux/386
         run: GOOS=linux GOARCH=386 go build -ldflags "-w" -v -o boofutils-linux-386 .
@@ -149,51 +84,7 @@ jobs:
         run: GOOS=linux GOARCH=s390x go build -ldflags "-w" -v -o boofutils-linux-s390x .
         continue-on-error: true
 
-      - name: Build netbsd/386
-        run: GOOS=netbsd GOARCH=386 go build -ldflags "-w" -v -o boofutils-netbsd-386 .
-        continue-on-error: true
-
-      - name: Build netbsd/amd64
-        run: GOOS=netbsd GOARCH=amd64 go build -ldflags "-w" -v -o boofutils-netbsd-amd64 .
-        continue-on-error: true
-
-      - name: Build netbsd/arm
-        run: GOOS=netbsd GOARCH=arm go build -ldflags "-w" -v -o boofutils-netbsd-arm .
-        continue-on-error: true
-
-      - name: Build netbsd/arm64
-        run: GOOS=netbsd GOARCH=arm64 go build -ldflags "-w" -v -o boofutils-netbsd-arm64 .
-        continue-on-error: true
-
-      - name: Build openbsd/386
-        run: GOOS=openbsd GOARCH=386 go build -ldflags "-w" -v -o boofutils-openbsd-386 .
-        continue-on-error: true
-
-      - name: Build openbsd/amd64
-        run: GOOS=openbsd GOARCH=amd64 go build -ldflags "-w" -v -o boofutils-openbsd-amd64 .
-        continue-on-error: true
-
-      - name: Build openbsd/arm
-        run: GOOS=openbsd GOARCH=arm go build -ldflags "-w" -v -o boofutils-openbsd-arm .
-        continue-on-error: true
-
-      - name: Build openbsd/arm64
-        run: GOOS=openbsd GOARCH=arm64 go build -ldflags "-w" -v -o boofutils-openbsd-arm64 .
-        continue-on-error: true
-
-      - name: Build plan9/386
-        run: GOOS=plan9 GOARCH=386 go build -ldflags "-w" -v -o boofutils-plan9-386 .
-        continue-on-error: true
-
-      - name: Build plan9/amd64
-        run: GOOS=plan9 GOARCH=amd64 go build -ldflags "-w" -v -o boofutils-plan9-amd64 .
-        continue-on-error: true
-
-      - name: Build plan9/arm
-        run: GOOS=plan9 GOARCH=arm go build -ldflags "-w" -v -o boofutils-plan9-arm .
-        continue-on-error: true
-
-      - name: Build windows/386
+     - name: Build windows/386
         run: GOOS=windows GOARCH=386 go build -ldflags "-w" -v -o boofutils-windows-386.exe .
         continue-on-error: true
 
@@ -214,23 +105,6 @@ jobs:
         with:
           name: boofutils
           path: |
-            boofutils-aix-ppc64
-            boofutils-android-386
-            boofutils-android-amd64
-            boofutils-android-arm
-            boofutils-android-arm64
-            boofutils-darwin-amd64
-            boofutils-darwin-arm64
-            boofutils-dragonfly-amd64
-            boofutils-freebsd-386
-            boofutils-freebsd-amd64
-            boofutils-freebsd-arm
-            boofutils-freebsd-arm64
-            boofutils-freebsd-riscv64
-            boofutils-illumos-amd64
-            boofutils-ios-amd64
-            boofutils-ios-arm64
-            boofutils-js-wasm
             boofutils-linux-386
             boofutils-linux-amd64
             boofutils-linux-arm
@@ -244,19 +118,6 @@ jobs:
             boofutils-linux-ppc64le
             boofutils-linux-riscv64
             boofutils-linux-s390x
-            boofutils-netbsd-386
-            boofutils-netbsd-amd64
-            boofutils-netbsd-arm
-            boofutils-netbsd-arm64
-            boofutils-openbsd-386
-            boofutils-openbsd-amd64
-            boofutils-openbsd-arm
-            boofutils-openbsd-arm64
-            boofutils-plan9-386
-            boofutils-plan9-amd64
-            boofutils-plan9-arm
-            boofutils-solaris-amd64
-            boofutils-wasip1-wasm
             boofutils-windows-386.exe
             boofutils-windows-amd64.exe
             boofutils-windows-arm.exe
@@ -289,23 +150,6 @@ jobs:
             commit: main
             body: ${{ github.event.head_commit.message }}
             artifacts: |
-              build/boofutils/boofutils-aix-ppc64
-              build/boofutils/boofutils-android-386
-              build/boofutils/boofutils-android-amd64
-              build/boofutils/boofutils-android-arm
-              build/boofutils/boofutils-android-arm64
-              build/boofutils/boofutils-darwin-amd64
-              build/boofutils/boofutils-darwin-arm64
-              build/boofutils/boofutils-dragonfly-amd64
-              build/boofutils/boofutils-freebsd-386
-              build/boofutils/boofutils-freebsd-amd64
-              build/boofutils/boofutils-freebsd-arm
-              build/boofutils/boofutils-freebsd-arm64
-              build/boofutils/boofutils-freebsd-riscv64
-              build/boofutils/boofutils-illumos-amd64
-              build/boofutils/boofutils-ios-amd64
-              build/boofutils/boofutils-ios-arm64
-              build/boofutils/boofutils-js-wasm
               build/boofutils/boofutils-linux-386
               build/boofutils/boofutils-linux-amd64
               build/boofutils/boofutils-linux-arm
@@ -319,19 +163,6 @@ jobs:
               build/boofutils/boofutils-linux-ppc64le
               build/boofutils/boofutils-linux-riscv64
               build/boofutils/boofutils-linux-s390x
-              build/boofutils/boofutils-netbsd-386
-              build/boofutils/boofutils-netbsd-amd64
-              build/boofutils/boofutils-netbsd-arm
-              build/boofutils/boofutils-netbsd-arm64
-              build/boofutils/boofutils-openbsd-386
-              build/boofutils/boofutils-openbsd-amd64
-              build/boofutils/boofutils-openbsd-arm
-              build/boofutils/boofutils-openbsd-arm64
-              build/boofutils/boofutils-plan9-386
-              build/boofutils/boofutils-plan9-amd64
-              build/boofutils/boofutils-plan9-arm
-              build/boofutils/boofutils-solaris-amd64
-              build/boofutils/boofutils-wasip1-wasm
               build/boofutils/boofutils-windows-386.exe
               build/boofutils/boofutils-windows-amd64.exe
               build/boofutils/boofutils-windows-arm.exe
