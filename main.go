@@ -16,12 +16,6 @@ import (
 	m_report "github.com/hexahigh/boofutils/modules/report"
 )
 
-/*
-#cgo LDFLAGS: -lnms
-#include <nms.h>
-*/
-import "C"
-
 //go:embed LICENSE
 var LICENSE embed.FS
 

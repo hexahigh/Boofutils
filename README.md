@@ -27,13 +27,8 @@ sudo apt install -y boofutils
 
 You will need go version 1.21 or higher. If you do not have it installed then i recommend using [GVM.](https://github.com/moovweb/gvm)
 
-You will also need to install libasound, pkg-config and libnms.
+You will also need to install libasound and pkg-config.
 If you are using a Debian based distro, you can install them with `sudo apt install -y libasound2-dev pkg-config git`.
-To install libnms you can run the following command after cloning this repo:
-
-```bash
-make nms
-```
 
 After you have installed them you can simply clone the repo and build it. These commands should be the same on all operating systems.
 

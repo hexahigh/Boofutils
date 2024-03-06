@@ -27,9 +27,6 @@ jobs:
       - name: Check out code
         uses: actions/checkout@v2
 
-      - name: Build libnms
-        run: make nms
-
       - name: Get dependencies
         run: go get -v -t -d ./...
 

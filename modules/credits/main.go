@@ -1,11 +1,5 @@
 package credits
 
-/*
-#cgo LDFLAGS: -lnms
-#include <nms.h>
-*/
-import "C"
-
 import (
 	"context"
 	"fmt"
@@ -20,8 +14,7 @@ func Main() {
 	defer cancel()
 	go m.PlayAudioAdvanced(ctx, "credits.flac", 16, 2, 48000)
 
-	C.nms_set_auto_decrypt(1)
-	C.nms_exec(C.CString(con.Art))
+	fmt.Print(con.Art)
 
 	for _, line := range con.Credits {
 		// Print each character of the line one by one
