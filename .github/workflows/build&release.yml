@@ -17,7 +17,7 @@ jobs:
         run: |
           sudo apt update
           sudo apt upgrade -y
-          sudo apt install -y libasound2-dev pkg-config make gcc
+          sudo apt install -y libasound2-dev pkg-config make gcc gcc-mingw-w64-x86-64
 
       - name: Set up Go
         uses: actions/setup-go@v2
@@ -34,7 +34,7 @@ jobs:
         run: go get -v -t -d ./...
 
       - name: Build windows/amd64
-        run: CGO_ENABLED=1 GOOS=windows GOARCH=amd64 go build -ldflags "-w" -v -o boofutils-windows-amd64.exe .
+        run: CC=x86_64-w64-mingw64-gcc CGO_ENABLED=1 GOOS=windows GOARCH=amd64 go build -ldflags "-w" -v -o boofutils-windows-amd64.exe .
         continue-on-error: true
 
       - name: Build linux/amd64
