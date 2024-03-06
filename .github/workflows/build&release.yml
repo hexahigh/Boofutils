@@ -33,72 +33,16 @@ jobs:
       - name: Get dependencies
         run: go get -v -t -d ./...
 
-      - name: Build linux/386
-        run: GOOS=linux GOARCH=386 go build -ldflags "-w" -v -o boofutils-linux-386 .
+      - name: Build windows/amd64
+        run: CGO_ENABLED=1 GOOS=windows GOARCH=amd64 go build -ldflags "-w" -v -o boofutils-windows-amd64.exe .
         continue-on-error: true
 
       - name: Build linux/amd64
-        run: GOOS=linux GOARCH=amd64 go build -ldflags "-w" -v -o boofutils-linux-amd64 .
-        continue-on-error: true
-
-      - name: Build linux/arm
-        run: GOOS=linux GOARCH=arm go build -ldflags "-w" -v -o boofutils-linux-arm .
+        run: CGO_ENABLED=1 GOOS=linux GOARCH=amd64 go build -ldflags "-w" -v -o boofutils-linux-amd64 .
         continue-on-error: true
 
       - name: Build linux/arm64
-        run: GOOS=linux GOARCH=arm64 go build -ldflags "-w" -v -o boofutils-linux-arm64 .
-        continue-on-error: true
-
-      - name: Build linux/loong64
-        run: GOOS=linux GOARCH=loong64 go build -ldflags "-w" -v -o boofutils-linux-loong64 .
-        continue-on-error: true
-
-      - name: Build linux/mips
-        run: GOOS=linux GOARCH=mips go build -ldflags "-w" -v -o boofutils-linux-mips .
-        continue-on-error: true
-
-      - name: Build linux/mips64
-        run: GOOS=linux GOARCH=mips64 go build -ldflags "-w" -v -o boofutils-linux-mips64 .
-        continue-on-error: true
-
-      - name: Build linux/mips64le
-        run: GOOS=linux GOARCH=mips64le go build -ldflags "-w" -v -o boofutils-linux-mips64le .
-        continue-on-error: true
-
-      - name: Build linux/mipsle
-        run: GOOS=linux GOARCH=mipsle go build -ldflags "-w" -v -o boofutils-linux-mipsle .
-        continue-on-error: true
-
-      - name: Build linux/ppc64
-        run: GOOS=linux GOARCH=ppc64 go build -ldflags "-w" -v -o boofutils-linux-ppc64 .
-        continue-on-error: true
-
-      - name: Build linux/ppc64le
-        run: GOOS=linux GOARCH=ppc64le go build -ldflags "-w" -v -o boofutils-linux-ppc64le .
-        continue-on-error: true
-
-      - name: Build linux/riscv64
-        run: GOOS=linux GOARCH=riscv64 go build -ldflags "-w" -v -o boofutils-linux-riscv64 .
-        continue-on-error: true
-
-      - name: Build linux/s390x
-        run: GOOS=linux GOARCH=s390x go build -ldflags "-w" -v -o boofutils-linux-s390x .
-        continue-on-error: true
-
-      - name: Build windows/386
-        run: GOOS=windows GOARCH=386 go build -ldflags "-w" -v -o boofutils-windows-386.exe .
-        continue-on-error: true
-
-      - name: Build windows/amd64
-        run: GOOS=windows GOARCH=amd64 go build -ldflags "-w" -v -o boofutils-windows-amd64.exe .
-        continue-on-error: true
-
-      - name: Build windows/arm
-        run: GOOS=windows GOARCH=arm go build -ldflags "-w" -v -o boofutils-windows-arm.exe .
-        continue-on-error: true
-
-      - name: Build windows/arm64
-        run: GOOS=windows GOARCH=arm64 go build -ldflags "-w" -v -o boofutils-windows-arm64.exe .
+        run: CGO_ENABLED=1 GOOS=linux GOARCH=arm64 go build -ldflags "-w" -v -o boofutils-linux-arm64 .
         continue-on-error: true
 
       - name: Upload the artifact
