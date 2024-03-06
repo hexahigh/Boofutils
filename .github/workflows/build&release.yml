@@ -34,15 +34,15 @@ jobs:
         run: go get -v -t -d ./...
 
       - name: Build windows/amd64
-        run: CC=x86_64-w64-mingw64-gcc CGO_ENABLED=1 GOOS=windows GOARCH=amd64 go build -ldflags "-w" -v -o boofutils-windows-amd64.exe .
+        run: CC=x86_64-w64-mingw64-gcc CGO_ENABLED=1 GOOS=windows GOARCH=amd64 go build -ldflags "-w" -o boofutils-windows-amd64.exe .
         continue-on-error: true
 
       - name: Build linux/amd64
-        run: CGO_ENABLED=1 GOOS=linux GOARCH=amd64 go build -ldflags "-w" -v -o boofutils-linux-amd64 .
+        run: CGO_ENABLED=1 GOOS=linux GOARCH=amd64 go build -ldflags "-w" -o boofutils-linux-amd64 .
         continue-on-error: true
 
       - name: Build linux/arm64
-        run: CGO_ENABLED=1 GOOS=linux GOARCH=arm64 go build -ldflags "-w" -v -o boofutils-linux-arm64 .
+        run: CGO_ENABLED=1 GOOS=linux GOARCH=arm64 go build -ldflags "-w" -o boofutils-linux-arm64 .
         continue-on-error: true
 
       - name: Upload the artifact
