@@ -81,21 +81,5 @@ jobs:
             commit: main
             body: ${{ github.event.head_commit.message }}
             artifacts: |
-              build/boofutils/boofutils-linux-386
-              build/boofutils/boofutils-linux-amd64
-              build/boofutils/boofutils-linux-arm
-              build/boofutils/boofutils-linux-arm64
-              build/boofutils/boofutils-linux-loong64
-              build/boofutils/boofutils-linux-mips
-              build/boofutils/boofutils-linux-mips64
-              build/boofutils/boofutils-linux-mips64le
-              build/boofutils/boofutils-linux-mipsle
-              build/boofutils/boofutils-linux-ppc64
-              build/boofutils/boofutils-linux-ppc64le
-              build/boofutils/boofutils-linux-riscv64
-              build/boofutils/boofutils-linux-s390x
-              build/boofutils/boofutils-windows-386.exe
-              build/boofutils/boofutils-windows-amd64.exe
-              build/boofutils/boofutils-windows-arm.exe
-              build/boofutils/boofutils-windows-arm64.exe
+              build/*
             prerelease: true
