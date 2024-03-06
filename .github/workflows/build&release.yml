@@ -78,5 +78,7 @@ jobs:
             commit: main
             body: ${{ github.event.head_commit.message }}
             artifacts: |
-              build/*
+              build/boofutils-linux-amd64
+              build/boofutils-linux-arm64
+              build/boofutils-windows-amd64.exe
             prerelease: true
