@@ -1,5 +1,5 @@
 Package: boofutils
-Version: 1.6.7
+Version: %{VERSION}%
 Maintainer: Boofdev
 Architecture: amd64
 Description: Utility program
