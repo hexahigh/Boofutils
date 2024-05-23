@@ -1,11 +1,16 @@
 # Boofutils
 
+## Boofutils has been deprecated
+The entire code is a complete mess, its a bunch of modules held together by duct tape.
+I have decided to abandon boofutils and start working on another utility program which has an actual architecture/structure.
+You can find it at [hexahigh/blutils](https://github.com/hexahigh/blutils)
+
 ![Build and release](https://github.com/hexahigh/boofutils/actions/workflows/build&release.yml/badge.svg)
 [![Release](https://img.shields.io/github/release/hexahigh/boofutils.svg)](https://github.com/hexahigh/boofutils/releases)
 [![License](https://img.shields.io/github/license/hexahigh/boofutils)](https://github.com/hexahigh/boofutils/blob/main/LICENSE)
 [![Downloads](https://img.shields.io/github/downloads/hexahigh/boofutils/total.svg)](https://github.com/hexahigh/boofutils/releases)
 ![Go report card](https://goreportcard.com/badge/github.com/hexahigh/boofutils)
-![Maintained](https://img.shields.io/badge/status-maintained-lime.svg)<br>
+![Unmaintained](https://img.shields.io/badge/status-Unmaintained-red.svg)<br>
 A utility program im working on.
 <br>
 Booftutils is very unigue.
